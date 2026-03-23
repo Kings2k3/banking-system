@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Payvexis Security - Bank-Grade Protection for Every Transaction</title>
+  <meta name="description"
+    content="Payvexis protects your money with 256-bit encryption, AI fraud detection, biometric authentication, and 24/7 real-time monitoring.">
+  <meta name="theme-color" content="#0a0e17">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dark: { 900: '#0a0e17', 800: '#111827', 700: '#1e293b' },
+            accent: '#c9f573',
+            'accent-dim': 'rgba(201,245,115,0.15)',
+            glass: 'rgba(255,255,255,0.04)',
+            'glass-border': 'rgba(255,255,255,0.08)',
+          },
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Shield Animation */
+    .shield-container {
+      position: relative;
+      width: 280px;
+      height: 320px;
+      margin: 0 auto;
+    }
+
+    .shield-outer-ring {
+      position: absolute;
+      inset: -20px;
+      border: 2px solid rgba(201, 245, 115, 0.15);
+      border-radius: 50%;
+      animation: shieldSpin 12s linear infinite;
+    }
+
+    .shield-mid-ring {
+      position: absolute;
+      inset: 10px;
+      border: 1px dashed rgba(34, 211, 238, 0.2);
+      border-radius: 50%;
+      animation: shieldSpin 8s linear infinite reverse;
+    }
+
+    .shield-inner-ring {
+      position: absolute;
+      inset: 40px;
+      border: 2px solid rgba(201, 245, 115, 0.1);
+      border-radius: 50%;
+      animation: shieldPulse 4s ease-in-out infinite;
+    }
+
+    @keyframes shieldSpin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes shieldPulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 0.3;
+      }
+
+      50% {
+        transform: scale(1.08);
+        opacity: 0.6;
+      }
+    }
+
+    .shield-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    /* Ring node dots */
+    .ring-dot {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: #c9f573;
+      border-radius: 50%;
+      box-shadow: 0 0 12px rgba(201, 245, 115, 0.6);
+    }
+
+    .ring-dot:nth-child(1) {
+      top: -4px;
+      left: 50%;
+    }
+
+    .ring-dot:nth-child(2) {
+      bottom: -4px;
+      left: 50%;
+    }
+
+    .ring-dot:nth-child(3) {
+      top: 50%;
+      right: -4px;
+    }
+
+    /* Architecture diagram */
+    .arch-layer {
+      transition: all 0.5s ease;
+      cursor: default;
+    }
+
+    .arch-layer:hover {
+      transform: scale(1.03);
+      filter: brightness(1.2);
+    }
+
+    @keyframes dataFlow {
+      0% {
+        stroke-dashoffset: 20;
+      }
+
+      100% {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    .data-path {
+      stroke-dasharray: 4 6;
+      animation: dataFlow 1.5s linear infinite;
+    }
+
+    @keyframes radarSweep {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .radar-line {
+      transform-origin: center;
+      animation: radarSweep 4s linear infinite;
+    }
+
+    /* Compliance card */
+    .compliance-card {
+      transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s ease;
+    }
+
+    .compliance-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 50px rgba(201, 245, 115, 0.08);
+    }
+
+    /* Security score ring */
+    .score-ring {
+      animation: scoreGrow 2s ease-out forwards;
+    }
+
+    @keyframes scoreGrow {
+      from {
+        stroke-dashoffset: 283;
+      }
+
+      to {
+        stroke-dashoffset: 14;
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-dark-900 text-slate-100 font-sans">
+
+  <!-- NAVBAR -->
+  <nav id="navbar" class="navbar">
+    <div class="container-app navbar-shell">
+      <a href="index.html" id="logo" class="flex items-center gap-2.5 no-underline">
+        <div class="w-9 h-9 rounded-xl bg-accent/20 border border-accent/30 flex items-center justify-center">
+          <svg class="w-5 h-5 text-accent" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+          </svg>
+        </div>
+        <span class="text-lg font-bold text-slate-100 tracking-tight brand-wordmark">Payvexis</span>
+      </a>
+      <div class="navbar-desktop hidden lg:flex items-center gap-8">
+        <a href="index.html#hero" class="nav-link">Home</a>
+        <a href="features.html" class="nav-link">Features</a>
+        <a href="card.html" class="nav-link">Cards</a>
+        <a href="security.html" class="nav-link" aria-current="page">Security</a>
+        <a href="support.html" class="nav-link">Support</a>
+      </div>
+      <div class="navbar-actions">
+        <a href="login.html" class="nav-login hidden sm:inline-flex">Login</a>
+        <a href="#" class="btn-primary hidden lg:inline-flex text-sm py-2.5 px-5">Open Account
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+          </svg>
+        </a>
+        <button id="nav-toggle" class="lg:hidden p-2.5 rounded-xl glass" aria-label="Open menu">
+          <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Nav -->
+  <div id="mobile-nav" class="mobile-nav-overlay lg:hidden">
+    <div class="flex justify-between items-center mb-10">
+      <span class="text-lg font-bold text-accent brand-wordmark">Payvexis</span>
+      <button id="nav-close" class="p-2.5 rounded-xl glass" aria-label="Close menu">
+        <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <a href="index.html#hero" class="mobile-nav-link">Home</a>
+    <a href="features.html" class="mobile-nav-link">Features</a>
+    <a href="card.html" class="mobile-nav-link">Cards</a>
+    <a href="security.html" class="mobile-nav-link" aria-current="page">Security</a>
+    <a href="support.html" class="mobile-nav-link">Support</a>
+    <div class="mobile-nav-actions">
+      <a href="login.html" class="nav-login mobile-login-btn">Sign In</a>
+      <a href="#" class="btn-primary justify-center">Open Account</a>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <section id="hero" class="relative pt-28 pb-16 md:pt-40 md:pb-28 overflow-hidden">
+    <div class="glow-orb glow-orb-accent w-[420px] h-[420px] -top-32 -left-40"></div>
+    <div class="glow-orb glow-orb-purple w-[320px] h-[320px] top-20 right-0"></div>
+    <div class="particle" style="top:12%;left:8%;"></div>
+    <div class="particle" style="top:25%;left:82%;"></div>
+    <div class="particle" style="top:65%;left:18%;"></div>
+    <div class="particle" style="top:78%;left:90%;"></div>
+    <div class="particle" style="top:40%;left:55%;"></div>
+
+    <div class="container-app">
+      <div class="grid-2col items-center">
+        <div class="reveal-left">
+          <div class="section-label mb-6">
+            <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+            </svg>
+            Security & Trust
+          </div>
+          <h1 class="section-title mb-5">Your security is<br><span class="gradient-text">our foundation</span></h1>
+          <p class="section-subtitle mb-8">Every layer of Payvexis is engineered with bank-grade encryption, AI-powered
+            fraud detection, and real-time monitoring to keep your money and data safe â€” always.</p>
+          <div class="flex flex-wrap gap-3 mb-10">
+            <a href="#protection-grid" class="btn-primary" id="security-hero-cta">
+              Explore Protections
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </a>
+            <a href="index.html" class="btn-secondary">Back to Home</a>
+          </div>
+          <div class="flex items-center gap-6">
+            <div>
+              <p class="text-xl font-bold gradient-text">99.99%</p>
+              <p class="text-[10px] text-slate-500">Uptime SLA</p>
+            </div>
+            <div class="w-px h-8 bg-white/10"></div>
+            <div>
+              <p class="text-xl font-bold gradient-text">0</p>
+              <p class="text-[10px] text-slate-500">Data breaches</p>
+            </div>
+            <div class="w-px h-8 bg-white/10"></div>
+            <div>
+              <p class="text-xl font-bold gradient-text">256-bit</p>
+              <p class="text-[10px] text-slate-500">AES Encryption</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Animated Shield -->
+        <div class="reveal-right">
+          <div class="shield-container">
+            <div class="shield-outer-ring">
+              <div class="ring-dot"></div>
+              <div class="ring-dot"></div>
+              <div class="ring-dot"></div>
+            </div>
+            <div class="shield-mid-ring"></div>
+            <div class="shield-inner-ring"></div>
+            <div class="shield-icon">
+              <div
+                class="w-32 h-32 rounded-3xl bg-gradient-to-br from-accent/20 to-cyan-400/10 border border-accent/30 flex items-center justify-center shadow-2xl backdrop-blur-md">
+                <svg class="w-16 h-16 text-accent" fill="none" stroke="currentColor" stroke-width="1.5"
+                  viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+                </svg>
+              </div>
+            </div>
+            <div class="glow-orb glow-orb-accent w-24 h-24 -top-4 -right-4"></div>
+            <div class="glow-orb glow-orb-purple w-20 h-20 bottom-8 -left-8"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="py-12 md:py-16">
+    <div class="container-app">
+      <div class="grid-stats">
+        <div class="stat-item reveal stagger-1">
+          <p class="stat-number gradient-text"><span data-counter="12" data-suffix="M+">0</span></p>
+          <p class="text-sm text-slate-400 mt-1">Threats blocked annually</p>
+        </div>
+        <div class="stat-item reveal stagger-2">
+          <p class="stat-number gradient-text"><span data-counter="52" data-suffix="M">0</span></p>
+          <p class="text-sm text-slate-400 mt-1">Encrypted transactions monthly</p>
+        </div>
+        <div class="stat-item reveal stagger-3">
+          <p class="stat-number gradient-text"><span data-counter="24" data-suffix="/7">0</span></p>
+          <p class="text-sm text-slate-400 mt-1">Real-time monitoring</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROTECTION GRID -->
+  <section id="protection-grid" class="py-16 md:py-24 relative">
+    <div class="glow-orb glow-orb-accent w-[300px] h-[300px] top-0 left-1/2 -translate-x-1/2"></div>
+    <div class="container-app">
+      <div class="text-center mb-12 reveal">
+        <div class="section-label mx-auto mb-5 w-fit">
+          <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+          </svg>
+          Multi-Layer Protection
+        </div>
+        <h2 class="section-title mb-4">Six layers of<br><span class="gradient-text">defense for your money</span></h2>
+        <p class="section-subtitle mx-auto">Every transaction, login, and data transfer passes through multiple security
+          checkpoints designed to stop threats before they reach you.</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div class="feature-highlight glass-card p-6 reveal stagger-1">
+          <div
+            class="fi-icon w-12 h-12 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center mb-5">
+            <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+            </svg>
+          </div>
+          <h3 class="text-base font-bold mb-2">End-to-End Encryption</h3>
+          <p class="text-sm text-slate-400 leading-relaxed">All data is encrypted with 256-bit AES both in transit and
+            at rest. Your information is unreadable to anyone â€” including us.</p>
+        </div>
+        <div class="feature-highlight glass-card p-6 reveal stagger-2">
+          <div
+            class="fi-icon w-12 h-12 rounded-xl bg-cyan-400/10 border border-cyan-400/20 flex items-center justify-center mb-5">
+            <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M7.864 4.243A7.5 7.5 0 0119.5 10.5c0 2.92-.556 5.709-1.568 8.268M5.742 6.364A7.465 7.465 0 004.5 10.5a7.464 7.464 0 01-1.15 3.993m1.989 3.559A11.209 11.209 0 008.25 10.5a3.75 3.75 0 117.5 0c0 .527-.021 1.049-.064 1.565M12 10.5a14.94 14.94 0 01-3.6 9.75m6.633-4.596a18.666 18.666 0 01-2.485 5.33" />
+            </svg>
+          </div>
+          <h3 class="text-base font-bold mb-2">Biometric Authentication</h3>
+          <p class="text-sm text-slate-400 leading-relaxed">Sign in with Face ID, fingerprint, or device-level
+            biometrics. Your identity is verified locally â€” never stored on our servers.</p>
+        </div>
+        <div class="feature-highlight glass-card p-6 reveal stagger-3">
+          <div
+            class="fi-icon w-12 h-12 rounded-xl bg-purple-400/10 border border-purple-400/20 flex items-center justify-center mb-5">
+            <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" stroke-width="1.5"
+              viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
+            </svg>
+          </div>
+          <h3 class="text-base font-bold mb-2">AI Fraud Detection</h3>
+          <p class="text-sm text-slate-400 leading-relaxed">Machine learning models analyze transaction patterns in real
+            time to flag and block suspicious activity before it completes.</p>
+        </div>
+        <div class="feature-highlight glass-card p-6 reveal stagger-1">
+          <div
+            class="fi-icon w-12 h-12 rounded-xl bg-emerald-400/10 border border-emerald-400/20 flex items-center justify-center mb-5">
+            <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" stroke-width="1.5"
+              viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+            </svg>
+          </div>
+          <h3 class="text-base font-bold mb-2">Real-Time Alerts</h3>
+          <p class="text-sm text-slate-400 leading-relaxed">Instant push notifications for every login, transaction, and
+            security event. Know exactly what's happening with your account.</p>
+        </div>
+        <div class="feature-highlight glass-card p-6 reveal stagger-2">
+          <div
+            class="fi-icon w-12 h-12 rounded-xl bg-yellow-400/10 border border-yellow-400/20 flex items-center justify-center mb-5">
+            <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" stroke-width="1.5"
+              viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
+            </svg>
+          </div>
+          <h3 class="text-base font-bold mb-2">Card Controls</h3>
+          <p class="text-sm text-slate-400 leading-relaxed">Freeze cards instantly, set merchant limits, toggle online
+            or international use, and control exactly where your card works.</p>
+        </div>
+        <div class="feature-highlight glass-card p-6 reveal stagger-3">
+          <div
+            class="fi-icon w-12 h-12 rounded-xl bg-rose-400/10 border border-rose-400/20 flex items-center justify-center mb-5">
+            <svg class="w-6 h-6 text-rose-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
+            </svg>
+          </div>
+          <h3 class="text-base font-bold mb-2">Secure Data Storage</h3>
+          <p class="text-sm text-slate-400 leading-relaxed">Your data lives in geographically distributed, SOC 2
+            certified data centers with continuous integrity checks and automated backups.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECURITY ARCHITECTURE -->
+  <section class="py-16 md:py-24 relative overflow-hidden">
+    <div class="glow-orb glow-orb-blue w-[350px] h-[350px] -bottom-40 -right-40"></div>
+    <div class="container-app">
+      <div class="grid-2col items-center">
+        <div class="reveal-left">
+          <div class="section-label mb-5">
+            <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            Security Architecture
+          </div>
+          <h2 class="section-title mb-5">Defense in depth<br><span class="gradient-text">at every layer</span></h2>
+          <p class="section-subtitle mb-8">Our multi-ring security architecture ensures that even if one layer is
+            tested, multiple additional barriers stand between threats and your data.</p>
+          <ul class="space-y-4 mb-8">
+            <li class="flex items-start gap-3 text-sm text-slate-400">
+              <span
+                class="w-5 h-5 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center flex-shrink-0 mt-0.5"><svg
+                  class="w-3 h-3 text-accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg></span>
+              Network perimeter with DDoS protection and web application firewall.
+            </li>
+            <li class="flex items-start gap-3 text-sm text-slate-400">
+              <span
+                class="w-5 h-5 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center flex-shrink-0 mt-0.5"><svg
+                  class="w-3 h-3 text-accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg></span>
+              Application-level tokenization for all payment and card data.
+            </li>
+            <li class="flex items-start gap-3 text-sm text-slate-400">
+              <span
+                class="w-5 h-5 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center flex-shrink-0 mt-0.5"><svg
+                  class="w-3 h-3 text-accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg></span>
+              Isolated database clusters with hardware security modules (HSMs).
+            </li>
+            <li class="flex items-start gap-3 text-sm text-slate-400">
+              <span
+                class="w-5 h-5 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center flex-shrink-0 mt-0.5"><svg
+                  class="w-3 h-3 text-accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg></span>
+              Continuous penetration testing and third-party security audits.
+            </li>
+          </ul>
+        </div>
+
+        <!-- SVG Architecture Diagram -->
+        <div class="reveal-right">
+          <div class="glass-card p-5 md:p-7">
+            <svg viewBox="0 0 400 400" class="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="archGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#c9f573" stop-opacity="0.3" />
+                  <stop offset="100%" stop-color="#22d3ee" stop-opacity="0.1" />
+                </linearGradient>
+                <linearGradient id="archGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#22d3ee" stop-opacity="0.25" />
+                  <stop offset="100%" stop-color="#a78bfa" stop-opacity="0.1" />
+                </linearGradient>
+                <linearGradient id="flowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#c9f573" stop-opacity="0" />
+                  <stop offset="50%" stop-color="#c9f573" />
+                  <stop offset="100%" stop-color="#22d3ee" stop-opacity="0" />
+                </linearGradient>
+              </defs>
+              <!-- Outer ring: Network -->
+              <circle cx="200" cy="200" r="180" fill="none" stroke="rgba(201,245,115,0.1)" stroke-width="1"
+                class="arch-layer" />
+              <circle cx="200" cy="200" r="180" fill="none" stroke="rgba(201,245,115,0.15)" stroke-width="1"
+                stroke-dasharray="8 12" class="data-path" />
+              <!-- Mid ring: Application -->
+              <circle cx="200" cy="200" r="130" fill="none" stroke="rgba(34,211,238,0.1)" stroke-width="1"
+                class="arch-layer" />
+              <circle cx="200" cy="200" r="130" fill="none" stroke="rgba(34,211,238,0.15)" stroke-width="1"
+                stroke-dasharray="6 10" class="data-path" style="animation-duration:2s" />
+              <!-- Inner ring: Data -->
+              <circle cx="200" cy="200" r="80" fill="url(#archGrad1)" stroke="rgba(201,245,115,0.2)" stroke-width="1.5"
+                class="arch-layer" />
+              <!-- Center: Core -->
+              <circle cx="200" cy="200" r="35" fill="url(#archGrad2)" stroke="rgba(201,245,115,0.3)" stroke-width="2" />
+              <!-- Radar sweep -->
+              <line x1="200" y1="200" x2="200" y2="20" stroke="rgba(201,245,115,0.08)" stroke-width="1"
+                class="radar-line" />
+              <!-- Shield in center -->
+              <path
+                d="M200 175 L200 175 C205 172 210 170 215 170 L215 170 C215 185 210 198 200 205 C190 198 185 185 185 170 L185 170 C190 170 195 172 200 175Z"
+                fill="rgba(201,245,115,0.15)" stroke="#c9f573" stroke-width="1.5" />
+              <path d="M196 188 L199 191 L205 183" fill="none" stroke="#c9f573" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" />
+              <!-- Layer labels -->
+              <text x="200" y="36" text-anchor="middle" fill="rgba(201,245,115,0.6)" font-size="9" font-family="Inter"
+                font-weight="600">NETWORK</text>
+              <text x="200" y="82" text-anchor="middle" fill="rgba(34,211,238,0.6)" font-size="9" font-family="Inter"
+                font-weight="600">APPLICATION</text>
+              <text x="200" y="132" text-anchor="middle" fill="rgba(201,245,115,0.5)" font-size="9" font-family="Inter"
+                font-weight="600">DATABASE</text>
+              <!-- Node dots on outer ring -->
+              <circle cx="200" cy="20" r="4" fill="#c9f573" opacity="0.7" />
+              <circle cx="380" cy="200" r="4" fill="#c9f573" opacity="0.5" />
+              <circle cx="200" cy="380" r="4" fill="#22d3ee" opacity="0.5" />
+              <circle cx="20" cy="200" r="4" fill="#22d3ee" opacity="0.7" />
+              <!-- Node dots on mid ring -->
+              <circle cx="330" cy="200" r="3" fill="#22d3ee" opacity="0.6" />
+              <circle cx="70" cy="200" r="3" fill="#c9f573" opacity="0.6" />
+              <circle cx="200" cy="70" r="3" fill="#c9f573" opacity="0.5" />
+              <circle cx="200" cy="330" r="3" fill="#22d3ee" opacity="0.5" />
+              <!-- Pulse rings -->
+              <circle cx="200" cy="20" r="8" fill="none" stroke="#c9f573" stroke-width="0.5" opacity="0.4"
+                class="pulse-ring-svg" />
+              <circle cx="380" cy="200" r="8" fill="none" stroke="#c9f573" stroke-width="0.5" opacity="0.4"
+                class="pulse-ring-svg" />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW WE PROTECT YOU -->
+  <section class="py-16 md:py-24 relative">
+    <div class="container-app">
+      <div class="text-center mb-12 reveal">
+        <div class="section-label mx-auto mb-5 w-fit">
+          <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+          How It Works
+        </div>
+        <h2 class="section-title mb-4">Monitor, detect,<br><span class="gradient-text">respond â€” instantly</span></h2>
+        <p class="section-subtitle mx-auto">Our security pipeline runs continuously. Here's how we keep you safe every
+          second.</p>
+      </div>
+      <div class="grid-features">
+        <div class="feature-card-premium text-center reveal stagger-1">
+          <div
+            class="w-14 h-14 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center mx-auto mb-5">
+            <span class="text-accent font-bold text-xl">1</span></div>
+          <div class="feature-icon mx-auto icon-bounce"><svg class="w-6 h-6 text-accent" fill="none"
+              stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg></div>
+          <h3 class="text-base font-bold text-slate-100 mb-2 mt-4">Monitor</h3>
+          <p class="text-sm text-slate-400 leading-relaxed">AI systems continuously scan every transaction, login, and
+            data request in real time across all channels.</p>
+        </div>
+        <div class="feature-card-premium text-center reveal stagger-2">
+          <div
+            class="w-14 h-14 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center mx-auto mb-5">
+            <span class="text-accent font-bold text-xl">2</span></div>
+          <div class="feature-icon mx-auto icon-bounce"><svg class="w-6 h-6 text-accent" fill="none"
+              stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+            </svg></div>
+          <h3 class="text-base font-bold text-slate-100 mb-2 mt-4">Detect</h3>
+          <p class="text-sm text-slate-400 leading-relaxed">Anomalies trigger instant classification. Suspicious
+            patterns are flagged and isolated within milliseconds.</p>
+        </div>
+        <div class="feature-card-premium text-center reveal stagger-3">
+          <div
+            class="w-14 h-14 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center mx-auto mb-5">
+            <span class="text-accent font-bold text-xl">3</span></div>
+          <div class="feature-icon mx-auto icon-bounce"><svg class="w-6 h-6 text-accent" fill="none"
+              stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+            </svg></div>
+          <h3 class="text-base font-bold text-slate-100 mb-2 mt-4">Respond</h3>
+          <p class="text-sm text-slate-400 leading-relaxed">Threats are automatically blocked, you're alerted instantly,
+            and our security team investigates every incident.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPLIANCE -->
+  <section class="py-16 md:py-24 relative overflow-hidden">
+    <div class="glow-orb glow-orb-purple w-[320px] h-[320px] top-1/2 -left-32"></div>
+    <div class="container-app">
+      <div class="text-center mb-12 reveal">
+        <div class="section-label mx-auto mb-5 w-fit">
+          <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+          </svg>
+          Trusted & Certified
+        </div>
+        <h2 class="section-title mb-4">Compliance you<br><span class="gradient-text">can count on</span></h2>
+        <p class="section-subtitle mx-auto">Payvexis meets the highest international security and data protection
+          standards.</p>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-5">
+        <div class="compliance-card glass-card p-6 text-center reveal stagger-1">
+          <div
+            class="w-14 h-14 rounded-2xl bg-accent/10 border border-accent/20 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-7 h-7 text-accent" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+            </svg>
+          </div>
+          <p class="text-sm font-bold mb-1">PCI DSS</p>
+          <p class="text-[11px] text-slate-500">Level 1 Certified</p>
+        </div>
+        <div class="compliance-card glass-card p-6 text-center reveal stagger-2">
+          <div
+            class="w-14 h-14 rounded-2xl bg-cyan-400/10 border border-cyan-400/20 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-7 h-7 text-cyan-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+            </svg>
+          </div>
+          <p class="text-sm font-bold mb-1">SOC 2</p>
+          <p class="text-[11px] text-slate-500">Type II Audited</p>
+        </div>
+        <div class="compliance-card glass-card p-6 text-center reveal stagger-3">
+          <div
+            class="w-14 h-14 rounded-2xl bg-purple-400/10 border border-purple-400/20 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-7 h-7 text-purple-400" fill="none" stroke="currentColor" stroke-width="1.5"
+              viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
+            </svg>
+          </div>
+          <p class="text-sm font-bold mb-1">GDPR</p>
+          <p class="text-[11px] text-slate-500">Fully Compliant</p>
+        </div>
+        <div class="compliance-card glass-card p-6 text-center reveal stagger-4">
+          <div
+            class="w-14 h-14 rounded-2xl bg-emerald-400/10 border border-emerald-400/20 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-7 h-7 text-emerald-400" fill="none" stroke="currentColor" stroke-width="1.5"
+              viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+            </svg>
+          </div>
+          <p class="text-sm font-bold mb-1">ISO 27001</p>
+          <p class="text-[11px] text-slate-500">Certified</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LIVE DASHBOARD -->
+  <section class="py-16 md:py-24 relative overflow-hidden">
+    <div class="glow-orb glow-orb-accent w-[350px] h-[350px] -top-40 right-0"></div>
+    <div class="container-app">
+      <div class="grid-2col items-center">
+        <div class="reveal-left">
+          <div class="section-label mb-5">
+            <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5" />
+            </svg>
+            Live Dashboard
+          </div>
+          <h2 class="section-title mb-5">Full visibility into<br><span class="gradient-text">your security status</span>
+          </h2>
+          <p class="section-subtitle mb-8">Monitor active sessions, review security events, and manage device access â€”
+            all from one transparent dashboard.</p>
+          <a href="#" class="btn-primary">
+            View Security Center
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </a>
+        </div>
+        <div class="reveal-right">
+          <div class="glass-card p-5 md:p-7 space-y-4">
+            <!-- Security Score -->
+            <div class="glass-card p-4 !rounded-xl">
+              <div class="flex items-center justify-between mb-3">
+                <p class="text-xs text-slate-500 uppercase tracking-wider">Security score</p>
+                <div class="flex items-center gap-1.5"><span
+                    class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span><span
+                    class="text-xs text-emerald-400 font-semibold">Excellent</span></div>
+              </div>
+              <div class="flex items-center gap-5">
+                <svg viewBox="0 0 100 100" class="w-20 h-20">
+                  <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="8" />
+                  <circle cx="50" cy="50" r="45" fill="none" stroke="url(#scoreGrad)" stroke-width="8"
+                    stroke-linecap="round" transform="rotate(-90 50 50)" stroke-dasharray="283" class="score-ring" />
+                  <defs>
+                    <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="#c9f573" />
+                      <stop offset="100%" stop-color="#22d3ee" />
+                    </linearGradient>
+                  </defs><text x="50" y="54" text-anchor="middle" fill="#c9f573" font-size="20" font-weight="800"
+                    font-family="Inter">95</text>
+                </svg>
+                <div class="grid grid-cols-2 gap-3 flex-1">
+                  <div class="glass p-2.5 rounded-lg">
+                    <p class="text-[10px] text-slate-500">Encryption</p>
+                    <p class="text-xs font-semibold text-accent">Active</p>
+                  </div>
+                  <div class="glass p-2.5 rounded-lg">
+                    <p class="text-[10px] text-slate-500">2FA</p>
+                    <p class="text-xs font-semibold text-accent">Enabled</p>
+                  </div>
+                  <div class="glass p-2.5 rounded-lg">
+                    <p class="text-[10px] text-slate-500">Biometric</p>
+                    <p class="text-xs font-semibold text-accent">On</p>
+                  </div>
+                  <div class="glass p-2.5 rounded-lg">
+                    <p class="text-[10px] text-slate-500">Monitoring</p>
+                    <p class="text-xs font-semibold text-accent">24/7</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Security Events -->
+            <div class="glass-card p-4 !rounded-xl">
+              <p class="text-xs text-slate-500 mb-3 uppercase tracking-wider">Recent security events</p>
+              <div class="space-y-3">
+                <div class="flex items-center justify-between text-xs">
+                  <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400"></span><span
+                      class="text-slate-300">Login from trusted device</span></div><span class="text-slate-500">2 min
+                    ago</span>
+                </div>
+                <div class="flex items-center justify-between text-xs">
+                  <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400"></span><span
+                      class="text-slate-300">Card payment authorized</span></div><span class="text-slate-500">14 min
+                    ago</span>
+                </div>
+                <div class="flex items-center justify-between text-xs">
+                  <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-yellow-400"></span><span
+                      class="text-slate-300">New device sign-in blocked</span></div><span class="text-slate-500">1 hr
+                    ago</span>
+                </div>
+                <div class="flex items-center justify-between text-xs">
+                  <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400"></span><span
+                      class="text-slate-300">Security scan completed</span></div><span class="text-slate-500">3 hrs
+                    ago</span>
+                </div>
+                <div class="flex items-center justify-between text-xs">
+                  <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-red-400"></span><span
+                      class="text-slate-300">Suspicious login attempt blocked</span></div><span class="text-slate-500">6
+                    hrs ago</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="py-16 md:py-24">
+    <div class="container-app max-w-3xl">
+      <div class="text-center mb-12 reveal">
+        <div class="section-label mx-auto mb-5 w-fit">
+          <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
+          </svg>
+          Security FAQ
+        </div>
+        <h2 class="section-title mb-4">Common security<br><span class="gradient-text">questions</span></h2>
+      </div>
+      <div class="space-y-3 reveal" id="faq-list">
+        <div class="faq-item glass-card !rounded-xl cursor-pointer" onclick="this.classList.toggle('open')">
+          <div class="p-4 flex items-center justify-between">
+            <p class="text-sm font-semibold">How does Payvexis encrypt my data?</p><svg
+              class="w-4 h-4 text-slate-400 faq-chevron flex-shrink-0" fill="none" stroke="currentColor"
+              stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+          <div class="faq-answer">
+            <p class="text-sm text-slate-400 leading-relaxed">All data is protected with 256-bit AES encryption, both in
+              transit (TLS 1.3) and at rest. Card numbers are tokenized and never stored in plain text. Encryption keys
+              are managed through hardware security modules (HSMs) that meet FIPS 140-2 Level 3 standards.</p>
+          </div>
+        </div>
+        <div class="faq-item glass-card !rounded-xl cursor-pointer" onclick="this.classList.toggle('open')">
+          <div class="p-4 flex items-center justify-between">
+            <p class="text-sm font-semibold">What happens if suspicious activity is detected?</p><svg
+              class="w-4 h-4 text-slate-400 faq-chevron flex-shrink-0" fill="none" stroke="currentColor"
+              stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+          <div class="faq-answer">
+            <p class="text-sm text-slate-400 leading-relaxed">Our AI systems automatically block the suspicious
+              transaction, freeze the affected card if necessary, and send you an instant notification. Our security
+              team investigates every flagged event and will contact you directly if additional verification is needed.
+            </p>
+          </div>
+        </div>
+        <div class="faq-item glass-card !rounded-xl cursor-pointer" onclick="this.classList.toggle('open')">
+          <div class="p-4 flex items-center justify-between">
+            <p class="text-sm font-semibold">Is my biometric data stored on Payvexis servers?</p><svg
+              class="w-4 h-4 text-slate-400 faq-chevron flex-shrink-0" fill="none" stroke="currentColor"
+              stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+          <div class="faq-answer">
+            <p class="text-sm text-slate-400 leading-relaxed">No. Biometric authentication (Face ID, fingerprint) is
+              processed and stored exclusively on your device using the manufacturer's secure enclave. Payvexis never
+              receives, transmits, or stores your biometric data.</p>
+          </div>
+        </div>
+        <div class="faq-item glass-card !rounded-xl cursor-pointer" onclick="this.classList.toggle('open')">
+          <div class="p-4 flex items-center justify-between">
+            <p class="text-sm font-semibold">What security certifications does Payvexis hold?</p><svg
+              class="w-4 h-4 text-slate-400 faq-chevron flex-shrink-0" fill="none" stroke="currentColor"
+              stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+          <div class="faq-answer">
+            <p class="text-sm text-slate-400 leading-relaxed">Payvexis is PCI DSS Level 1 certified, SOC 2 Type II
+              audited, GDPR compliant, and ISO 27001 certified. We undergo regular third-party penetration tests and
+              publish our security audit results annually.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="py-16 md:py-24">
+    <div class="container-app reveal-scale">
+      <div class="cta-premium p-8 md:p-14 flex flex-col md:flex-row items-center justify-between gap-8 relative">
+        <div class="text-center md:text-left z-10">
+          <div class="section-label mb-5 !bg-white/10 !border-white/20 !text-white">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+            </svg>
+            Protected Banking
+          </div>
+          <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">Open a secure
+            account<br>with confidence.</h2>
+          <p class="text-white/60 text-sm mb-8 max-w-md leading-relaxed">Join millions who trust Payvexis with their
+            money. Bank-grade security, zero breaches, and full transparency â€” always.</p>
+          <a href="#" class="btn-primary !bg-white !text-[#1a3c34]">
+            Open Free Account
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </a>
+        </div>
+        <div class="glass-card p-5 w-full max-w-sm z-10 !bg-white/10 !border-white/15">
+          <p class="text-xs uppercase tracking-wider text-white/60 mb-3">Security included â€” free</p>
+          <div class="space-y-3">
+            <div class="flex items-center justify-between border-b border-white/10 pb-3"><span
+                class="text-sm text-white">256-bit AES encryption</span><span
+                class="text-xs text-accent font-medium">&#10003;</span></div>
+            <div class="flex items-center justify-between border-b border-white/10 pb-3"><span
+                class="text-sm text-white">AI fraud detection</span><span
+                class="text-xs text-accent font-medium">&#10003;</span></div>
+            <div class="flex items-center justify-between border-b border-white/10 pb-3"><span
+                class="text-sm text-white">Biometric authentication</span><span
+                class="text-xs text-accent font-medium">&#10003;</span></div>
+            <div class="flex items-center justify-between"><span class="text-sm text-white">24/7 monitoring</span><span
+                class="text-xs text-accent font-medium">&#10003;</span></div>
+          </div>
+        </div>
+        <div class="absolute top-0 right-0 w-72 h-72 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/3 blur-2xl">
+        </div>
+        <div
+          class="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/3 blur-2xl">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer id="footer" class="footer-premium py-16">
+    <div class="container-app">
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
+        <div class="col-span-2 md:col-span-1">
+          <div class="flex items-center gap-2.5 mb-5">
+            <div class="w-9 h-9 rounded-xl bg-accent/20 border border-accent/30 flex items-center justify-center">
+              <svg class="w-5 h-5 text-accent" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+              </svg>
+            </div>
+            <span class="text-lg font-bold text-slate-100 brand-wordmark">Payvexis</span>
+          </div>
+          <p class="text-sm text-slate-500 mb-5 leading-relaxed">Secure, modern banking built around clarity and
+            control.</p>
+          <div class="flex gap-2">
+            <div
+              class="glass px-3 py-2.5 rounded-lg text-xs text-slate-400 cursor-pointer hover:border-accent/30 hover:text-accent transition-all min-h-[40px] flex items-center">
+              App Store</div>
+            <div
+              class="glass px-3 py-2.5 rounded-lg text-xs text-slate-400 cursor-pointer hover:border-accent/30 hover:text-accent transition-all min-h-[40px] flex items-center">
+              Google Play</div>
+          </div>
+        </div>
+        <div>
+          <h4 class="font-semibold text-sm text-slate-300 mb-4">Quick Links</h4>
+          <ul class="space-y-2">
+            <li><a href="index.html#hero" class="footer-link">Home</a></li>
+            <li><a href="features.html" class="footer-link">Features</a></li>
+            <li><a href="card.html" class="footer-link">Cards</a></li>
+            <li><a href="security.html" class="footer-link">Security</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-semibold text-sm text-slate-300 mb-4">Products</h4>
+          <ul class="space-y-2">
+            <li><a href="#" class="footer-link">Checking</a></li>
+            <li><a href="#" class="footer-link">Savings</a></li>
+            <li><a href="#" class="footer-link">Cards</a></li>
+            <li><a href="#" class="footer-link">Transfers</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-semibold text-sm text-slate-300 mb-4">Company</h4>
+          <ul class="space-y-2">
+            <li><a href="#" class="footer-link">About Payvexis</a></li>
+            <li><a href="#" class="footer-link">Careers</a></li>
+            <li><a href="#" class="footer-link">Help Center</a></li>
+            <li><a href="#" class="footer-link">Status</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-semibold text-sm text-slate-300 mb-4">Follow</h4>
+          <ul class="space-y-2">
+            <li><a href="#" class="footer-link">LinkedIn</a></li>
+            <li><a href="#" class="footer-link">X</a></li>
+            <li><a href="#" class="footer-link">YouTube</a></li>
+            <li><a href="#" class="footer-link">Instagram</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-white/5 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <p class="text-xs text-slate-600">&copy; 2026 Payvexis. All rights reserved.</p>
+        <div class="flex gap-4">
+          <a href="#" class="text-xs text-slate-600 hover:text-accent transition-colors">Privacy Policy</a>
+          <a href="#" class="text-xs text-slate-600 hover:text-accent transition-colors">Terms of Service</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+  <!-- FAQ accordion style (reused from card.html) -->
+  <style>
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      padding: 0 1rem;
+      transition: max-height 0.4s cubic-bezier(0.22, 1, 0.36, 1), padding 0.3s ease;
+    }
+
+    .faq-item.open .faq-answer {
+      max-height: 300px;
+      padding: 0.75rem 1rem 1rem;
+    }
+
+    .faq-item.open .faq-chevron {
+      transform: rotate(180deg);
+    }
+
+    .faq-chevron {
+      transition: transform 0.3s ease;
+    }
+
+    .feature-highlight {
+      transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s ease;
+    }
+
+    .feature-highlight:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 60px rgba(201, 245, 115, 0.06);
+    }
+
+    .feature-highlight .fi-icon {
+      transition: transform 0.4s ease, background 0.3s ease;
+    }
+
+    .feature-highlight:hover .fi-icon {
+      transform: scale(1.1);
+      background: rgba(201, 245, 115, 0.15);
+    }
+  </style>
+</body>
+
+</html>

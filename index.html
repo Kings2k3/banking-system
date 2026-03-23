@@ -1,0 +1,1128 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Payvexis - Secure Digital Banking for Everyday Money</title>
+  <meta name="description"
+    content="Payvexis is a secure, modern banking app to manage spending, send transfers, control cards, and protect every transaction.">
+  <meta name="theme-color" content="#0a0e17">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dark: { 900: '#0a0e17', 800: '#111827', 700: '#1e293b' },
+            accent: '#c9f573',
+            'accent-dim': 'rgba(201,245,115,0.15)',
+            glass: 'rgba(255,255,255,0.04)',
+            'glass-border': 'rgba(255,255,255,0.08)',
+          },
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="bg-dark-900 text-slate-100 font-sans">
+
+  <!-- ============================================================
+       NAVBAR
+       ============================================================ -->
+  <nav id="navbar" class="navbar">
+    <div class="container-app navbar-shell">
+      <!-- Logo -->
+      <a href="index.html" id="logo" class="flex items-center gap-2.5 no-underline">
+        <div class="w-9 h-9 rounded-xl bg-accent/20 border border-accent/30 flex items-center justify-center">
+          <svg class="w-5 h-5 text-accent" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+          </svg>
+        </div>
+        <span class="text-lg font-bold text-slate-100 tracking-tight brand-wordmark">Payvexis</span>
+      </a>
+      <div class="navbar-desktop hidden lg:flex items-center gap-8">
+        <a href="#hero" class="nav-link">Home</a>
+        <a href="features.html" class="nav-link">Features</a>
+        <a href="card.html" class="nav-link">Cards</a>
+        <a href="security.html" class="nav-link">Security</a>
+        <a href="support.html" class="nav-link">Support</a>
+      </div>
+      <div class="navbar-actions">
+        <a href="login.html" class="nav-login hidden sm:inline-flex" id="nav-login-btn">Login</a>
+        <a href="open-account.html" class="btn-primary hidden lg:inline-flex text-sm py-2.5 px-5" id="nav-signup-btn">
+          Open Account
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+          </svg>
+        </a>
+        <button id="nav-toggle" class="lg:hidden p-2.5 rounded-xl glass" aria-label="Open menu">
+          <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Nav Overlay -->
+  <div id="mobile-nav" class="mobile-nav-overlay lg:hidden">
+    <div class="flex justify-between items-center mb-10">
+      <span class="text-lg font-bold text-accent brand-wordmark">Payvexis</span>
+      <button id="nav-close" class="p-2.5 rounded-xl glass" aria-label="Close menu">
+        <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <a href="#hero" class="mobile-nav-link">Home</a>
+    <a href="features.html" class="mobile-nav-link">Features</a>
+    <a href="#cards" class="mobile-nav-link">Cards</a>
+    <a href="security.html" class="mobile-nav-link">Security</a>
+    <a href="support.html" class="mobile-nav-link">Support</a>
+    <div class="mobile-nav-actions">
+      <a href="login.html" class="nav-login mobile-login-btn">Sign In</a>
+      <a href="open-account.html" class="btn-primary justify-center">Open Account</a>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       HERO SECTION
+       ============================================================ -->
+  <section id="hero" class="relative pt-28 pb-16 md:pt-40 md:pb-28 overflow-hidden">
+    <!-- Decorative glow orbs -->
+    <div class="glow-orb glow-orb-accent w-[400px] h-[400px] -top-32 -left-40"></div>
+    <div class="glow-orb glow-orb-blue w-[300px] h-[300px] top-20 right-0"></div>
+    <!-- Particles -->
+    <div class="particle" style="top:15%;left:10%;"></div>
+    <div class="particle" style="top:30%;left:75%;"></div>
+    <div class="particle" style="top:60%;left:30%;"></div>
+    <div class="particle" style="top:80%;left:85%;"></div>
+    <div class="particle" style="top:45%;left:55%;"></div>
+    <div class="particle" style="top:20%;left:90%;"></div>
+
+    <div class="container-app">
+      <div class="grid-2col">
+        <!-- Left â€” Text -->
+        <div class="reveal-left">
+          <div class="section-label mb-6">
+            <span class="w-2 h-2 rounded-full bg-accent inline-block animate-pulse"></span>
+            Secure Digital Banking
+          </div>
+          <h1 class="section-title mb-5">
+            Banking built for<br>
+            <span class="gradient-text">control and clarity</span>
+          </h1>
+          <p class="section-subtitle mb-8">
+            Open an account in minutes, link your cards, and move money with real-time alerts, spending insights, and
+            bank-grade security.
+          </p>
+          <div class="flex flex-wrap gap-3 mb-10">
+            <a href="open-account.html" class="btn-primary" id="hero-cta-btn">
+              Open Account
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </a>
+            <a href="features.html" class="btn-secondary" id="hero-learn-btn">
+              View Features
+            </a>
+          </div>
+          <!-- Trust badges -->
+          <div class="flex items-center gap-4">
+            <div class="avatar-stack flex">
+              <img src="https://i.pravatar.cc/40?img=1" class="w-10 h-10 rounded-full object-cover" alt="User"
+                loading="lazy">
+              <img src="https://i.pravatar.cc/40?img=2" class="w-10 h-10 rounded-full object-cover" alt="User"
+                loading="lazy">
+              <img src="https://i.pravatar.cc/40?img=3" class="w-10 h-10 rounded-full object-cover" alt="User"
+                loading="lazy">
+              <img src="https://i.pravatar.cc/40?img=4" class="w-10 h-10 rounded-full object-cover" alt="User"
+                loading="lazy">
+            </div>
+            <div>
+              <p class="text-xl font-bold gradient-text">2.4M+</p>
+              <p class="text-xs text-slate-400">Protected with real-time monitoring</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right â€” 3D Card Stack -->
+        <div class="relative flex justify-center reveal-right">
+          <div class="relative w-72 h-[420px] md:w-80 md:h-[460px]">
+            <!-- Green Card (back) -->
+            <div
+              class="banking-card shine-effect card-3d absolute top-8 left-8 w-64 md:w-72 h-44 z-10 animate-float-delayed shadow-2xl">
+              <p class="text-xs opacity-70 mb-1 tracking-wider">Payvexis</p>
+              <p class="text-[10px] opacity-40">Debit Card</p>
+              <p class="text-lg font-semibold tracking-[0.2em] mt-8">5789 &bull;&bull;&bull;&bull; 2847</p>
+              <div class="flex justify-between items-end mt-8">
+                <div>
+                  <p class="text-[9px] opacity-40">Card Holder</p>
+                  <p class="text-xs font-medium">Sarasta A.</p>
+                </div>
+                <div>
+                  <p class="text-[9px] opacity-40">Expires</p>
+                  <p class="text-xs font-medium">04/28</p>
+                </div>
+                <div class="flex">
+                  <div class="w-5 h-5 rounded-full bg-red-500/80"></div>
+                  <div class="w-5 h-5 rounded-full bg-yellow-400/80 -ml-2"></div>
+                </div>
+              </div>
+            </div>
+            <!-- Glassmorphic Card (front) -->
+            <div
+              class="banking-card-white card-3d absolute top-32 -left-2 w-64 md:w-72 h-44 z-20 animate-float shadow-2xl">
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="text-xs text-slate-400 mb-1 tracking-wider">Payvexis</p>
+                  <p class="text-[10px] text-slate-500">Premium Account</p>
+                </div>
+                <div class="w-9 h-6 rounded bg-gradient-to-r from-yellow-400 to-yellow-500"></div>
+              </div>
+              <p class="text-lg font-semibold tracking-[0.2em] mt-8">5789 &bull;&bull;&bull;&bull; 284</p>
+              <div class="flex justify-between items-end mt-8">
+                <div>
+                  <p class="text-[9px] text-slate-500">Card Holder</p>
+                  <p class="text-xs font-medium">Sarasta A.</p>
+                </div>
+                <div>
+                  <p class="text-[9px] text-slate-500">Expires</p>
+                  <p class="text-xs font-medium">04/28</p>
+                </div>
+                <p class="text-xs font-bold text-accent">VISA</p>
+              </div>
+            </div>
+            <!-- Decorative glows -->
+            <div class="glow-orb glow-orb-accent w-32 h-32 -top-6 -right-6"></div>
+            <div class="glow-orb glow-orb-purple w-24 h-24 bottom-10 -left-10"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       PARTNERS MARQUEE
+       ============================================================ -->
+  <section class="py-8 border-y border-white/5 relative">
+    <div class="container-app">
+      <p class="text-center text-xs text-slate-500 mb-5 tracking-widest uppercase reveal">Connected Payment and
+        Banking Networks
+      </p>
+    </div>
+    <div class="marquee-wrapper">
+      <div class="marquee-track">
+        <span class="partner-logo">stripe</span>
+        <span class="partner-logo flex items-center gap-1">
+          <svg class="w-8 h-6" viewBox="0 0 24 24">
+            <circle cx="9" cy="12" r="7" fill="#eb001b" opacity="0.7" />
+            <circle cx="15" cy="12" r="7" fill="#f79e1b" opacity="0.7" />
+          </svg>
+          mastercard
+        </span>
+        <span class="partner-logo">PayPal</span>
+        <span class="partner-logo">G Pay</span>
+        <span class="partner-logo">Skrill</span>
+        <span class="partner-logo">Revolut</span>
+        <span class="partner-logo">Wise</span>
+        <span class="partner-logo">Binance</span>
+        <!-- Duplicate for seamless loop -->
+        <span class="partner-logo">stripe</span>
+        <span class="partner-logo flex items-center gap-1">
+          <svg class="w-8 h-6" viewBox="0 0 24 24">
+            <circle cx="9" cy="12" r="7" fill="#eb001b" opacity="0.7" />
+            <circle cx="15" cy="12" r="7" fill="#f79e1b" opacity="0.7" />
+          </svg>
+          mastercard
+        </span>
+        <span class="partner-logo">PayPal</span>
+        <span class="partner-logo">G Pay</span>
+        <span class="partner-logo">Skrill</span>
+        <span class="partner-logo">Revolut</span>
+        <span class="partner-logo">Wise</span>
+        <span class="partner-logo">Binance</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       STATS SECTION
+       ============================================================ -->
+  <section class="py-16 md:py-24 relative">
+    <div class="container-app">
+      <div class="grid-stats">
+        <div class="stat-item reveal stagger-1">
+          <p class="stat-number gradient-text"><span data-counter="120" data-suffix="+">0</span></p>
+          <p class="text-sm text-slate-400 mt-1">Connected institutions</p>
+        </div>
+        <div class="stat-item reveal stagger-2">
+          <p class="stat-number gradient-text"><span data-counter="52" data-suffix="M">0</span></p>
+          <p class="text-sm text-slate-400 mt-1">Transactions screened monthly</p>
+        </div>
+        <div class="stat-item reveal stagger-3">
+          <p class="stat-number gradient-text"><span data-counter="24" data-suffix="/7">0</span></p>
+          <p class="text-sm text-slate-400 mt-1">Fraud monitoring</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SMARTER FINANCE â€” CARD DETAILS
+       ============================================================ -->
+  <section id="cards" class="py-16 md:py-24 relative overflow-hidden">
+    <div class="glow-orb glow-orb-blue w-[350px] h-[350px] -bottom-40 -right-40"></div>
+    <div class="container-app">
+      <div class="grid-2col">
+        <!-- Left Text -->
+        <div class="reveal-left">
+          <div class="section-label mb-5">
+            <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+            </svg>
+            Card Controls
+          </div>
+          <h2 class="section-title mb-5">Card management with<br><span class="gradient-text">real-time controls</span>
+          </h2>
+          <ul class="space-y-4 mb-8">
+            <li class="flex items-start gap-3 text-sm text-slate-400">
+              <span
+                class="w-5 h-5 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-3 h-3 text-accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </span>
+              Freeze or unfreeze cards instantly, set limits, and control merchants.
+            </li>
+            <li class="flex items-start gap-3 text-sm text-slate-400">
+              <span
+                class="w-5 h-5 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-3 h-3 text-accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </span>
+              Earn rewards on eligible purchases with transparent rates.
+            </li>
+            <li class="flex items-start gap-3 text-sm text-slate-400">
+              <span
+                class="w-5 h-5 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-3 h-3 text-accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </span>
+              Instant alerts with merchant name, category, and location.
+            </li>
+          </ul>
+          <a href="#" class="btn-primary" id="cards-explore-btn">
+            Manage cards
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </a>
+        </div>
+
+        <!-- Right: App Mockup -->
+        <div class="reveal-right">
+          <div class="glass-card p-5 md:p-7">
+            <!-- Balance -->
+            <div class="glass-card p-5 mb-4 !bg-accent/5 !border-accent/10">
+              <p class="text-xs text-slate-500 mb-1">Today's spend</p>
+              <p class="text-3xl font-bold gradient-text">$259.75</p>
+              <div class="mt-3">
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 65%"></div>
+                </div>
+                <div class="flex justify-between mt-2">
+                  <span class="text-[10px] text-slate-500">$0</span>
+                  <span class="text-[10px] text-accent">$400 limit</span>
+                </div>
+              </div>
+              <div class="flex gap-2 mt-3">
+                <span class="text-xs px-3 py-1.5 bg-accent text-dark-900 rounded-full font-semibold">Live</span>
+                <span class="text-xs px-3 py-1.5 glass rounded-full text-slate-400">Transactions</span>
+              </div>
+            </div>
+            <!-- Available Cards -->
+            <p class="text-xs text-slate-500 mb-3 font-medium tracking-wider uppercase">Protected cards</p>
+            <div class="space-y-3">
+              <div class="glass-card p-4 flex items-center justify-between !rounded-xl cursor-pointer">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-7 bg-gradient-to-r from-[#1a3c34] to-[#2d6a4f] rounded-lg"></div>
+                  <div>
+                    <p class="text-sm font-semibold">98,500</p>
+                    <p class="text-[10px] text-slate-500">...4143</p>
+                  </div>
+                </div>
+                <div class="flex">
+                  <div class="w-4 h-4 rounded-full bg-red-500 opacity-70"></div>
+                  <div class="w-4 h-4 rounded-full bg-yellow-400 opacity-70 -ml-1.5"></div>
+                </div>
+              </div>
+              <div class="glass-card p-4 flex items-center justify-between !rounded-xl cursor-pointer">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-7 bg-gradient-to-r from-slate-600 to-slate-500 rounded-lg"></div>
+                  <div>
+                    <p class="text-sm font-semibold">76,280</p>
+                    <p class="text-[10px] text-slate-500">...8345</p>
+                  </div>
+                </div>
+                <p class="text-xs font-bold text-accent">VISA</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FEATURES â€” SWIPEABLE CARDS
+       ============================================================ -->
+  <section id="features" class="py-16 md:py-24 relative overflow-hidden">
+    <div class="glow-orb glow-orb-accent w-[300px] h-[300px] top-0 left-1/2 -translate-x-1/2"></div>
+    <div class="container-app">
+      <div class="text-center mb-12 reveal">
+        <div class="section-label mx-auto mb-5 w-fit">
+          <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          Everyday Features
+        </div>
+        <h2 class="section-title mb-4">Everyday banking tools for<br><span class="gradient-text">clear financial
+            control</span></h2>
+        <p class="section-subtitle mx-auto">Manage accounts, monitor transactions, and send payments with live status
+          updates and actionable insights.</p>
+      </div>
+
+      <!-- Swipeable Carousel -->
+      <div class="swipe-carousel reveal" id="features-carousel">
+        <!-- Feature 1 -->
+        <div class="swipe-card">
+          <div class="feature-card-premium h-full">
+            <div class="mb-5 glass-card p-5 h-48 flex items-center justify-center !rounded-xl overflow-hidden">
+              <div class="banking-card shine-effect w-full h-full flex flex-col justify-between text-sm scale-90">
+                <div class="flex justify-between"><span class="text-xs opacity-70">Payvexis</span>
+                  <div class="w-7 h-5 bg-yellow-400 rounded-sm"></div>
+                </div>
+                <p class="tracking-[0.15em] text-sm font-medium">5789 •••• 2847</p>
+                <div class="flex justify-between text-[9px] opacity-70"><span>Sarasta A.</span><span>04/28</span></div>
+              </div>
+            </div>
+            <div class="feature-icon icon-bounce">
+              <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m9.86-5.02a4.5 4.5 0 00-6.364-6.364L4.5 6.271" />
+              </svg>
+            </div>
+            <h3 class="text-base font-bold text-slate-100 mb-2">Connect your accounts securely</h3>
+            <p class="text-sm text-slate-400 leading-relaxed">Link your existing banks and cards for a unified view. You
+              control access and can disconnect anytime.</p>
+          </div>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="swipe-card">
+          <div class="feature-card-premium h-full">
+            <div
+              class="mb-5 rounded-xl p-5 h-48 flex flex-col justify-center overflow-hidden bg-gradient-to-br from-[#1a3c34] to-[#2d6a4f]">
+              <p class="text-xs opacity-60 text-white mb-1">Income</p>
+              <p class="text-2xl font-bold text-white">$1,500</p>
+              <div class="mt-4 space-y-2">
+                <div class="flex justify-between text-xs text-white"><span
+                    class="opacity-60">Payroll</span><span>$4,000</span></div>
+                <div class="progress-bar !h-1 mt-1">
+                  <div class="progress-fill" style="width: 78%"></div>
+                </div>
+                <div class="flex justify-between text-xs text-white"><span
+                    class="opacity-60">Groceries</span><span>$650</span></div>
+                <div class="progress-bar !h-1 mt-1">
+                  <div class="progress-fill" style="width: 42%"></div>
+                </div>
+              </div>
+            </div>
+            <div class="feature-icon icon-bounce">
+              <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5" />
+              </svg>
+            </div>
+            <h3 class="text-base font-bold text-slate-100 mb-2">Clear spending insights</h3>
+            <p class="text-sm text-slate-400 leading-relaxed">Review categorized transactions, set budgets, and receive
+              alerts when spending trends change.</p>
+          </div>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="swipe-card">
+          <div class="feature-card-premium h-full">
+            <div class="mb-5 glass-card p-5 h-48 flex flex-col items-center justify-center !rounded-xl">
+              <div class="relative">
+                <div class="absolute inset-0 bg-accent/10 rounded-2xl blur-xl pulse-ring"></div>
+                <div
+                  class="relative bg-gradient-to-br from-[#1a3c34] to-[#2d6a4f] text-white rounded-2xl px-8 py-5 text-center">
+                  <p class="text-4xl font-bold">Instant</p>
+                  <p class="text-xs opacity-70 mt-1">Transfer status</p>
+                </div>
+              </div>
+            </div>
+            <div class="feature-icon icon-bounce">
+              <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+              </svg>
+            </div>
+            <h3 class="text-base font-bold text-slate-100 mb-2">Move money instantly</h3>
+            <p class="text-sm text-slate-400 leading-relaxed">Send transfers, pay contacts, and schedule bills with
+              real-time confirmations.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Carousel Dots -->
+      <div class="carousel-dots" id="features-dots">
+        <button class="carousel-dot active" data-index="0" aria-label="Slide 1"></button>
+        <button class="carousel-dot" data-index="1" aria-label="Slide 2"></button>
+        <button class="carousel-dot" data-index="2" aria-label="Slide 3"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECURITY & TRUST
+       ============================================================ -->
+  <section id="security" class="py-16 md:py-24 relative overflow-hidden">
+    <div class="glow-orb glow-orb-purple w-[300px] h-[300px] top-1/2 -left-32"></div>
+    <div class="container-app">
+      <div class="grid-2col">
+        <!-- Left: Security Content -->
+        <div class="reveal-left">
+          <div class="section-label mb-5">
+            <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+            </svg>
+            Security & Trust
+          </div>
+          <h2 class="section-title mb-5">Protection built into<br><span class="gradient-text">every transaction</span>
+          </h2>
+          <p class="section-subtitle mb-8">Your money and data are protected with layered security, real-time
+            monitoring,
+            and instant controls you can manage from the app.</p>
+          <ul class="space-y-4 mb-8">
+            <li class="flex items-start gap-3 text-sm text-slate-400">
+              <span
+                class="w-5 h-5 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-3 h-3 text-accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </span>
+              Data encrypted in transit and at rest, with continuous integrity checks.
+            </li>
+            <li class="flex items-start gap-3 text-sm text-slate-400">
+              <span
+                class="w-5 h-5 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-3 h-3 text-accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </span>
+              Real-time fraud monitoring with instant push and email alerts.
+            </li>
+            <li class="flex items-start gap-3 text-sm text-slate-400">
+              <span
+                class="w-5 h-5 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-3 h-3 text-accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </span>
+              Freeze cards, set limits, and control online or international spending.
+            </li>
+            <li class="flex items-start gap-3 text-sm text-slate-400">
+              <span
+                class="w-5 h-5 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-3 h-3 text-accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </span>
+              Biometric sign-in, device-level access, and secure recovery options.
+            </li>
+          </ul>
+          <div class="flex flex-wrap gap-3">
+            <a href="#" class="btn-primary" id="security-cta-btn">
+              Review security
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </a>
+            <a href="features.html#security-highlights" class="btn-secondary" id="security-learn-btn">See
+              protections</a>
+          </div>
+        </div>
+        <!-- Right: Security Preview -->
+        <div class="reveal-right">
+          <div class="glass-card p-5 md:p-7 space-y-4">
+            <div class="glass-card p-4 !rounded-xl">
+              <div class="flex items-center justify-between mb-3">
+                <p class="text-xs text-slate-500 uppercase tracking-wider">Security status</p>
+                <span class="text-xs text-accent font-semibold">Protected</span>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div class="glass p-3 rounded-lg">
+                  <p class="text-[10px] text-slate-500">Card controls</p>
+                  <p class="text-sm font-semibold">Freeze & limits</p>
+                </div>
+                <div class="glass p-3 rounded-lg">
+                  <p class="text-[10px] text-slate-500">Device access</p>
+                  <p class="text-sm font-semibold">Biometric</p>
+                </div>
+                <div class="glass p-3 rounded-lg">
+                  <p class="text-[10px] text-slate-500">Alerts</p>
+                  <p class="text-sm font-semibold">Instant</p>
+                </div>
+                <div class="glass p-3 rounded-lg">
+                  <p class="text-[10px] text-slate-500">Monitoring</p>
+                  <p class="text-sm font-semibold">24/7</p>
+                </div>
+              </div>
+            </div>
+            <div class="glass-card p-4 !rounded-xl">
+              <p class="text-xs text-slate-500 mb-3 uppercase tracking-wider">Recent alerts</p>
+              <div class="space-y-3">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-slate-300">New device sign-in</span>
+                  <span class="text-slate-500">2 min ago</span>
+                </div>
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-slate-300">Card used online</span>
+                  <span class="text-slate-500">12 min ago</span>
+                </div>
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-slate-300">Transfer completed</span>
+                  <span class="text-slate-500">1 hour ago</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       GLOBAL TRANSFERS â€” SEND MONEY ANYWHERE
+       ============================================================ -->
+  <section id="transfers" class="py-16 md:py-24 relative overflow-hidden">
+    <!-- Decorative orbs -->
+    <div class="glow-orb glow-orb-accent w-[350px] h-[350px] -top-40 right-0"></div>
+    <div class="glow-orb glow-orb-blue w-[250px] h-[250px] bottom-0 -left-32"></div>
+
+    <div class="container-app">
+      <!-- Header -->
+      <div class="text-center mb-12 reveal">
+        <div class="section-label mx-auto mb-5 w-fit">
+          <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Global Transfers
+        </div>
+        <h2 class="section-title mb-4">Start Sending Money<br><span class="gradient-text">Anywhere in the World</span>
+        </h2>
+        <p class="section-subtitle mx-auto">Review exchange rates, estimated delivery speed, and transfer coverage
+          before you confirm a payment.</p>
+      </div>
+
+      <div class="grid-2col">
+        <!-- LEFT: Interactive World Map -->
+        <div class="reveal-left">
+          <div class="globe-container glass-card p-4 md:p-6 relative" id="globe-card">
+            <!-- SVG World Map with transfer routes -->
+            <svg id="world-map" viewBox="0 0 800 450" class="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="3" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+                <linearGradient id="pathGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#c9f573" stop-opacity="0" />
+                  <stop offset="50%" stop-color="#c9f573" stop-opacity="1" />
+                  <stop offset="100%" stop-color="#22d3ee" stop-opacity="0" />
+                </linearGradient>
+              </defs>
+
+              <!-- Continent outlines -->
+              <path
+                d="M120,100 Q130,80 160,75 Q190,72 210,85 Q230,75 250,80 Q260,95 255,110 Q250,130 240,140 Q230,155 220,165 Q205,175 190,170 Q175,180 165,190 Q150,195 140,185 Q125,170 115,155 Q110,140 112,125 Q115,112 120,100Z"
+                fill="rgba(201,245,115,0.06)" stroke="rgba(201,245,115,0.15)" stroke-width="0.8" class="continent" />
+              <path
+                d="M220,220 Q235,210 245,220 Q255,235 260,255 Q265,275 260,295 Q255,315 248,330 Q240,345 230,355 Q220,360 215,350 Q208,335 205,315 Q200,295 202,275 Q205,255 210,240 Q215,228 220,220Z"
+                fill="rgba(201,245,115,0.06)" stroke="rgba(201,245,115,0.15)" stroke-width="0.8" class="continent" />
+              <path
+                d="M370,80 Q385,72 400,75 Q415,70 425,78 Q435,85 440,95 Q435,108 425,115 Q415,120 405,125 Q395,130 385,128 Q378,125 370,118 Q362,110 360,100 Q362,88 370,80Z"
+                fill="rgba(201,245,115,0.06)" stroke="rgba(201,245,115,0.15)" stroke-width="0.8" class="continent" />
+              <path
+                d="M390,150 Q405,140 420,145 Q435,150 442,165 Q448,185 450,205 Q448,230 442,250 Q435,270 425,285 Q415,295 405,290 Q395,280 388,265 Q382,245 380,225 Q378,205 380,185 Q382,168 390,150Z"
+                fill="rgba(201,245,115,0.06)" stroke="rgba(201,245,115,0.15)" stroke-width="0.8" class="continent" />
+              <path
+                d="M460,65 Q485,55 510,58 Q540,55 565,62 Q590,68 610,80 Q630,72 650,78 Q670,85 680,100 Q685,115 675,130 Q660,140 645,145 Q625,150 610,155 Q590,160 570,158 Q550,162 535,170 Q520,175 505,168 Q490,160 478,148 Q465,135 458,120 Q452,105 455,90 Q458,75 460,65Z"
+                fill="rgba(201,245,115,0.06)" stroke="rgba(201,245,115,0.15)" stroke-width="0.8" class="continent" />
+              <path
+                d="M620,260 Q640,250 660,255 Q680,260 690,275 Q695,290 688,305 Q678,315 665,318 Q650,320 638,315 Q625,308 618,295 Q615,280 618,268 Q620,262 620,260Z"
+                fill="rgba(201,245,115,0.06)" stroke="rgba(201,245,115,0.15)" stroke-width="0.8" class="continent" />
+
+              <!-- City dots -->
+              <circle cx="175" cy="130" r="4" fill="#c9f573" filter="url(#glow)" class="city-dot"
+                data-city="New York" />
+              <circle cx="160" cy="165" r="3" fill="#86efac" filter="url(#glow)" class="city-dot" data-city="Miami" />
+              <circle cx="395" cy="98" r="4" fill="#c9f573" filter="url(#glow)" class="city-dot" data-city="London" />
+              <circle cx="415" cy="105" r="3" fill="#86efac" filter="url(#glow)" class="city-dot" data-city="Paris" />
+              <circle cx="530" cy="115" r="3" fill="#86efac" filter="url(#glow)" class="city-dot" data-city="Dubai" />
+              <circle cx="610" cy="140" r="4" fill="#c9f573" filter="url(#glow)" class="city-dot"
+                data-city="Singapore" />
+              <circle cx="640" cy="105" r="3" fill="#86efac" filter="url(#glow)" class="city-dot" data-city="Tokyo" />
+              <circle cx="235" cy="280" r="3" fill="#86efac" filter="url(#glow)" class="city-dot"
+                data-city="São Paulo" />
+              <circle cx="660" cy="285" r="3" fill="#86efac" filter="url(#glow)" class="city-dot" data-city="Sydney" />
+              <circle cx="415" cy="190" r="3" fill="#86efac" filter="url(#glow)" class="city-dot" data-city="Lagos" />
+
+              <!-- Animated transfer paths -->
+              <path d="M175,130 Q280,60 395,98" fill="none" stroke="rgba(201,245,115,0.08)" stroke-width="1" />
+              <path d="M175,130 Q280,60 395,98" fill="none" stroke="url(#pathGrad)" stroke-width="1.5"
+                stroke-dasharray="8 200">
+                <animate attributeName="stroke-dashoffset" from="208" to="0" dur="3s" repeatCount="indefinite"
+                  calcMode="spline" keySplines="0.4 0 0.2 1" />
+              </path>
+
+              <path d="M395,98 Q465,80 530,115" fill="none" stroke="rgba(34,211,238,0.08)" stroke-width="1" />
+              <path d="M395,98 Q465,80 530,115" fill="none" stroke="url(#pathGrad)" stroke-width="1.5"
+                stroke-dasharray="8 150">
+                <animate attributeName="stroke-dashoffset" from="158" to="0" dur="2.5s" begin="0.8s"
+                  repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1" />
+              </path>
+
+              <path d="M530,115 Q570,140 610,140" fill="none" stroke="rgba(201,245,115,0.08)" stroke-width="1" />
+              <path d="M530,115 Q570,140 610,140" fill="none" stroke="url(#pathGrad)" stroke-width="1.5"
+                stroke-dasharray="8 120">
+                <animate attributeName="stroke-dashoffset" from="128" to="0" dur="2s" begin="1.6s"
+                  repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1" />
+              </path>
+
+              <path d="M175,130 Q200,200 235,280" fill="none" stroke="rgba(34,211,238,0.08)" stroke-width="1" />
+              <path d="M175,130 Q200,200 235,280" fill="none" stroke="url(#pathGrad)" stroke-width="1.5"
+                stroke-dasharray="8 180">
+                <animate attributeName="stroke-dashoffset" from="188" to="0" dur="3.2s" begin="0.4s"
+                  repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1" />
+              </path>
+
+              <path d="M610,140 Q640,210 660,285" fill="none" stroke="rgba(201,245,115,0.08)" stroke-width="1" />
+              <path d="M610,140 Q640,210 660,285" fill="none" stroke="url(#pathGrad)" stroke-width="1.5"
+                stroke-dasharray="8 170">
+                <animate attributeName="stroke-dashoffset" from="178" to="0" dur="2.8s" begin="1.2s"
+                  repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1" />
+              </path>
+
+              <path d="M395,98 Q400,145 415,190" fill="none" stroke="rgba(34,211,238,0.08)" stroke-width="1" />
+              <path d="M395,98 Q400,145 415,190" fill="none" stroke="url(#pathGrad)" stroke-width="1.5"
+                stroke-dasharray="8 120">
+                <animate attributeName="stroke-dashoffset" from="128" to="0" dur="2.2s" begin="2s"
+                  repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1" />
+              </path>
+
+              <!-- Currency badges -->
+              <g class="currency-badge" transform="translate(80,85)">
+                <rect x="-20" y="-12" width="40" height="24" rx="12" fill="rgba(10,14,23,0.8)"
+                  stroke="rgba(201,245,115,0.3)" stroke-width="0.8" />
+                <text x="0" y="4" text-anchor="middle" fill="#c9f573" font-size="10" font-weight="600"
+                  font-family="Inter">USD</text>
+              </g>
+              <g class="currency-badge" transform="translate(380,60)">
+                <rect x="-20" y="-12" width="40" height="24" rx="12" fill="rgba(10,14,23,0.8)"
+                  stroke="rgba(134,239,172,0.3)" stroke-width="0.8" />
+                <text x="0" y="4" text-anchor="middle" fill="#86efac" font-size="10" font-weight="600"
+                  font-family="Inter">EUR</text>
+              </g>
+              <g class="currency-badge" transform="translate(440,78)">
+                <rect x="-20" y="-12" width="40" height="24" rx="12" fill="rgba(10,14,23,0.8)"
+                  stroke="rgba(34,211,238,0.3)" stroke-width="0.8" />
+                <text x="0" y="4" text-anchor="middle" fill="#22d3ee" font-size="10" font-weight="600"
+                  font-family="Inter">GBP</text>
+              </g>
+              <g class="currency-badge" transform="translate(670,78)">
+                <rect x="-20" y="-12" width="40" height="24" rx="12" fill="rgba(10,14,23,0.8)"
+                  stroke="rgba(201,245,115,0.3)" stroke-width="0.8" />
+                <text x="0" y="4" text-anchor="middle" fill="#c9f573" font-size="10" font-weight="600"
+                  font-family="Inter">JPY</text>
+              </g>
+              <g class="currency-badge" transform="translate(260,310)">
+                <rect x="-20" y="-12" width="40" height="24" rx="12" fill="rgba(10,14,23,0.8)"
+                  stroke="rgba(251,191,36,0.4)" stroke-width="0.8" />
+                <text x="0" y="4" text-anchor="middle" fill="#fbbf24" font-size="10" font-weight="600"
+                  font-family="Inter">BRL</text>
+              </g>
+              <g class="currency-badge" transform="translate(700,270)">
+                <rect x="-20" y="-12" width="40" height="24" rx="12" fill="rgba(10,14,23,0.8)"
+                  stroke="rgba(34,211,238,0.3)" stroke-width="0.8" />
+                <text x="0" y="4" text-anchor="middle" fill="#22d3ee" font-size="10" font-weight="600"
+                  font-family="Inter">AUD</text>
+              </g>
+
+              <!-- Pulse rings -->
+              <circle cx="175" cy="130" r="8" fill="none" stroke="#c9f573" stroke-width="0.5" opacity="0.4"
+                class="pulse-ring-svg" />
+              <circle cx="395" cy="98" r="8" fill="none" stroke="#c9f573" stroke-width="0.5" opacity="0.4"
+                class="pulse-ring-svg" />
+              <circle cx="610" cy="140" r="8" fill="none" stroke="#c9f573" stroke-width="0.5" opacity="0.4"
+                class="pulse-ring-svg" />
+            </svg>
+
+            <!-- Hover tooltip for city dots -->
+            <div id="map-tooltip" class="map-tooltip">New York</div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Live Currency Converter -->
+        <div class="reveal-right">
+          <div class="space-y-5">
+            <!-- Live Rates Ticker -->
+            <div class="glass-card p-5">
+              <div class="flex items-center justify-between mb-4">
+                <p class="text-xs text-slate-500 uppercase tracking-wider font-medium">Live exchange rates</p>
+                <div class="flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                  <span class="text-[10px] text-green-400 font-medium" id="rates-status">Live</span>
+                </div>
+              </div>
+              <div class="space-y-3" id="live-rates">
+                <div class="rate-row flex items-center justify-between p-3 rounded-xl glass">
+                  <div class="flex items-center gap-2.5">
+                    <span class="text-lg">USD</span>
+                    <div>
+                      <p class="text-sm font-semibold">USD -> EUR</p>
+                      <p class="text-[10px] text-slate-500">US Dollar -> Euro</p>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <p class="text-sm font-bold gradient-text" id="rate-usd-eur">--</p>
+                    <p class="text-[10px] text-green-400" id="rate-usd-eur-change">loading...</p>
+                  </div>
+                </div>
+                <div class="rate-row flex items-center justify-between p-3 rounded-xl glass">
+                  <div class="flex items-center gap-2.5">
+                    <span class="text-lg">GBP</span>
+                    <div>
+                      <p class="text-sm font-semibold">GBP -> USD</p>
+                      <p class="text-[10px] text-slate-500">British Pound -> US Dollar</p>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <p class="text-sm font-bold gradient-text" id="rate-gbp-usd">--</p>
+                    <p class="text-[10px] text-green-400" id="rate-gbp-usd-change">loading...</p>
+                  </div>
+                </div>
+                <div class="rate-row flex items-center justify-between p-3 rounded-xl glass">
+                  <div class="flex items-center gap-2.5">
+                    <span class="text-lg">JPY</span>
+                    <div>
+                      <p class="text-sm font-semibold">USD -> JPY</p>
+                      <p class="text-[10px] text-slate-500">US Dollar -> Japanese Yen</p>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <p class="text-sm font-bold gradient-text" id="rate-usd-jpy">--</p>
+                    <p class="text-[10px] text-green-400" id="rate-usd-jpy-change">loading...</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Currency Converter Widget -->
+            <div class="glass-card p-5" id="converter-card">
+              <p class="text-xs text-slate-500 uppercase tracking-wider font-medium mb-4">Convert currency</p>
+              <!-- From -->
+              <div class="glass p-4 rounded-xl mb-3">
+                <div class="flex items-center justify-between mb-2">
+                  <label class="text-[10px] text-slate-500 uppercase tracking-wider">You send</label>
+                  <select id="convert-from"
+                    class="converter-select text-xs font-semibold bg-transparent text-slate-200 border-none outline-none cursor-pointer">
+                    <option value="USD" selected>USD</option>
+                    <option value="EUR">EUR</option>
+                    <option value="GBP">GBP</option>
+                    <option value="JPY">JPY</option>
+                    <option value="AUD">AUD</option>
+                    <option value="CAD">CAD</option>
+                    <option value="CHF">CHF</option>
+                    <option value="NGN">NGN</option>
+                    <option value="BRL">BRL</option>
+                    <option value="INR">INR</option>
+                  </select>
+                </div>
+                <input type="number" id="convert-amount" value="1000" min="0" step="any"
+                  class="converter-input w-full text-2xl font-bold bg-transparent text-slate-100 outline-none border-none"
+                  placeholder="0.00">
+              </div>
+              <!-- Swap -->
+              <div class="flex justify-center -my-1.5 relative z-10">
+                <button id="convert-swap"
+                  class="w-10 h-10 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center hover:bg-accent/30 hover:scale-110 active:scale-95 transition-all"
+                  aria-label="Swap currencies">
+                  <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" stroke-width="2.5"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                  </svg>
+                </button>
+              </div>
+              <!-- To -->
+              <div class="glass p-4 rounded-xl mt-3">
+                <div class="flex items-center justify-between mb-2">
+                  <label class="text-[10px] text-slate-500 uppercase tracking-wider">They receive</label>
+                  <select id="convert-to"
+                    class="converter-select text-xs font-semibold bg-transparent text-slate-200 border-none outline-none cursor-pointer">
+                    <option value="EUR" selected>EUR</option>
+                    <option value="USD">USD</option>
+                    <option value="GBP">GBP</option>
+                    <option value="JPY">JPY</option>
+                    <option value="AUD">AUD</option>
+                    <option value="CAD">CAD</option>
+                    <option value="CHF">CHF</option>
+                    <option value="NGN">NGN</option>
+                    <option value="BRL">BRL</option>
+                    <option value="INR">INR</option>
+                  </select>
+                </div>
+                <p id="convert-result" class="text-2xl font-bold gradient-text">--</p>
+              </div>
+              <!-- Rate info -->
+              <div class="flex items-center justify-between mt-4 pt-3 border-t border-white/5">
+                <p class="text-[11px] text-slate-500" id="convert-rate-info">Fetching rate...</p>
+                <p class="text-[10px] text-slate-600" id="convert-last-update">--</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom stats row -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-12 reveal">
+        <div class="glass-card p-4 text-center !rounded-xl">
+          <p class="text-lg font-bold gradient-text">180+</p>
+          <p class="text-[11px] text-slate-500">Countries supported</p>
+        </div>
+        <div class="glass-card p-4 text-center !rounded-xl">
+          <p class="text-lg font-bold gradient-text">50+</p>
+          <p class="text-[11px] text-slate-500">Currencies</p>
+        </div>
+        <div class="glass-card p-4 text-center !rounded-xl">
+          <p class="text-lg font-bold gradient-text">30s</p>
+          <p class="text-[11px] text-slate-500">Average transfer</p>
+        </div>
+        <div class="glass-card p-4 text-center !rounded-xl">
+          <p class="text-lg font-bold gradient-text">0.1%</p>
+          <p class="text-[11px] text-slate-500">Lowest fees</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       CTA BANNER
+       ============================================================ -->
+  <section class="py-16 md:py-24">
+    <div class="container-app reveal-scale">
+      <div class="cta-premium p-8 md:p-14 flex flex-col md:flex-row items-center justify-between gap-8 relative">
+        <div class="text-center md:text-left z-10">
+          <div class="section-label mb-5 !bg-white/10 !border-white/20 !text-white">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            Open Your Account
+          </div>
+          <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">Open a secure account
+            in minutes.</h2>
+          <p class="text-white/60 text-sm mb-8 max-w-md leading-relaxed">Move money with confidence using real-time
+            alerts, smart controls, and clear insights.</p>
+          <a href="#" class="btn-primary !bg-white !text-[#1a3c34]" id="cta-start-btn">
+            Open Account
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </a>
+        </div>
+        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&h=350&fit=crop&crop=face"
+          class="w-44 h-52 object-cover rounded-2xl z-10 hidden md:block border border-white/10 shadow-2xl"
+          alt="Account holder" loading="lazy">
+        <!-- BG decorations -->
+        <div class="absolute top-0 right-0 w-72 h-72 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/3 blur-2xl">
+        </div>
+        <div
+          class="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/3 blur-2xl">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       HOW IT WORKS â€” 3 STEPS
+       ============================================================ -->
+  <section class="py-16 md:py-24 relative">
+    <div class="container-app">
+      <div class="text-center mb-12 reveal">
+        <div class="section-label mx-auto mb-5 w-fit">
+          <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+          How It Works
+        </div>
+        <h2 class="section-title mb-4">Three steps to<br><span class="gradient-text">get started</span>
+        </h2>
+        <p class="section-subtitle mx-auto">Create an account, fund it, and start moving money in minutes.</p>
+      </div>
+
+      <div class="grid-features">
+        <!-- Step 1 -->
+        <div class="feature-card-premium text-center reveal stagger-1">
+          <div
+            class="w-12 h-12 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center mx-auto mb-5">
+            <span class="text-accent font-bold text-lg">1</span>
+          </div>
+          <div class="feature-icon mx-auto icon-bounce">
+            <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m9.86-5.02a4.5 4.5 0 00-6.364-6.364L4.5 6.271" />
+            </svg>
+          </div>
+          <h3 class="text-base font-bold text-slate-100 mb-2 mt-4">Create your account</h3>
+          <p class="text-sm text-slate-400 leading-relaxed">Open your account with secure identity checks and set your
+            preferences.</p>
+        </div>
+        <!-- Step 2 -->
+        <div class="feature-card-premium text-center reveal stagger-2">
+          <div
+            class="w-12 h-12 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center mx-auto mb-5">
+            <span class="text-accent font-bold text-lg">2</span>
+          </div>
+          <div class="feature-icon mx-auto icon-bounce">
+            <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5" />
+            </svg>
+          </div>
+          <h3 class="text-base font-bold text-slate-100 mb-2 mt-4">Add funds or link a bank</h3>
+          <p class="text-sm text-slate-400 leading-relaxed">Bring money in by transfer or card, then set budgets that
+            fit your goals.</p>
+        </div>
+        <!-- Step 3 -->
+        <div class="feature-card-premium text-center reveal stagger-3">
+          <div
+            class="w-12 h-12 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center mx-auto mb-5">
+            <span class="text-accent font-bold text-lg">3</span>
+          </div>
+          <div class="feature-icon mx-auto icon-bounce">
+            <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+            </svg>
+          </div>
+          <h3 class="text-base font-bold text-slate-100 mb-2 mt-4">Spend, send, and track</h3>
+          <p class="text-sm text-slate-400 leading-relaxed">Pay, transfer, and monitor every transaction with instant
+            alerts and receipts.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer id="footer" class="footer-premium py-16">
+    <div class="container-app">
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
+        <!-- Brand -->
+        <div class="col-span-2 md:col-span-1">
+          <div class="flex items-center gap-2.5 mb-5">
+            <div class="w-9 h-9 rounded-xl bg-accent/20 border border-accent/30 flex items-center justify-center">
+              <svg class="w-5 h-5 text-accent" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+              </svg>
+            </div>
+            <span class="text-lg font-bold text-slate-100 brand-wordmark">Payvexis</span>
+          </div>
+          <p class="text-sm text-slate-500 mb-5 leading-relaxed">Secure, modern banking built around clarity and
+            control.</p>
+          <p class="text-xs text-slate-600 mb-3 uppercase tracking-wider font-medium">Get the Payvexis app</p>
+          <div class="flex gap-2">
+            <div
+              class="glass px-3 py-2.5 rounded-lg text-xs text-slate-400 cursor-pointer hover:border-accent/30 hover:text-accent transition-all min-h-[40px] flex items-center">
+              App Store</div>
+            <div
+              class="glass px-3 py-2.5 rounded-lg text-xs text-slate-400 cursor-pointer hover:border-accent/30 hover:text-accent transition-all min-h-[40px] flex items-center">
+              Google Play</div>
+          </div>
+        </div>
+        <!-- Quick Links -->
+        <div>
+          <h4 class="font-semibold text-sm text-slate-300 mb-4">Quick Links</h4>
+          <ul class="space-y-2">
+            <li><a href="#hero" class="footer-link">Home</a></li>
+            <li><a href="features.html" class="footer-link">Features</a></li>
+            <li><a href="security.html" class="footer-link">Security</a></li>
+            <li><a href="#cards" class="footer-link">Cards</a></li>
+          </ul>
+        </div>
+        <!-- Services -->
+        <div>
+          <h4 class="font-semibold text-sm text-slate-300 mb-4">Products</h4>
+          <ul class="space-y-2">
+            <li><a href="#" class="footer-link">Checking</a></li>
+            <li><a href="#" class="footer-link">Savings</a></li>
+            <li><a href="#" class="footer-link">Cards</a></li>
+            <li><a href="#" class="footer-link">Transfers</a></li>
+          </ul>
+        </div>
+        <!-- Community -->
+        <div>
+          <h4 class="font-semibold text-sm text-slate-300 mb-4">Company</h4>
+          <ul class="space-y-2">
+            <li><a href="#" class="footer-link">About Payvexis</a></li>
+            <li><a href="#" class="footer-link">Careers</a></li>
+            <li><a href="#" class="footer-link">Help Center</a></li>
+            <li><a href="#" class="footer-link">Status</a></li>
+          </ul>
+        </div>
+        <!-- Social -->
+        <div>
+          <h4 class="font-semibold text-sm text-slate-300 mb-4">Follow</h4>
+          <ul class="space-y-2">
+            <li><a href="#" class="footer-link">LinkedIn</a></li>
+            <li><a href="#" class="footer-link">X</a></li>
+            <li><a href="#" class="footer-link">YouTube</a></li>
+            <li><a href="#" class="footer-link">Instagram</a></li>
+          </ul>
+        </div>
+      </div>
+      <!-- Bottom -->
+      <div class="border-t border-white/5 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <p class="text-xs text-slate-600">&copy; 2026 Payvexis. All rights reserved.</p>
+        <div class="flex gap-4">
+          <a href="#" class="text-xs text-slate-600 hover:text-accent transition-colors">Privacy Policy</a>
+          <a href="#" class="text-xs text-slate-600 hover:text-accent transition-colors">Terms of Service</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+
+</html>

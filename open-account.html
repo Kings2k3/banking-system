@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Open Account - Payvexis | Start Banking in Minutes</title>
+  <meta name="description"
+    content="Open a Payvexis account in under 5 minutes. No minimum deposit, no hidden fees. Start managing your money with bank-grade security.">
+  <meta name="theme-color" content="#0a0e17">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dark: { 900: '#0a0e17', 800: '#111827', 700: '#1e293b' },
+            accent: '#c9f573',
+            'accent-dim': 'rgba(201,245,115,0.15)',
+            glass: 'rgba(255,255,255,0.04)',
+            'glass-border': 'rgba(255,255,255,0.08)',
+          },
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .auth-bg {
+      background:
+        radial-gradient(circle at 16% 18%, rgba(34, 211, 238, 0.14), transparent 36%),
+        radial-gradient(circle at 83% 12%, rgba(201, 245, 115, 0.12), transparent 38%),
+        radial-gradient(circle at 50% 90%, rgba(52, 211, 153, 0.08), transparent 40%),
+        #0a0e17;
+    }
+
+    .auth-card {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .auth-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-bottom: 0.45rem;
+      display: block;
+    }
+
+    .auth-input {
+      width: 100%;
+      min-height: 48px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      background: rgba(15, 23, 42, 0.5);
+      color: #f1f5f9;
+      padding: 0.8rem 0.95rem;
+      outline: none;
+      font-size: 0.875rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .auth-input::placeholder {
+      color: #64748b;
+    }
+
+    .auth-input:focus {
+      border-color: rgba(201, 245, 115, 0.42);
+      box-shadow: 0 0 0 4px rgba(201, 245, 115, 0.08);
+      background: rgba(15, 23, 42, 0.7);
+    }
+
+    .auth-input.error {
+      border-color: rgba(239, 68, 68, 0.5);
+      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.08);
+    }
+
+    .auth-select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%2394a3b8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.95rem center;
+      padding-right: 2.5rem;
+    }
+
+    /* ── Step progress ── */
+    .step-bar {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-bottom: 1.75rem;
+    }
+
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex: 1;
+      position: relative;
+    }
+
+    .step-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      border: 2px solid rgba(255, 255, 255, 0.12);
+      background: rgba(15, 23, 42, 0.7);
+      color: #64748b;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .step-item.active .step-circle {
+      border-color: #c9f573;
+      background: rgba(201, 245, 115, 0.15);
+      color: #c9f573;
+      box-shadow: 0 0 16px rgba(201, 245, 115, 0.2);
+    }
+
+    .step-item.done .step-circle {
+      border-color: #4ade80;
+      background: rgba(74, 222, 128, 0.15);
+      color: #4ade80;
+    }
+
+    .step-label {
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #475569;
+      transition: color 0.3s ease;
+    }
+
+    .step-item.active .step-label,
+    .step-item.done .step-label {
+      color: #94a3b8;
+    }
+
+    .step-connector {
+      flex: 1;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.08);
+      margin: 0 0.5rem;
+      border-radius: 1px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .step-connector::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 0;
+      background: #c9f573;
+      transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .step-connector.filled::after {
+      width: 100%;
+    }
+
+    /* ── Step panels ── */
+    .step-panel {
+      display: none;
+      animation: stepFadeIn 0.4s ease-out;
+    }
+
+    .step-panel.active {
+      display: block;
+    }
+
+    @keyframes stepFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ── Password strength ── */
+    .strength-bar {
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.06);
+      overflow: hidden;
+      margin-top: 0.5rem;
+    }
+
+    .strength-fill {
+      height: 100%;
+      border-radius: 2px;
+      width: 0%;
+      transition: width 0.4s ease, background 0.4s ease;
+    }
+
+    .strength-weak {
+      width: 33%;
+      background: #ef4444;
+    }
+
+    .strength-medium {
+      width: 66%;
+      background: #f59e0b;
+    }
+
+    .strength-strong {
+      width: 100%;
+      background: #4ade80;
+    }
+
+    /* ── Benefits ticker ── */
+    .benefit-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.4rem 0.75rem;
+      border-radius: 100px;
+      background: rgba(201, 245, 115, 0.08);
+      border: 1px solid rgba(201, 245, 115, 0.12);
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #c9f573;
+      white-space: nowrap;
+    }
+
+    .auth-input-wrap {
+      position: relative;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 0.7rem;
+      top: 50%;
+      transform: translateY(-50%);
+      min-width: 36px;
+      min-height: 36px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #94a3b8;
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: color 0.2s ease, background 0.2s ease;
+    }
+
+    .password-toggle:hover {
+      color: #c9f573;
+      background: rgba(201, 245, 115, 0.08);
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: #4ade80;
+      box-shadow: 0 0 12px rgba(74, 222, 128, 0.65);
+    }
+
+    /* ── Success state ── */
+    .success-check {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: rgba(74, 222, 128, 0.12);
+      border: 2px solid rgba(74, 222, 128, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.25rem;
+      animation: successPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes successPop {
+      from {
+        transform: scale(0);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    /* ── Checkbox ── */
+    .custom-check {
+      width: 18px;
+      height: 18px;
+      border-radius: 5px;
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      background: transparent;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+
+    .custom-check:checked {
+      border-color: #c9f573;
+      background: rgba(201, 245, 115, 0.2);
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='10' viewBox='0 0 12 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 5L4.5 8.5L11 1.5' stroke='%23c9f573' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    @media (max-width: 640px) {
+      .step-label {
+        display: none;
+      }
+
+      .step-connector {
+        margin: 0 0.25rem;
+      }
+    }
+  </style>
+</head>
+
+<body class="auth-bg text-slate-100 font-sans min-h-screen">
+  <nav id="navbar" class="navbar">
+    <div class="container-app navbar-shell">
+      <a href="index.html" id="logo" class="flex items-center gap-2.5 no-underline">
+        <div class="w-9 h-9 rounded-xl bg-accent/20 border border-accent/30 flex items-center justify-center">
+          <svg class="w-5 h-5 text-accent" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+          </svg>
+        </div>
+        <span class="text-lg font-bold text-slate-100 tracking-tight brand-wordmark">Payvexis</span>
+      </a>
+      <div class="navbar-desktop hidden lg:flex items-center gap-8">
+        <a href="index.html#hero" class="nav-link">Home</a>
+        <a href="features.html" class="nav-link">Features</a>
+        <a href="card.html" class="nav-link">Cards</a>
+        <a href="security.html" class="nav-link">Security</a>
+        <a href="support.html" class="nav-link">Support</a>
+      </div>
+      <div class="navbar-actions">
+        <a href="login.html" class="nav-login hidden sm:inline-flex">Login</a>
+        <a href="open-account.html" class="btn-primary hidden lg:inline-flex text-sm py-2.5 px-5" aria-current="page">
+          Open Account
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+          </svg>
+        </a>
+        <button id="nav-toggle" class="lg:hidden p-2.5 rounded-xl glass" aria-label="Open menu">
+          <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div id="mobile-nav" class="mobile-nav-overlay lg:hidden">
+    <div class="flex justify-between items-center mb-10">
+      <span class="text-lg font-bold text-accent brand-wordmark">Payvexis</span>
+      <button id="nav-close" class="p-2.5 rounded-xl glass" aria-label="Close menu">
+        <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <a href="index.html#hero" class="mobile-nav-link">Home</a>
+    <a href="features.html" class="mobile-nav-link">Features</a>
+    <a href="card.html" class="mobile-nav-link">Cards</a>
+    <a href="security.html" class="mobile-nav-link">Security</a>
+    <a href="support.html" class="mobile-nav-link">Support</a>
+    <div class="mobile-nav-actions">
+      <a href="login.html" class="nav-login mobile-login-btn">Sign In</a>
+      <a href="open-account.html" class="btn-primary justify-center" aria-current="page">Open Account</a>
+    </div>
+  </div>
+
+  <main class="relative pt-28 pb-16 md:pt-40 md:pb-24 overflow-hidden">
+    <div class="particle" style="top:16%;left:8%;"></div>
+    <div class="particle" style="top:26%;left:84%;"></div>
+    <div class="particle" style="top:64%;left:20%;"></div>
+    <div class="particle" style="top:82%;left:88%;"></div>
+    <div class="glow-orb glow-orb-accent w-[340px] h-[340px] -top-20 -left-32"></div>
+    <div class="glow-orb glow-orb-blue w-[300px] h-[300px] top-16 right-0"></div>
+
+    <section class="container-app">
+      <div class="grid-2col items-start">
+        <!-- Left: Info panel -->
+        <div class="reveal-left">
+          <div class="section-label mb-5">
+            <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+            </svg>
+            Create Account
+          </div>
+          <h1 class="section-title mb-5">Start banking<br><span class="gradient-text">in under 5 minutes</span></h1>
+          <p class="section-subtitle mb-8">No minimum deposit. No hidden fees. Open a fully protected Payvexis account
+            and manage your money with confidence.</p>
+
+          <div class="glass-card p-5 md:p-6 space-y-4 mb-6">
+            <div class="flex items-start gap-3">
+              <span
+                class="w-5 h-5 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-3 h-3 text-accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </span>
+              <p class="text-sm text-slate-400">Instant account activation — no paperwork required.</p>
+            </div>
+            <div class="flex items-start gap-3">
+              <span
+                class="w-5 h-5 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-3 h-3 text-accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </span>
+              <p class="text-sm text-slate-400">Free virtual debit card issued with every account.</p>
+            </div>
+            <div class="flex items-start gap-3">
+              <span
+                class="w-5 h-5 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-3 h-3 text-accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </span>
+              <p class="text-sm text-slate-400">Bank-grade encryption protects every transaction.</p>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap gap-2 mb-6">
+            <span class="benefit-chip">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              $0 Monthly Fee
+            </span>
+            <span class="benefit-chip">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              FDIC Insured
+            </span>
+            <span class="benefit-chip">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              24/7 Support
+            </span>
+          </div>
+
+          <div class="flex items-center gap-2.5">
+            <span class="status-dot"></span>
+            <p class="text-sm text-slate-400">Registrations open — average setup: 3 min</p>
+          </div>
+        </div>
+
+        <!-- Right: Multi-step form -->
+        <div class="reveal-right">
+          <section class="auth-card rounded-[24px] p-5 md:p-7 max-w-lg mx-auto">
+            <!-- Step progress bar -->
+            <div class="step-bar" id="step-bar">
+              <div class="step-item active" data-step="1">
+                <div class="step-circle">1</div>
+                <span class="step-label">Personal</span>
+              </div>
+              <div class="step-connector" id="conn-1"></div>
+              <div class="step-item" data-step="2">
+                <div class="step-circle">2</div>
+                <span class="step-label">Security</span>
+              </div>
+              <div class="step-connector" id="conn-2"></div>
+              <div class="step-item" data-step="3">
+                <div class="step-circle">3</div>
+                <span class="step-label">Verify</span>
+              </div>
+            </div>
+
+            <!-- Success banner (hidden) -->
+            <div id="signup-success"
+              class="hidden rounded-xl border border-emerald-300/30 bg-emerald-400/10 text-emerald-200 text-sm px-3.5 py-3 mb-4">
+              Account created successfully! Redirecting...
+            </div>
+
+            <form id="signup-form" novalidate autocomplete="on">
+              <!-- ═══ STEP 1 — Personal Info ═══ -->
+              <div class="step-panel active" id="panel-1">
+                <div class="mb-5">
+                  <p class="text-xs uppercase tracking-[0.14em] text-slate-500 mb-1">Step 1 of 3</p>
+                  <h2 class="text-xl font-bold text-slate-100">Personal information</h2>
+                </div>
+
+                <div class="space-y-4">
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label class="auth-label" for="first-name">First Name</label>
+                      <input id="first-name" name="firstName" type="text" autocomplete="given-name" required
+                        class="auth-input" placeholder="John">
+                    </div>
+                    <div>
+                      <label class="auth-label" for="last-name">Last Name</label>
+                      <input id="last-name" name="lastName" type="text" autocomplete="family-name" required
+                        class="auth-input" placeholder="Doe">
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="auth-label" for="signup-email">Email Address</label>
+                    <input id="signup-email" name="email" type="email" autocomplete="email" required class="auth-input"
+                      placeholder="you@email.com">
+                  </div>
+
+                  <div>
+                    <label class="auth-label" for="phone">Phone Number</label>
+                    <input id="phone" name="phone" type="tel" autocomplete="tel" required class="auth-input"
+                      placeholder="+1 (555) 000-0000">
+                  </div>
+
+                  <div>
+                    <label class="auth-label" for="dob">Date of Birth</label>
+                    <input id="dob" name="dob" type="date" required class="auth-input">
+                  </div>
+
+                  <button type="button" id="next-1" class="btn-primary w-full justify-center mt-2">
+                    Continue
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- ═══ STEP 2 — Security ═══ -->
+              <div class="step-panel" id="panel-2">
+                <div class="mb-5">
+                  <p class="text-xs uppercase tracking-[0.14em] text-slate-500 mb-1">Step 2 of 3</p>
+                  <h2 class="text-xl font-bold text-slate-100">Set up your credentials</h2>
+                </div>
+
+                <div class="space-y-4">
+                  <div>
+                    <label class="auth-label" for="account-type">Account Type</label>
+                    <select id="account-type" name="accountType" required class="auth-input auth-select">
+                      <option value="" disabled selected>Select account type</option>
+                      <option value="personal">Personal Checking</option>
+                      <option value="savings">Savings Account</option>
+                      <option value="business">Business Account</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label class="auth-label" for="signup-password">Create Password</label>
+                    <div class="auth-input-wrap">
+                      <input id="signup-password" name="password" type="password" autocomplete="new-password" required
+                        minlength="8" class="auth-input pr-11" placeholder="Minimum 8 characters">
+                      <button id="toggle-password" type="button" class="password-toggle"
+                        aria-label="Toggle password visibility">
+                        <svg id="eye-open" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
+                          viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          <circle cx="12" cy="12" r="3" />
+                        </svg>
+                        <svg id="eye-closed" class="w-4 h-4 hidden" fill="none" stroke="currentColor" stroke-width="2"
+                          viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M3 3l18 18M10.478 10.478a3 3 0 004.243 4.243M9.88 5.09A9.77 9.77 0 0112 5c4.478 0 8.268 2.943 9.542 7a9.974 9.974 0 01-4.132 5.411M6.228 6.228A9.96 9.96 0 002.458 12c1.274 4.057 5.064 7 9.542 7a9.96 9.96 0 005.772-1.772" />
+                        </svg>
+                      </button>
+                    </div>
+                    <div class="strength-bar">
+                      <div class="strength-fill" id="strength-fill"></div>
+                    </div>
+                    <p class="text-[11px] text-slate-500 mt-1.5" id="strength-text">Use 8+ characters with letters,
+                      numbers & symbols</p>
+                  </div>
+
+                  <div>
+                    <label class="auth-label" for="confirm-password">Confirm Password</label>
+                    <input id="confirm-password" name="confirmPassword" type="password" autocomplete="new-password"
+                      required class="auth-input" placeholder="Re-enter password">
+                  </div>
+
+                  <div class="flex gap-3">
+                    <button type="button" id="back-2" class="btn-secondary flex-1 justify-center">Back</button>
+                    <button type="button" id="next-2" class="btn-primary flex-1 justify-center">
+                      Continue
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ═══ STEP 3 — Confirm ═══ -->
+              <div class="step-panel" id="panel-3">
+                <div class="mb-5">
+                  <p class="text-xs uppercase tracking-[0.14em] text-slate-500 mb-1">Step 3 of 3</p>
+                  <h2 class="text-xl font-bold text-slate-100">Review & confirm</h2>
+                </div>
+
+                <div class="space-y-4">
+                  <!-- Summary card -->
+                  <div class="glass-card p-4 !rounded-xl space-y-3 !transform-none">
+                    <div class="flex justify-between text-sm">
+                      <span class="text-slate-500">Name</span>
+                      <span class="text-slate-200 font-medium" id="summary-name">—</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                      <span class="text-slate-500">Email</span>
+                      <span class="text-slate-200 font-medium" id="summary-email">—</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                      <span class="text-slate-500">Phone</span>
+                      <span class="text-slate-200 font-medium" id="summary-phone">—</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                      <span class="text-slate-500">Account</span>
+                      <span class="text-slate-200 font-medium" id="summary-account">—</span>
+                    </div>
+                  </div>
+
+                  <div class="flex items-start gap-2.5">
+                    <input type="checkbox" id="terms" required class="custom-check mt-0.5">
+                    <label for="terms" class="text-xs text-slate-400 leading-relaxed cursor-pointer">I agree to
+                      Payvexis's <a href="#" class="text-accent hover:underline">Terms of Service</a> and <a href="#"
+                        class="text-accent hover:underline">Privacy Policy</a>.</label>
+                  </div>
+
+                  <div class="flex items-start gap-2.5">
+                    <input type="checkbox" id="marketing" class="custom-check mt-0.5">
+                    <label for="marketing" class="text-xs text-slate-400 leading-relaxed cursor-pointer">Send me
+                      product updates and security alerts.</label>
+                  </div>
+
+                  <div class="flex gap-3">
+                    <button type="button" id="back-3" class="btn-secondary flex-1 justify-center">Back</button>
+                    <button type="submit" id="signup-submit" class="btn-primary flex-1 justify-center">
+                      <span id="signup-submit-text">Create Account</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ═══ SUCCESS PANEL ═══ -->
+              <div class="step-panel" id="panel-success">
+                <div class="text-center py-6">
+                  <div class="success-check">
+                    <svg class="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2.5"
+                      viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <h2 class="text-2xl font-bold text-slate-100 mb-2">Welcome to Payvexis!</h2>
+                  <p class="text-sm text-slate-400 mb-6 max-w-xs mx-auto">Your account is ready. You'll receive a
+                    confirmation email with your account details shortly.</p>
+                  <a href="login.html" class="btn-primary inline-flex">
+                    Sign In to Dashboard
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </form>
+
+            <p class="text-xs text-slate-500 mt-5 text-center">Already have an account?
+              <a href="login.html" class="text-accent hover:underline">Sign in</a>
+            </p>
+          </section>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="open-account.js"></script>
+</body>
+
+</html>

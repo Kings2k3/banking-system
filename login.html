@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Payvexis Login - Secure Account Access</title>
+  <meta name="description"
+    content="Sign in to Payvexis securely to manage accounts, cards, transfers, and transaction activity.">
+  <meta name="theme-color" content="#0a0e17">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dark: { 900: '#0a0e17', 800: '#111827', 700: '#1e293b' },
+            accent: '#c9f573',
+            'accent-dim': 'rgba(201,245,115,0.15)',
+            glass: 'rgba(255,255,255,0.04)',
+            'glass-border': 'rgba(255,255,255,0.08)',
+          },
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .auth-bg {
+      background:
+        radial-gradient(circle at 16% 18%, rgba(34, 211, 238, 0.14), transparent 36%),
+        radial-gradient(circle at 83% 12%, rgba(201, 245, 115, 0.12), transparent 38%),
+        radial-gradient(circle at 50% 90%, rgba(52, 211, 153, 0.08), transparent 40%),
+        #0a0e17;
+    }
+
+    .auth-card {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .auth-input-wrap {
+      position: relative;
+    }
+
+    .auth-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-bottom: 0.45rem;
+      display: block;
+    }
+
+    .auth-input {
+      width: 100%;
+      min-height: 48px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      background: rgba(15, 23, 42, 0.5);
+      color: #f1f5f9;
+      padding: 0.8rem 0.95rem;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .auth-input::placeholder {
+      color: #64748b;
+    }
+
+    .auth-input:focus {
+      border-color: rgba(201, 245, 115, 0.42);
+      box-shadow: 0 0 0 4px rgba(201, 245, 115, 0.08);
+      background: rgba(15, 23, 42, 0.7);
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 0.7rem;
+      top: 50%;
+      transform: translateY(-50%);
+      min-width: 36px;
+      min-height: 36px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #94a3b8;
+      transition: color 0.2s ease, background 0.2s ease;
+    }
+
+    .password-toggle:hover {
+      color: #c9f573;
+      background: rgba(201, 245, 115, 0.08);
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: #4ade80;
+      box-shadow: 0 0 12px rgba(74, 222, 128, 0.65);
+    }
+
+    .demo-note {
+      font-size: 0.72rem;
+      color: #64748b;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+
+<body class="auth-bg text-slate-100 font-sans min-h-screen">
+  <nav id="navbar" class="navbar">
+    <div class="container-app navbar-shell">
+      <a href="index.html" id="logo" class="flex items-center gap-2.5 no-underline">
+        <div class="w-9 h-9 rounded-xl bg-accent/20 border border-accent/30 flex items-center justify-center">
+          <svg class="w-5 h-5 text-accent" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+          </svg>
+        </div>
+        <span class="text-lg font-bold text-slate-100 tracking-tight brand-wordmark">Payvexis</span>
+      </a>
+      <div class="navbar-desktop hidden lg:flex items-center gap-8">
+        <a href="index.html#hero" class="nav-link">Home</a>
+        <a href="features.html" class="nav-link">Features</a>
+        <a href="card.html" class="nav-link">Cards</a>
+        <a href="security.html" class="nav-link">Security</a>
+        <a href="support.html" class="nav-link">Support</a>
+      </div>
+      <div class="navbar-actions">
+        <a href="open-account.html" class="nav-login hidden sm:inline-flex" aria-current="page">Login</a>
+        <a href="open-account.html" class="btn-primary hidden lg:inline-flex text-sm py-2.5 px-5">
+          Open Account
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+          </svg>
+        </a>
+        <button id="nav-toggle" class="lg:hidden p-2.5 rounded-xl glass" aria-label="Open menu">
+          <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div id="mobile-nav" class="mobile-nav-overlay lg:hidden">
+    <div class="flex justify-between items-center mb-10">
+      <span class="text-lg font-bold text-accent brand-wordmark">Payvexis</span>
+      <button id="nav-close" class="p-2.5 rounded-xl glass" aria-label="Close menu">
+        <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <a href="index.html#hero" class="mobile-nav-link">Home</a>
+    <a href="features.html" class="mobile-nav-link">Features</a>
+    <a href="card.html" class="mobile-nav-link">Cards</a>
+    <a href="security.html" class="mobile-nav-link">Security</a>
+    <a href="support.html" class="mobile-nav-link">Support</a>
+    <div class="mobile-nav-actions">
+      <a href="login.html" class="nav-login mobile-login-btn" aria-current="page">Sign In</a>
+      <a href="open-account.html" class="btn-primary justify-center">Open Account</a>
+    </div>
+  </div>
+
+  <main class="relative pt-28 pb-16 md:pt-40 md:pb-24 overflow-hidden">
+    <div class="particle" style="top:16%;left:8%;"></div>
+    <div class="particle" style="top:26%;left:84%;"></div>
+    <div class="particle" style="top:64%;left:20%;"></div>
+    <div class="particle" style="top:82%;left:88%;"></div>
+    <div class="glow-orb glow-orb-accent w-[340px] h-[340px] -top-20 -left-32"></div>
+    <div class="glow-orb glow-orb-blue w-[300px] h-[300px] top-16 right-0"></div>
+
+    <section class="container-app">
+      <div class="grid-2col items-start">
+        <div class="reveal-left">
+          <div class="section-label mb-5">
+            <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+            </svg>
+            Secure Access
+          </div>
+          <h1 class="section-title mb-5">Sign in to manage<br><span class="gradient-text">accounts and cards</span></h1>
+          <p class="section-subtitle mb-8">Access balances, transactions, transfers, and card controls from your secure
+            Payvexis dashboard.</p>
+
+          <div class="glass-card p-5 md:p-6 space-y-4 mb-6">
+            <div class="flex items-start gap-3">
+              <span
+                class="w-5 h-5 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-3 h-3 text-accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </span>
+              <p class="text-sm text-slate-400">256-bit encrypted sign-in sessions.</p>
+            </div>
+            <div class="flex items-start gap-3">
+              <span
+                class="w-5 h-5 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-3 h-3 text-accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </span>
+              <p class="text-sm text-slate-400">Trusted device and biometric checks.</p>
+            </div>
+            <div class="flex items-start gap-3">
+              <span
+                class="w-5 h-5 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-3 h-3 text-accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </span>
+              <p class="text-sm text-slate-400">Real-time alerts for login and payment activity.</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2.5 mb-3">
+            <span class="status-dot"></span>
+            <p class="text-sm text-slate-400">Authentication services operating normally</p>
+          </div>
+          <a href="support.html" class="btn-secondary">Need Account Help?</a>
+        </div>
+
+        <div class="reveal-right">
+          <section class="auth-card rounded-[24px] p-5 md:p-7 max-w-lg mx-auto">
+            <div class="mb-6">
+              <p class="text-xs uppercase tracking-[0.14em] text-slate-500 mb-2">Welcome Back</p>
+              <h2 class="text-2xl font-bold text-slate-100">Log in securely</h2>
+            </div>
+
+            <div id="login-success"
+              class="hidden rounded-xl border border-emerald-300/30 bg-emerald-400/10 text-emerald-200 text-sm px-3.5 py-3 mb-4">
+              Sign-in successful. Redirecting to your dashboard...
+            </div>
+
+            <form id="login-form" class="space-y-4" novalidate>
+              <div>
+                <label class="auth-label" for="login-email">Email Address</label>
+                <input id="login-email" name="email" type="email" autocomplete="email" required class="auth-input"
+                  placeholder="you@payvexis.com">
+              </div>
+
+              <div>
+                <label class="auth-label" for="login-password">Password</label>
+                <div class="auth-input-wrap">
+                  <input id="login-password" name="password" type="password" autocomplete="current-password" required
+                    class="auth-input pr-11" placeholder="Enter your password">
+                  <button id="toggle-password" type="button" class="password-toggle"
+                    aria-label="Toggle password visibility">
+                    <svg id="eye-open" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
+                      viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                    <svg id="eye-closed" class="w-4 h-4 hidden" fill="none" stroke="currentColor" stroke-width="2"
+                      viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M3 3l18 18M10.478 10.478a3 3 0 004.243 4.243M9.88 5.09A9.77 9.77 0 0112 5c4.478 0 8.268 2.943 9.542 7a9.974 9.974 0 01-4.132 5.411M6.228 6.228A9.96 9.96 0 002.458 12c1.274 4.057 5.064 7 9.542 7a9.96 9.96 0 005.772-1.772" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label class="auth-label" for="login-otp">Authenticator Code (optional)</label>
+                <input id="login-otp" name="otp" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6"
+                  class="auth-input" placeholder="6-digit code">
+              </div>
+
+              <div class="flex items-center justify-between gap-3">
+                <label class="inline-flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox"
+                    class="w-4 h-4 rounded border-white/20 bg-transparent text-accent focus:ring-accent/30">
+                  <span class="text-xs text-slate-400">Remember this device</span>
+                </label>
+                <a href="support.html" class="text-xs text-accent hover:underline">Forgot Password?</a>
+              </div>
+
+              <button id="login-submit" type="submit" class="btn-primary w-full justify-center">
+                <span id="login-submit-text">Sign In Securely</span>
+              </button>
+            </form>
+
+            <div class="mt-5">
+              <p class="demo-note">Demo environment: authentication is simulated for UI testing.</p>
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-white/10 flex flex-col sm:flex-row gap-2.5">
+              <button type="button" class="btn-secondary flex-1 justify-center text-xs">Use Biometric</button>
+              <button type="button" class="btn-secondary flex-1 justify-center text-xs">Send Magic Link</button>
+            </div>
+
+            <p class="text-xs text-slate-500 mt-5 text-center">New to Payvexis?
+              <a href="open-account.html" class="text-accent hover:underline">Open your account</a>
+            </p>
+          </section>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="login.js"></script>
+</body>
+
+</html>
