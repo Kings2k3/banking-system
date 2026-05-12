@@ -8,26 +8,8 @@
   <meta name="description"
     content="Explore Payvexis's powerful banking features: instant transfers, spending insights, card controls, savings goals, and real-time security monitoring.">
   <meta name="theme-color" content="#0a0e17">
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="tailwind/output.css">
   <link rel="stylesheet" href="style.css">
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            dark: { 900: '#0a0e17', 800: '#111827', 700: '#1e293b' },
-            accent: '#c9f573',
-            'accent-dim': 'rgba(201,245,115,0.15)',
-            glass: 'rgba(255,255,255,0.04)',
-            'glass-border': 'rgba(255,255,255,0.08)',
-          },
-          fontFamily: {
-            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-          }
-        }
-      }
-    }
-  </script>
   <style>
     .feature-highlight {
       transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s ease;
