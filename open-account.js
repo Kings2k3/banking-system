@@ -98,10 +98,10 @@ function initPasswordStrength() {
     fill.className = 'strength-fill';
     if (score <= 1) {
       fill.classList.add('strength-weak');
-      text.textContent = 'Weak — add uppercase, numbers & symbols';
+      text.textContent = 'Weak - add uppercase, numbers & symbols';
     } else if (score <= 2) {
       fill.classList.add('strength-medium');
-      text.textContent = 'Medium — getting stronger';
+      text.textContent = 'Medium - getting stronger';
     } else {
       fill.classList.add('strength-strong');
       text.textContent = 'Strong password';
@@ -223,7 +223,7 @@ function initStepForm() {
     document.getElementById('summary-email').textContent = document.getElementById('signup-email').value;
     document.getElementById('summary-phone').textContent = document.getElementById('phone').value;
     const accountSelect = document.getElementById('account-type');
-    const accountText = accountSelect.options[accountSelect.selectedIndex]?.text || '—';
+    const accountText = accountSelect.options[accountSelect.selectedIndex]?.text || '-';
     document.getElementById('summary-account').textContent = accountText;
   }
 
@@ -264,6 +264,7 @@ function initStepForm() {
       submitText.textContent = 'Creating Account...';
 
       setTimeout(() => {
+        saveRegisteredUser();
         goTo('success');
       }, 1400);
     });
@@ -274,4 +275,48 @@ function initStepForm() {
     inp.addEventListener('focus', () => inp.classList.remove('error'));
     inp.addEventListener('change', () => inp.classList.remove('error'));
   });
+}
+
+function saveRegisteredUser() {
+  const accountSelect = document.getElementById('account-type');
+  const accountType = accountSelect.value;
+  const accountLabel = accountSelect.options[accountSelect.selectedIndex]?.text || 'Personal Checking';
+  const email = document.getElementById('signup-email').value.trim().toLowerCase();
+  const users = readUsers();
+  const existingIndex = users.findIndex(user => user.email === email);
+  const user = {
+    id: existingIndex >= 0 ? users[existingIndex].id : `user-${Date.now()}`,
+    firstName: document.getElementById('first-name').value.trim(),
+    lastName: document.getElementById('last-name').value.trim(),
+    email,
+    phone: document.getElementById('phone').value.trim(),
+    dob: document.getElementById('dob').value,
+    password: document.getElementById('signup-password').value,
+    accountType,
+    accountLabel,
+    accountMask: existingIndex >= 0 ? users[existingIndex].accountMask : makeAccountMask(),
+    balance: existingIndex >= 0 ? users[existingIndex].balance : 0,
+    createdAt: existingIndex >= 0 ? users[existingIndex].createdAt : new Date().toISOString(),
+  };
+
+  if (existingIndex >= 0) {
+    users[existingIndex] = user;
+  } else {
+    users.push(user);
+  }
+
+  localStorage.setItem('payvexisUsers', JSON.stringify(users));
+  localStorage.setItem('payvexisCurrentUser', user.email);
+}
+
+function readUsers() {
+  try {
+    return JSON.parse(localStorage.getItem('payvexisUsers')) || [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function makeAccountMask() {
+  return String(Math.floor(1000 + Math.random() * 9000));
 }

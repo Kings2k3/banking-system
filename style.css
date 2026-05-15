@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 /* ========================================
-   CSS CUSTOM PROPERTIES — DARK FINTECH
+   CSS CUSTOM PROPERTIES - DARK FINTECH
    ======================================== */
 :root {
   --bg-primary: #0a0e17;
@@ -615,6 +615,8 @@ body {
   display: flex;
   flex-direction: column;
   padding: 1.5rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .mobile-nav-overlay.open {
@@ -652,6 +654,33 @@ body {
 .mobile-nav-link[aria-current='page'] {
   color: var(--accent);
   padding-left: 0.5rem;
+}
+
+/* Keep custom button/link display styles from overriding Tailwind visibility utilities. */
+.nav-login.hidden,
+.btn-primary.hidden,
+.btn-secondary.hidden {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .nav-login.sm\:inline-flex,
+  .btn-primary.sm\:inline-flex,
+  .btn-secondary.sm\:inline-flex {
+    display: inline-flex;
+  }
+}
+
+@media (min-width: 1024px) {
+  .nav-login.lg\:inline-flex,
+  .btn-primary.lg\:inline-flex,
+  .btn-secondary.lg\:inline-flex {
+    display: inline-flex;
+  }
+
+  .mobile-nav-overlay.lg\:hidden {
+    display: none;
+  }
 }
 
 /* ========================================
@@ -949,7 +978,7 @@ body {
 }
 
 /* ========================================
-   SCROLLBAR — DARK
+   SCROLLBAR - DARK
    ======================================== */
 ::-webkit-scrollbar {
   width: 6px;
@@ -1017,7 +1046,7 @@ body {
 }
 
 /* ========================================
-   RESPONSIVE — MOBILE FIRST
+   RESPONSIVE - MOBILE FIRST
    ======================================== */
 
 /* Container */
@@ -1157,7 +1186,7 @@ body {
 }
 
 /* ========================================
-   GLOBAL TRANSFERS — MAP & CONVERTER
+   GLOBAL TRANSFERS - MAP & CONVERTER
    ======================================== */
 .globe-container {
   position: relative;

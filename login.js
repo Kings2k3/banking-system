@@ -91,16 +91,45 @@ function initLoginForm() {
       return;
     }
 
+    const email = document.getElementById('login-email').value.trim().toLowerCase();
+    const password = document.getElementById('login-password').value;
+    const user = findRegisteredUser(email);
+    if (!user || user.password !== password) {
+      showLoginError('No matching account found. Use the email and password you registered with.');
+      return;
+    }
+
     submitBtn.disabled = true;
     submitBtn.classList.add('opacity-80', 'cursor-not-allowed');
     submitText.textContent = 'Signing In...';
 
     setTimeout(() => {
+      localStorage.setItem('payvexisCurrentUser', user.email);
       success.classList.remove('hidden');
       submitText.textContent = 'Continue to Dashboard';
       window.setTimeout(() => {
-        window.location.href = 'index.html';
+        window.location.href = 'dashboard.html';
       }, 800);
     }, 1100);
   });
+}
+
+function findRegisteredUser(email) {
+  try {
+    const users = JSON.parse(localStorage.getItem('payvexisUsers')) || [];
+    return users.find(user => user.email === email);
+  } catch (error) {
+    return null;
+  }
+}
+
+function showLoginError(message) {
+  let error = document.getElementById('login-error');
+  if (!error) {
+    error = document.createElement('div');
+    error.id = 'login-error';
+    error.className = 'rounded-xl border border-red-300/30 bg-red-400/10 text-red-200 text-sm px-3.5 py-3 mb-4';
+    document.getElementById('login-form').before(error);
+  }
+  error.textContent = message;
 }

@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Payvexis Dashboard - Account Overview</title>
+  <meta name="description" content="Payvexis account dashboard with balances, cards, recent activity, alerts, and quick banking actions.">
+  <meta name="theme-color" content="#0a0e17">
+  <link rel="stylesheet" href="tailwind/output.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .dashboard-shell {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 10% 10%, rgba(34, 211, 238, 0.11), transparent 32%),
+        radial-gradient(circle at 80% 8%, rgba(201, 245, 115, 0.10), transparent 34%),
+        radial-gradient(circle at 50% 100%, rgba(52, 211, 153, 0.07), transparent 38%),
+        var(--bg-primary);
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    @media (min-width: 1024px) {
+      .dashboard-grid {
+        grid-template-columns: minmax(0, 1.6fr) minmax(340px, 0.8fr);
+        gap: 1.25rem;
+      }
+    }
+
+    .metric-card {
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid var(--border-glass);
+      padding: 1rem;
+      min-height: 108px;
+    }
+
+    .quick-action {
+      min-height: 72px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.035);
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.9rem;
+      transition: border-color 0.25s ease, transform 0.25s ease, background 0.25s ease;
+    }
+
+    .quick-action:hover {
+      border-color: rgba(201, 245, 115, 0.24);
+      background: rgba(201, 245, 115, 0.055);
+      transform: translateY(-2px);
+    }
+
+    .action-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: rgba(201, 245, 115, 0.12);
+      border: 1px solid rgba(201, 245, 115, 0.18);
+      color: var(--accent);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .dashboard-tab {
+      border-radius: 999px;
+      min-height: 36px;
+      padding: 0.45rem 0.85rem;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      font-weight: 700;
+      transition: all 0.2s ease;
+    }
+
+    .dashboard-tab.active,
+    .dashboard-tab:hover {
+      color: var(--bg-primary);
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .dashboard-input {
+      width: 100%;
+      min-height: 40px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      background: rgba(15, 23, 42, 0.48);
+      color: var(--text-primary);
+      padding: 0.65rem 0.85rem;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .dashboard-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .dashboard-input:focus {
+      border-color: rgba(201, 245, 115, 0.36);
+      box-shadow: 0 0 0 4px rgba(201, 245, 115, 0.08);
+      background: rgba(15, 23, 42, 0.68);
+    }
+
+    .activity-row,
+    .account-row,
+    .alert-row {
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      background: rgba(255, 255, 255, 0.025);
+      transition: border-color 0.25s ease, background 0.25s ease;
+    }
+
+    .activity-row:hover,
+    .account-row:hover,
+    .alert-row:hover {
+      border-color: rgba(201, 245, 115, 0.16);
+      background: rgba(255, 255, 255, 0.045);
+    }
+
+    .status-pill {
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.04);
+      padding: 0.25rem 0.55rem;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .spend-track {
+      height: 8px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .spend-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #c9f573, #22d3ee);
+    }
+
+    .money-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      background: rgba(2, 6, 23, 0.72);
+      backdrop-filter: blur(14px);
+    }
+
+    .money-modal.hidden {
+      display: none;
+    }
+
+    .money-modal-panel {
+      width: min(100%, 430px);
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      background: rgba(15, 23, 42, 0.96);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.38);
+    }
+  </style>
+</head>
+
+<body class="dashboard-shell text-slate-100 font-sans">
+  <nav id="navbar" class="navbar">
+    <div class="container-app navbar-shell">
+      <a href="dashboard.html" id="logo" class="flex items-center gap-2.5 no-underline">
+        <div class="w-9 h-9 rounded-xl bg-accent/20 border border-accent/30 flex items-center justify-center">
+          <svg class="w-5 h-5 text-accent" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+          </svg>
+        </div>
+        <span class="text-lg font-bold text-slate-100 tracking-tight brand-wordmark">Payvexis</span>
+      </a>
+
+      <div class="navbar-desktop hidden lg:flex items-center gap-8">
+        <a href="dashboard.html" class="nav-link" aria-current="page">Overview</a>
+        <a href="#accounts" class="nav-link">Accounts</a>
+        <a href="#cards" class="nav-link">Cards</a>
+        <a href="#activity" class="nav-link">Activity</a>
+        <a href="support.html" class="nav-link">Support</a>
+      </div>
+
+      <div class="navbar-actions">
+        <button id="balance-toggle" class="nav-login hidden sm:inline-flex" type="button">Hide Balance</button>
+        <a href="index.html" class="btn-primary hidden lg:inline-flex text-sm py-2.5 px-5">
+          Sign Out
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6A2.25 2.25 0 005.25 5.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3-3H9m9.75 0l-3-3m3 3l-3 3" />
+          </svg>
+        </a>
+        <button id="nav-toggle" class="lg:hidden p-2.5 rounded-xl glass" aria-label="Open menu">
+          <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div id="mobile-nav" class="mobile-nav-overlay lg:hidden">
+    <div class="flex justify-between items-center mb-10">
+      <span class="text-lg font-bold text-accent brand-wordmark">Payvexis</span>
+      <button id="nav-close" class="p-2.5 rounded-xl glass" aria-label="Close menu">
+        <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <a href="dashboard.html" class="mobile-nav-link" aria-current="page">Overview</a>
+    <a href="#accounts" class="mobile-nav-link">Accounts</a>
+    <a href="#cards" class="mobile-nav-link">Cards</a>
+    <a href="#activity" class="mobile-nav-link">Activity</a>
+    <a href="support.html" class="mobile-nav-link">Support</a>
+    <div class="mobile-nav-actions">
+      <button id="mobile-balance-toggle" class="nav-login mobile-login-btn" type="button">Hide Balance</button>
+      <a href="index.html" class="btn-primary justify-center">Sign Out</a>
+    </div>
+  </div>
+
+  <main class="relative pt-28 pb-12 md:pt-36 md:pb-16 overflow-hidden">
+    <div class="particle" style="top:14%;left:8%;"></div>
+    <div class="particle" style="top:26%;left:88%;"></div>
+    <div class="particle" style="top:72%;left:22%;"></div>
+    <div class="glow-orb glow-orb-accent w-[360px] h-[360px] -top-32 -left-40"></div>
+    <div class="glow-orb glow-orb-blue w-[320px] h-[320px] top-24 right-0"></div>
+
+    <section class="container-app relative z-10">
+      <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-5 mb-6">
+        <div>
+          <div class="section-label mb-4 w-fit">
+            <span class="w-2 h-2 rounded-full bg-accent inline-block animate-pulse"></span>
+            Account Overview
+          </div>
+          <h1 class="text-3xl md:text-4xl font-bold leading-tight mb-3">Welcome back, <span id="customer-name" class="gradient-text">Customer</span></h1>
+          <p class="text-sm text-slate-400 max-w-2xl">Review balances, cards, recent activity, and account alerts from one secure workspace.</p>
+        </div>
+        <div class="glass-card !rounded-xl px-4 py-3 !transform-none">
+          <p class="text-[10px] uppercase tracking-wider text-slate-500 mb-1">Today</p>
+          <p id="dashboard-date" class="text-sm font-semibold text-slate-200">Loading...</p>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="space-y-5">
+          <section class="glass-card p-5 md:p-6 reveal">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="md:col-span-1">
+                <p class="text-xs uppercase tracking-wider text-slate-500 mb-2">Available balance</p>
+                <p id="available-balance" class="text-4xl font-bold gradient-text">$0.00</p>
+                <p id="balance-caption" class="text-xs text-slate-500 mt-2">Across active accounts</p>
+              </div>
+              <div class="metric-card">
+                <p class="text-xs text-slate-500 mb-2">Monthly income</p>
+                <p id="monthly-income" class="text-2xl font-bold text-slate-100">$0.00</p>
+                <p class="text-xs text-emerald-400 mt-2">Payroll and deposits</p>
+              </div>
+              <div class="metric-card">
+                <p class="text-xs text-slate-500 mb-2">Monthly spend</p>
+                <p id="monthly-spend" class="text-2xl font-bold text-slate-100">$0.00</p>
+                <p class="text-xs text-slate-500 mt-2">Card and transfer activity</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 reveal">
+            <button class="quick-action text-left" type="button" data-money-action="add">
+              <span class="action-icon">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" /></svg>
+              </span>
+              <span>
+                <span class="block text-sm font-bold">Add Money</span>
+                <span class="block text-xs text-slate-500 mt-1">Deposit funds</span>
+              </span>
+            </button>
+            <button class="quick-action text-left" type="button" data-money-action="transfer">
+              <span class="action-icon">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+              </span>
+              <span>
+                <span class="block text-sm font-bold">Transfer</span>
+                <span class="block text-xs text-slate-500 mt-1">Move money</span>
+              </span>
+            </button>
+            <button class="quick-action text-left" type="button" data-money-action="bill">
+              <span class="action-icon">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15A2.25 2.25 0 002.25 6.75v10.5A2.25 2.25 0 004.5 19.5z" /></svg>
+              </span>
+              <span>
+                <span class="block text-sm font-bold">Pay Bills</span>
+                <span class="block text-xs text-slate-500 mt-1">Schedule payment</span>
+              </span>
+            </button>
+            <button class="quick-action text-left" type="button" data-statement-action="download">
+              <span class="action-icon">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h12A2.25 2.25 0 0020.25 14.25V3M8.25 21h7.5M12 16.5V21" /></svg>
+              </span>
+              <span>
+                <span class="block text-sm font-bold">Statements</span>
+                <span class="block text-xs text-slate-500 mt-1">Download records</span>
+              </span>
+            </button>
+          </section>
+
+          <section id="accounts" class="glass-card p-5 md:p-6 reveal">
+            <div class="flex items-center justify-between gap-4 mb-4">
+              <div>
+                <p class="text-xs uppercase tracking-wider text-slate-500 mb-1">Accounts</p>
+                <h2 class="text-xl font-bold">Balances</h2>
+              </div>
+              <span id="total-balance" class="status-pill">$0.00 total</span>
+            </div>
+            <div id="account-list" class="space-y-3"></div>
+          </section>
+
+          <section id="activity" class="glass-card p-5 md:p-6 reveal">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
+              <div>
+                <p class="text-xs uppercase tracking-wider text-slate-500 mb-1">Recent activity</p>
+                <h2 class="text-xl font-bold">Transactions</h2>
+              </div>
+              <div class="flex flex-col sm:flex-row gap-2">
+                <input id="transaction-search" class="dashboard-input text-sm" type="search" placeholder="Search activity">
+                <div class="flex gap-2">
+                  <button class="dashboard-tab active" type="button" data-filter="all">All</button>
+                  <button class="dashboard-tab" type="button" data-filter="income">Income</button>
+                  <button class="dashboard-tab" type="button" data-filter="spend">Spend</button>
+                </div>
+              </div>
+            </div>
+            <div id="transaction-list" class="space-y-3"></div>
+          </section>
+        </div>
+
+        <aside class="space-y-5">
+          <section id="cards" class="glass-card p-5 md:p-6 reveal">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <p class="text-xs uppercase tracking-wider text-slate-500 mb-1">Cards</p>
+                <h2 class="text-xl font-bold">Active cards</h2>
+              </div>
+              <span id="card-count" class="status-pill">0 cards</span>
+            </div>
+            <div id="card-list" class="space-y-3"></div>
+          </section>
+
+          <section class="glass-card p-5 md:p-6 reveal">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <p class="text-xs uppercase tracking-wider text-slate-500 mb-1">Spending</p>
+                <h2 class="text-xl font-bold">This month</h2>
+              </div>
+              <span class="status-pill">Budget view</span>
+            </div>
+            <div id="spending-list" class="space-y-4"></div>
+          </section>
+
+          <section class="glass-card p-5 md:p-6 reveal">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <p class="text-xs uppercase tracking-wider text-slate-500 mb-1">Alerts</p>
+                <h2 class="text-xl font-bold">Needs attention</h2>
+              </div>
+              <span id="alert-count" class="status-pill">0 open</span>
+            </div>
+            <div id="alert-list" class="space-y-3"></div>
+          </section>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <div id="money-modal" class="money-modal hidden" role="dialog" aria-modal="true" aria-labelledby="money-modal-title">
+    <form id="money-form" class="money-modal-panel p-5 md:p-6">
+      <div class="flex items-start justify-between gap-4 mb-5">
+        <div>
+          <p id="money-modal-kicker" class="text-xs uppercase tracking-wider text-slate-500 mb-1">Money movement</p>
+          <h2 id="money-modal-title" class="text-xl font-bold">Add Money</h2>
+          <p id="money-modal-description" class="text-sm text-slate-500 mt-1">Deposit funds into your account.</p>
+        </div>
+        <button class="btn-secondary !p-2.5" type="button" data-modal-close aria-label="Close">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <input id="money-action-type" type="hidden" value="add">
+
+      <label id="money-detail-label" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2" for="money-detail">Source</label>
+      <input id="money-detail" class="dashboard-input text-sm mb-4" type="text" placeholder="Payroll, cash deposit, or bank source">
+
+      <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2" for="money-amount">Amount</label>
+      <input id="money-amount" class="dashboard-input text-sm mb-3" type="number" min="1" step="0.01" inputmode="decimal" placeholder="0.00" required>
+
+      <p id="money-error" class="hidden text-sm text-red-300 mb-4"></p>
+
+      <div class="flex gap-3">
+        <button class="btn-secondary flex-1 justify-center" type="button" data-modal-close>Cancel</button>
+        <button id="money-submit" class="btn-primary flex-1 justify-center" type="submit">Add Money</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="dashboard.js"></script>
+</body>
+
+</html>

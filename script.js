@@ -1,5 +1,5 @@
 // ============================================================
-// BANKLIO — Premium Fintech Interactions
+// BANKLIO - Premium Fintech Interactions
 // ============================================================
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ============================================================
-// SCROLL REVEAL — IntersectionObserver with stagger
+// SCROLL REVEAL - IntersectionObserver with stagger
 // ============================================================
 function initScrollReveal() {
   const elements = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
@@ -40,7 +40,7 @@ function initScrollReveal() {
 }
 
 // ============================================================
-// COUNTER ANIMATIONS — Spring easing
+// COUNTER ANIMATIONS - Spring easing
 // ============================================================
 function initCounters() {
   const counters = document.querySelectorAll('[data-counter]');
@@ -136,7 +136,7 @@ function initMobileNav() {
     closeBtn.addEventListener('click', closeMobileNav);
   }
 
-  // Close overlay on link click — don't delay navigation for external links
+  // Close overlay on link click - don't delay navigation for external links
   mobileNav.querySelectorAll('a').forEach(link => {
     link.addEventListener('click', (e) => {
       const href = link.getAttribute('href') || '';
@@ -159,7 +159,7 @@ function initMobileNav() {
 }
 
 // ============================================================
-// SMOOTH SCROLL — with navbar offset
+// SMOOTH SCROLL - with navbar offset
 // ============================================================
 function initSmoothScroll() {
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -167,7 +167,7 @@ function initSmoothScroll() {
       const targetId = this.getAttribute('href');
       if (!targetId || targetId === '#') return;
 
-      // Only handle same-page hash links — skip if target section doesn't exist on this page
+      // Only handle same-page hash links - skip if target section doesn't exist on this page
       const target = document.querySelector(targetId);
       if (target) {
         e.preventDefault();
@@ -180,7 +180,7 @@ function initSmoothScroll() {
 }
 
 // ============================================================
-// 3D CARD TILT — Mouse + Touch
+// 3D CARD TILT - Mouse + Touch
 // ============================================================
 function initCard3DTilt() {
   document.querySelectorAll('.card-3d').forEach(card => {
@@ -221,7 +221,7 @@ function initCard3DTilt() {
 }
 
 // ============================================================
-// NAVBAR SCROLL — Glassmorphic on scroll
+// NAVBAR SCROLL - Glassmorphic on scroll
 // ============================================================
 function initNavbarScroll() {
   const nav = document.getElementById('navbar');
@@ -244,7 +244,7 @@ function initNavbarScroll() {
 }
 
 // ============================================================
-// SWIPE CAROUSEL — Touch + Mouse drag with snap
+// SWIPE CAROUSEL - Touch + Mouse drag with snap
 // ============================================================
 function initSwipeCarousels() {
   document.querySelectorAll('.swipe-carousel').forEach(carousel => {
@@ -338,7 +338,7 @@ function momentumScroll(el, velocity) {
 }
 
 // ============================================================
-// PARALLAX GLOW ORBS — Subtle movement on scroll
+// PARALLAX GLOW ORBS - Subtle movement on scroll
 // ============================================================
 function initParallaxOrbs() {
   const orbs = document.querySelectorAll('.glow-orb');
@@ -365,7 +365,7 @@ function initParallaxOrbs() {
 }
 
 // ============================================================
-// CARD HOVER GLOW — glass-card subtle glow follow
+// CARD HOVER GLOW - glass-card subtle glow follow
 // ============================================================
 function initCardHoverGlow() {
   document.querySelectorAll('.glass-card, .feature-card-premium, .testimonial-card-premium').forEach(card => {
@@ -385,7 +385,7 @@ function initCardHoverGlow() {
 }
 
 // ============================================================
-// LIVE EXCHANGE RATES — frankfurter.app API
+// LIVE EXCHANGE RATES - frankfurter.app API
 // ============================================================
 function initLiveRates() {
   fetchLiveRates();
@@ -561,7 +561,7 @@ function initCurrencyConverter() {
 }
 
 // ============================================================
-// MAP TOOLTIPS — City dot hover labels
+// MAP TOOLTIPS - City dot hover labels
 // ============================================================
 function initMapTooltips() {
   const tooltip = document.getElementById('map-tooltip');
