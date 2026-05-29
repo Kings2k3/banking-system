@@ -151,6 +151,83 @@
       background: linear-gradient(90deg, #c9f573, #22d3ee);
     }
 
+    .overview-card-tile {
+      position: relative;
+      overflow: hidden;
+      border-radius: 16px;
+      padding: 1rem;
+      min-height: 188px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 18px 54px rgba(0, 0, 0, 0.28);
+      isolation: isolate;
+    }
+
+    .overview-card-tile::before {
+      content: '';
+      position: absolute;
+      inset: -45% -30% auto auto;
+      width: 78%;
+      height: 90%;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.14);
+      filter: blur(18px);
+      z-index: -1;
+    }
+
+    .overview-card-theme-graphite {
+      background: linear-gradient(145deg, #111827, #243447 48%, #0f172a);
+    }
+
+    .overview-card-theme-emerald {
+      background: linear-gradient(145deg, #052e2b, #2d6a4f 52%, #93c5a8);
+    }
+
+    .overview-card-theme-ocean {
+      background: linear-gradient(145deg, #082f49, #155e75 52%, #22d3ee);
+    }
+
+    .overview-card-theme-sunrise {
+      background: linear-gradient(145deg, #3b1d2f, #a8553f 50%, #f8d66d);
+    }
+
+    .overview-card-chip {
+      width: 42px;
+      height: 30px;
+      border-radius: 9px;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.18)),
+        #d7b76a;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+    }
+
+    .overview-card-label {
+      color: rgba(255, 255, 255, 0.68);
+      font-size: 0.62rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .overview-card-number {
+      font-size: 1.05rem;
+      line-height: 1.1;
+      letter-spacing: 0.08em;
+      font-weight: 850;
+    }
+
+    .overview-card-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.65rem;
+      margin-top: 0.85rem;
+    }
+
+    @media (max-width: 420px) {
+      .overview-card-actions {
+        grid-template-columns: 1fr;
+      }
+    }
+
     .money-modal {
       position: fixed;
       inset: 0;
@@ -169,10 +246,102 @@
 
     .money-modal-panel {
       width: min(100%, 430px);
+      max-height: calc(100vh - 2rem);
+      overflow-y: auto;
       border-radius: 18px;
       border: 1px solid rgba(255, 255, 255, 0.10);
       background: rgba(15, 23, 42, 0.96);
       box-shadow: 0 24px 80px rgba(0, 0, 0, 0.38);
+    }
+
+    .blocked-modal-panel {
+      width: min(100%, 560px);
+      border-radius: 16px;
+    }
+
+    .blocked-modal-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 44px;
+      align-items: start;
+      gap: 1rem;
+      margin-bottom: 1.1rem;
+    }
+
+    .blocked-modal-heading {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.85rem;
+      min-width: 0;
+    }
+
+    .blocked-modal-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+    }
+
+    .blocked-modal-title {
+      font-size: clamp(1.35rem, 4vw, 1.8rem);
+      line-height: 1.18;
+      letter-spacing: 0;
+      max-width: none;
+    }
+
+    .blocked-modal-close {
+      width: 44px;
+      height: 44px;
+      padding: 0 !important;
+      justify-content: center;
+      border-radius: 999px;
+    }
+
+    .blocked-modal-actions {
+      display: grid;
+      grid-template-columns: minmax(220px, 1.2fr) minmax(132px, 0.8fr);
+      gap: 0.75rem;
+    }
+
+    .blocked-modal-actions .btn-primary,
+    .blocked-modal-actions .btn-secondary {
+      justify-content: center;
+      white-space: nowrap;
+      padding-inline: 1.15rem;
+    }
+
+    @media (max-width: 540px) {
+      .money-modal {
+        align-items: center;
+        padding: 0.75rem;
+      }
+
+      .blocked-modal-panel {
+        padding: 1rem !important;
+      }
+
+      .blocked-modal-header {
+        grid-template-columns: minmax(0, 1fr) 40px;
+        gap: 0.75rem;
+      }
+
+      .blocked-modal-heading {
+        gap: 0.7rem;
+      }
+
+      .blocked-modal-icon,
+      .blocked-modal-close {
+        width: 40px;
+        height: 40px;
+      }
+
+      .blocked-modal-title {
+        font-size: 1.12rem;
+        line-height: 1.25;
+        max-width: none;
+      }
+
+      .blocked-modal-actions {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -191,9 +360,8 @@
 
       <div class="navbar-desktop hidden lg:flex items-center gap-8">
         <a href="dashboard.html" class="nav-link" aria-current="page">Overview</a>
-        <a href="#accounts" class="nav-link">Accounts</a>
-        <a href="#cards" class="nav-link">Cards</a>
-        <a href="#activity" class="nav-link">Activity</a>
+        <a href="dashboard-cards.html" class="nav-link">Cards</a>
+        <a href="dashboard-activity.html" class="nav-link">Activity</a>
         <a href="support.html" class="nav-link">Support</a>
       </div>
 
@@ -225,8 +393,8 @@
     </div>
     <a href="dashboard.html" class="mobile-nav-link" aria-current="page">Overview</a>
     <a href="#accounts" class="mobile-nav-link">Accounts</a>
-    <a href="#cards" class="mobile-nav-link">Cards</a>
-    <a href="#activity" class="mobile-nav-link">Activity</a>
+    <a href="dashboard-cards.html" class="mobile-nav-link">Cards</a>
+    <a href="dashboard-activity.html" class="mobile-nav-link">Activity</a>
     <a href="support.html" class="mobile-nav-link">Support</a>
     <div class="mobile-nav-actions">
       <button id="mobile-balance-toggle" class="nav-login mobile-login-btn" type="button">Hide Balance</button>
@@ -332,6 +500,20 @@
               <span id="total-balance" class="status-pill">$0.00 total</span>
             </div>
             <div id="account-list" class="space-y-3"></div>
+            <div id="account-details-panel" class="account-row p-4 mt-3">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                  <p class="text-xs uppercase tracking-wider text-slate-500 mb-1">Account details</p>
+                  <p id="dashboard-account-number" class="text-lg font-bold text-slate-100 tracking-[0.18em]">----------</p>
+                  <p class="text-xs text-slate-500 mt-1">Use Show before copying the full 10-digit account number.</p>
+                </div>
+                <div class="flex gap-2">
+                  <button id="account-number-toggle" class="btn-secondary text-xs py-2.5 px-4" type="button">Show</button>
+                  <button id="account-number-copy" class="btn-primary text-xs py-2.5 px-4" type="button">Copy</button>
+                </div>
+              </div>
+              <p id="account-number-feedback" class="text-xs text-accent mt-3 hidden">Copied account number.</p>
+            </div>
           </section>
 
           <section id="activity" class="glass-card p-5 md:p-6 reveal">
@@ -347,6 +529,7 @@
                   <button class="dashboard-tab" type="button" data-filter="income">Income</button>
                   <button class="dashboard-tab" type="button" data-filter="spend">Spend</button>
                 </div>
+                <a href="dashboard-activity.html" class="btn-secondary justify-center text-xs py-2.5 px-4">View all</a>
               </div>
             </div>
             <div id="transaction-list" class="space-y-3"></div>
@@ -360,8 +543,9 @@
                 <p class="text-xs uppercase tracking-wider text-slate-500 mb-1">Cards</p>
                 <h2 class="text-xl font-bold">Active cards</h2>
               </div>
-              <span id="card-count" class="status-pill">0 cards</span>
+              <a href="dashboard-cards.html" class="btn-secondary text-xs py-2.5 px-4">Customize</a>
             </div>
+            <span id="card-count" class="status-pill mb-3 inline-flex">0 cards</span>
             <div id="card-list" class="space-y-3"></div>
           </section>
 
@@ -391,8 +575,8 @@
     </section>
   </main>
 
-  <div id="money-modal" class="money-modal hidden" role="dialog" aria-modal="true" aria-labelledby="money-modal-title">
-    <form id="money-form" class="money-modal-panel p-5 md:p-6">
+  <div id="money-modal" class="money-modal hidden justify-center" role="dialog" aria-modal="true" aria-labelledby="money-modal-title" >
+    <form id="money-form" class="money-modal-panel p-5 md:p-6 justify-center">
       <div class="flex items-start justify-between gap-4 mb-5">
         <div>
           <p id="money-modal-kicker" class="text-xs uppercase tracking-wider text-slate-500 mb-1">Money movement</p>
@@ -421,6 +605,42 @@
         <button id="money-submit" class="btn-primary flex-1 justify-center" type="submit">Add Money</button>
       </div>
     </form>
+  </div>
+
+  <div id="blocked-transaction-modal" class="money-modal hidden" role="dialog" aria-modal="true" aria-labelledby="blocked-transaction-title">
+    <div class="money-modal-panel blocked-modal-panel p-5 md:p-6">
+      <div class="blocked-modal-header">
+        <div class="blocked-modal-heading">
+          <span class="action-icon blocked-modal-icon text-yellow-100 border-yellow-400/30 bg-yellow-400/10">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+            </svg>
+          </span>
+          <div class="min-w-0">
+            <p id="blocked-transaction-kicker" class="text-xs uppercase tracking-wider text-slate-500 mb-1">Transaction blocked</p>
+            <h2 id="blocked-transaction-title" class="blocked-modal-title font-bold">Verification required</h2>
+          </div>
+        </div>
+        <button class="btn-secondary blocked-modal-close" type="button" data-blocked-close aria-label="Close">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <p class="text-sm text-slate-400 leading-relaxed mb-4">
+        <span id="blocked-transaction-message">Your request has been blocked for your protection. Please contact Customer Service before trying again.</span>
+      </p>
+
+      <div id="blocked-transaction-note" class="rounded-xl border border-yellow-400/30 bg-yellow-400/10 px-3.5 py-3 text-sm text-yellow-100 mb-5">
+        No money has been added to your account, and your available balance remains unchanged.
+      </div>
+
+      <div class="blocked-modal-actions">
+        <a id="blocked-transaction-action" href="support.html" class="btn-primary flex-1 justify-center">Contact Customer Service</a>
+        <button class="btn-secondary flex-1 justify-center" type="button" data-blocked-close>Close</button>
+      </div>
+    </div>
   </div>
 
   <script src="dashboard.js"></script>

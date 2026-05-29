@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initPasswordStrength();
 });
 
-/* ── Mobile Navigation ── */
+/* Mobile Navigation */
 function initMobileNav() {
   const toggle = document.getElementById('nav-toggle');
   const mobileNav = document.getElementById('mobile-nav');
@@ -34,7 +34,7 @@ function initMobileNav() {
   });
 }
 
-/* ── Scroll Reveal ── */
+/* Scroll Reveal */
 function initReveal() {
   const elements = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
   const observer = new IntersectionObserver((entries) => {
@@ -48,7 +48,7 @@ function initReveal() {
   elements.forEach(el => observer.observe(el));
 }
 
-/* ── Navbar Scroll ── */
+/* Navbar Scroll */
 function initNavbarScroll() {
   const nav = document.getElementById('navbar');
   if (!nav) return;
@@ -64,7 +64,7 @@ function initNavbarScroll() {
   }, { passive: true });
 }
 
-/* ── Password Toggle ── */
+/* Password Toggle */
 function initPasswordToggle() {
   const passwordInput = document.getElementById('signup-password');
   const toggleBtn = document.getElementById('toggle-password');
@@ -80,7 +80,7 @@ function initPasswordToggle() {
   });
 }
 
-/* ── Password Strength Meter ── */
+/* Password Strength Meter */
 function initPasswordStrength() {
   const input = document.getElementById('signup-password');
   const fill = document.getElementById('strength-fill');
@@ -114,7 +114,7 @@ function initPasswordStrength() {
   });
 }
 
-/* ── Multi-step Form ── */
+/* Multi-step Form */
 function initStepForm() {
   let current = 1;
   const totalSteps = 3;
@@ -264,7 +264,8 @@ function initStepForm() {
       submitText.textContent = 'Creating Account...';
 
       setTimeout(() => {
-        saveRegisteredUser();
+        const user = saveRegisteredUser();
+        showCreatedAccountNumber(user);
         goTo('success');
       }, 1400);
     });
@@ -284,8 +285,12 @@ function saveRegisteredUser() {
   const email = document.getElementById('signup-email').value.trim().toLowerCase();
   const users = readUsers();
   const existingIndex = users.findIndex(user => user.email === email);
+  const existingUser = existingIndex >= 0 ? users[existingIndex] : null;
+  const accountNumber = isTenDigitAccountNumber(existingUser?.accountNumber)
+    ? String(existingUser.accountNumber)
+    : makeAccountNumber(users);
   const user = {
-    id: existingIndex >= 0 ? users[existingIndex].id : `user-${Date.now()}`,
+    id: existingUser?.id || `user-${Date.now()}`,
     firstName: document.getElementById('first-name').value.trim(),
     lastName: document.getElementById('last-name').value.trim(),
     email,
@@ -294,9 +299,10 @@ function saveRegisteredUser() {
     password: document.getElementById('signup-password').value,
     accountType,
     accountLabel,
-    accountMask: existingIndex >= 0 ? users[existingIndex].accountMask : makeAccountMask(),
-    balance: existingIndex >= 0 ? users[existingIndex].balance : 0,
-    createdAt: existingIndex >= 0 ? users[existingIndex].createdAt : new Date().toISOString(),
+    accountNumber,
+    accountMask: getAccountMask(accountNumber),
+    balance: existingUser?.balance || 0,
+    createdAt: existingUser?.createdAt || new Date().toISOString(),
   };
 
   if (existingIndex >= 0) {
@@ -307,6 +313,7 @@ function saveRegisteredUser() {
 
   localStorage.setItem('payvexisUsers', JSON.stringify(users));
   localStorage.setItem('payvexisCurrentUser', user.email);
+  return user;
 }
 
 function readUsers() {
@@ -317,6 +324,28 @@ function readUsers() {
   }
 }
 
-function makeAccountMask() {
-  return String(Math.floor(1000 + Math.random() * 9000));
+function makeAccountNumber(users) {
+  const usedNumbers = new Set(users.map(user => String(user.accountNumber || '')));
+  let accountNumber;
+
+  do {
+    accountNumber = String(Math.floor(1000000000 + Math.random() * 9000000000));
+  } while (usedNumbers.has(accountNumber));
+
+  return accountNumber;
+}
+
+function isTenDigitAccountNumber(accountNumber) {
+  return /^\d{10}$/.test(String(accountNumber || ''));
+}
+
+function getAccountMask(accountNumber) {
+  return String(accountNumber).slice(-4);
+}
+
+function showCreatedAccountNumber(user) {
+  const accountNumberEl = document.getElementById('success-account-number');
+  if (!user) return;
+
+  if (accountNumberEl) accountNumberEl.textContent = user.accountNumber || '----------';
 }

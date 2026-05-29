@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Payvexis Dashboard - Activity Center</title>
+  <meta name="description" content="Review Payvexis account activity with transaction filters, spending insights, exports, and transaction details.">
+  <meta name="theme-color" content="#0a0e17">
+  <link rel="stylesheet" href="tailwind/output.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .activity-shell {
+      min-height: 100vh;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background:
+        radial-gradient(circle at 10% 10%, rgba(34, 211, 238, 0.11), transparent 32%),
+        radial-gradient(circle at 80% 8%, rgba(201, 245, 115, 0.10), transparent 34%),
+        radial-gradient(circle at 50% 100%, rgba(52, 211, 153, 0.07), transparent 38%),
+        var(--bg-primary);
+    }
+
+    .activity-main {
+      padding: 7rem 0 3rem;
+    }
+
+    .activity-hero {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .activity-title {
+      font-size: clamp(1.875rem, 4vw, 2.25rem);
+      line-height: 1.15;
+      font-weight: 700;
+      letter-spacing: 0;
+      margin: 0.55rem 0 0.75rem;
+    }
+
+    .activity-copy {
+      max-width: 660px;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.65;
+    }
+
+    .activity-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.85rem;
+      margin-bottom: 1rem;
+    }
+
+    .activity-panel {
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-glass);
+      background: var(--gradient-card);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      box-shadow: var(--shadow-card);
+    }
+
+    .summary-tile {
+      min-height: 118px;
+      padding: 1rem;
+    }
+
+    .summary-label {
+      color: var(--text-muted);
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 850;
+    }
+
+    .summary-value {
+      font-size: 1.45rem;
+      font-weight: 900;
+      line-height: 1.1;
+      margin-top: 0.55rem;
+    }
+
+    .summary-copy {
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      margin-top: 0.45rem;
+    }
+
+    .activity-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 1rem;
+    }
+
+    @media (min-width: 1060px) {
+      .activity-layout {
+        grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.75fr);
+        align-items: start;
+      }
+
+      .activity-sidebar {
+        position: sticky;
+        top: 7rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .activity-main {
+        padding: 9rem 0 4rem;
+      }
+    }
+
+    .activity-feed-panel,
+    .activity-sidebar {
+      padding: 1rem;
+    }
+
+    .activity-toolbar {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) auto auto;
+      gap: 0.75rem;
+      align-items: center;
+      margin-bottom: 0.95rem;
+    }
+
+    .activity-search,
+    .activity-select {
+      width: 100%;
+      min-height: 44px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(15, 23, 42, 0.58);
+      color: var(--text-primary);
+      padding: 0.72rem 0.85rem;
+      outline: none;
+    }
+
+    .activity-search:focus,
+    .activity-select:focus {
+      border-color: rgba(201, 245, 115, 0.36);
+      box-shadow: 0 0 0 4px rgba(201, 245, 115, 0.08);
+    }
+
+    .activity-tabs {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .activity-tab {
+      min-height: 38px;
+      border-radius: 999px;
+      padding: 0.48rem 0.86rem;
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      color: var(--text-secondary);
+      font-size: 0.76rem;
+      font-weight: 850;
+      transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+    }
+
+    .activity-tab.active,
+    .activity-tab:hover {
+      color: var(--bg-primary);
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .activity-feed {
+      display: grid;
+      gap: 0.7rem;
+    }
+
+    .activity-row-card {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr) auto;
+      gap: 0.85rem;
+      align-items: center;
+      width: 100%;
+      text-align: left;
+      padding: 0.9rem;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.075);
+      background: rgba(15, 23, 42, 0.38);
+      transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+    }
+
+    .activity-row-card:hover {
+      border-color: rgba(201, 245, 115, 0.2);
+      background: rgba(255, 255, 255, 0.055);
+      transform: translateY(-1px);
+    }
+
+    .activity-row-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      color: var(--accent);
+      background: rgba(201, 245, 115, 0.1);
+      border: 1px solid rgba(201, 245, 115, 0.16);
+    }
+
+    .activity-row-icon.is-spend {
+      color: #fca5a5;
+      background: rgba(248, 113, 113, 0.1);
+      border-color: rgba(248, 113, 113, 0.16);
+    }
+
+    .activity-row-title {
+      font-size: 0.94rem;
+      font-weight: 850;
+      line-height: 1.25;
+      color: var(--text-primary);
+    }
+
+    .activity-row-meta {
+      color: var(--text-muted);
+      font-size: 0.76rem;
+      margin-top: 0.22rem;
+    }
+
+    .activity-row-amount {
+      font-size: 0.95rem;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .activity-row-amount.is-income {
+      color: #34d399;
+    }
+
+    .activity-row-amount.is-spend {
+      color: var(--text-primary);
+    }
+
+    .empty-activity {
+      padding: 1rem;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-secondary);
+      background: rgba(15, 23, 42, 0.38);
+    }
+
+    .sidebar-section + .sidebar-section {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .sidebar-title {
+      font-size: 1rem;
+      font-weight: 900;
+      margin-bottom: 0.75rem;
+    }
+
+    .insight-list {
+      display: grid;
+      gap: 0.72rem;
+    }
+
+    .insight-row {
+      display: grid;
+      gap: 0.38rem;
+    }
+
+    .insight-row-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      font-size: 0.82rem;
+    }
+
+    .insight-track {
+      height: 8px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .insight-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #c9f573, #22d3ee);
+    }
+
+    .cashflow-box {
+      display: grid;
+      gap: 0.55rem;
+    }
+
+    .cashflow-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.7rem 0.75rem;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.42);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .export-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.65rem;
+    }
+
+    .activity-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      background: rgba(2, 6, 23, 0.72);
+      backdrop-filter: blur(14px);
+    }
+
+    .activity-modal.hidden {
+      display: none;
+    }
+
+    .activity-modal-panel {
+      width: min(100%, 460px);
+      max-height: calc(100vh - 2rem);
+      overflow-y: auto;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      background: rgba(15, 23, 42, 0.98);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.38);
+      padding: 1rem;
+    }
+
+    .detail-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.88rem;
+    }
+
+    .detail-line span:first-child {
+      color: var(--text-muted);
+    }
+
+    .detail-line span:last-child {
+      color: var(--text-primary);
+      font-weight: 750;
+      text-align: right;
+    }
+
+    .signed-out-panel {
+      display: none;
+      padding: 1.1rem;
+    }
+
+    .signed-out-panel.open {
+      display: block;
+    }
+
+    .workspace-hidden {
+      display: none;
+    }
+
+    @media (max-width: 860px) {
+      .activity-summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .activity-toolbar {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .activity-main {
+        padding-top: 5.75rem;
+        padding-bottom: 2rem;
+      }
+
+      .activity-hero {
+        display: block;
+        margin-bottom: 0.85rem;
+      }
+
+      .activity-title {
+        font-size: 1.75rem;
+        line-height: 1.14;
+        margin: 0.5rem 0 0.55rem;
+      }
+
+      .activity-copy {
+        font-size: 0.86rem;
+        line-height: 1.55;
+      }
+
+      .activity-hero .btn-secondary {
+        width: 100%;
+        justify-content: center;
+        margin-top: 0.8rem;
+        min-height: 44px;
+        padding: 0.7rem 1rem;
+      }
+
+      .activity-summary-grid {
+        gap: 0.65rem;
+      }
+
+      .summary-tile {
+        min-height: 96px;
+        padding: 0.78rem;
+        border-radius: 14px;
+      }
+
+      .summary-label {
+        font-size: 0.58rem;
+      }
+
+      .summary-value {
+        font-size: 1.08rem;
+      }
+
+      .summary-copy {
+        font-size: 0.7rem;
+      }
+
+      .activity-feed-panel,
+      .activity-sidebar {
+        padding: 0.8rem;
+        border-radius: 14px;
+      }
+
+      .activity-search,
+      .activity-select {
+        min-height: 42px;
+        font-size: 0.9rem;
+      }
+
+      .activity-tab {
+        min-height: 36px;
+        font-size: 0.72rem;
+        padding: 0.42rem 0.72rem;
+      }
+
+      .activity-row-card {
+        grid-template-columns: 40px minmax(0, 1fr);
+        gap: 0.7rem;
+        padding: 0.75rem;
+      }
+
+      .activity-row-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+      }
+
+      .activity-row-title {
+        font-size: 0.86rem;
+      }
+
+      .activity-row-meta {
+        font-size: 0.7rem;
+      }
+
+      .activity-row-amount {
+        grid-column: 2;
+        justify-self: start;
+        font-size: 0.86rem;
+      }
+
+      .activity-modal {
+        align-items: flex-end;
+        padding: 0.75rem;
+      }
+
+      .activity-modal-panel {
+        padding: 0.9rem;
+      }
+    }
+  </style>
+</head>
+
+<body class="activity-shell text-slate-100 font-sans">
+  <nav id="navbar" class="navbar">
+    <div class="container-app navbar-shell">
+      <a href="dashboard.html" id="logo" class="flex items-center gap-2.5 no-underline">
+        <div class="w-9 h-9 rounded-xl bg-accent/20 border border-accent/30 flex items-center justify-center">
+          <svg class="w-5 h-5 text-accent" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+          </svg>
+        </div>
+        <span class="text-lg font-bold text-slate-100 tracking-tight brand-wordmark">Payvexis</span>
+      </a>
+
+      <div class="navbar-desktop hidden lg:flex items-center gap-8">
+        <a href="dashboard.html" class="nav-link">Overview</a>
+        <a href="dashboard-cards.html" class="nav-link">Cards</a>
+        <a href="dashboard-activity.html" class="nav-link" aria-current="page">Activity</a>
+        <a href="support.html" class="nav-link">Support</a>
+      </div>
+
+      <div class="navbar-actions">
+        <a href="dashboard.html" class="nav-login hidden sm:inline-flex">Dashboard</a>
+        <a href="index.html" class="btn-primary hidden lg:inline-flex text-sm py-2.5 px-5" data-sign-out>
+          Sign Out
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6A2.25 2.25 0 005.25 5.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3-3H9m9.75 0l-3-3m3 3l-3 3" />
+          </svg>
+        </a>
+        <button id="nav-toggle" class="lg:hidden p-2.5 rounded-xl glass" aria-label="Open menu">
+          <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div id="mobile-nav" class="mobile-nav-overlay lg:hidden">
+    <div class="flex justify-between items-center mb-10">
+      <span class="text-lg font-bold text-accent brand-wordmark">Payvexis</span>
+      <button id="nav-close" class="p-2.5 rounded-xl glass" aria-label="Close menu">
+        <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <a href="dashboard.html" class="mobile-nav-link">Overview</a>
+    <a href="dashboard-cards.html" class="mobile-nav-link">Cards</a>
+    <a href="dashboard-activity.html" class="mobile-nav-link" aria-current="page">Activity</a>
+    <a href="support.html" class="mobile-nav-link">Support</a>
+    <div class="mobile-nav-actions">
+      <a href="dashboard.html" class="nav-login mobile-login-btn justify-center">Dashboard</a>
+      <a href="index.html" class="btn-primary justify-center" data-sign-out>Sign Out</a>
+    </div>
+  </div>
+
+  <main class="activity-main">
+    <section class="container-app activity-hero">
+      <div>
+        <div class="section-label w-fit">
+          <span class="w-2 h-2 rounded-full bg-accent inline-block animate-pulse"></span>
+          Activity Center
+        </div>
+        <h1 class="activity-title">Monitor every movement</h1>
+        <p class="activity-copy">Search, filter, review, and export account activity from one focused dashboard workspace.</p>
+      </div>
+      <a href="dashboard.html" class="btn-secondary">Back to Overview</a>
+    </section>
+
+    <section id="signed-out-state" class="container-app activity-panel signed-out-panel">
+      <h2 class="sidebar-title">Sign in to review activity</h2>
+      <p class="activity-copy">Transaction activity is linked to the active Payvexis account owner.</p>
+      <div class="flex flex-col sm:flex-row gap-3 mt-4">
+        <a href="login.html" class="btn-primary justify-center">Sign In</a>
+        <a href="open-account.html" class="btn-secondary justify-center">Open Account</a>
+      </div>
+    </section>
+
+    <section id="activity-workspace" class="container-app">
+      <div class="activity-summary-grid">
+        <article class="activity-panel summary-tile">
+          <p class="summary-label">Inflow</p>
+          <p id="summary-income" class="summary-value text-emerald-300">$0</p>
+          <p class="summary-copy">Deposits and credits</p>
+        </article>
+        <article class="activity-panel summary-tile">
+          <p class="summary-label">Outflow</p>
+          <p id="summary-spend" class="summary-value">$0</p>
+          <p class="summary-copy">Transfers and card spend</p>
+        </article>
+        <article class="activity-panel summary-tile">
+          <p class="summary-label">Net movement</p>
+          <p id="summary-net" class="summary-value">$0</p>
+          <p class="summary-copy">Current filtered range</p>
+        </article>
+        <article class="activity-panel summary-tile">
+          <p class="summary-label">Transactions</p>
+          <p id="summary-count" class="summary-value">0</p>
+          <p class="summary-copy">Matching activity items</p>
+        </article>
+      </div>
+
+      <div class="activity-layout">
+        <section class="activity-panel activity-feed-panel">
+          <div class="activity-toolbar">
+            <input id="activity-search" class="activity-search" type="search" placeholder="Search merchant, category, or account">
+            <select id="category-filter" class="activity-select" aria-label="Filter by category">
+              <option value="all">All categories</option>
+            </select>
+            <select id="range-filter" class="activity-select" aria-label="Filter by date range">
+              <option value="all">All time</option>
+              <option value="7">Last 7 days</option>
+              <option value="30">Last 30 days</option>
+              <option value="90">Last 90 days</option>
+            </select>
+          </div>
+
+          <div class="activity-tabs mb-4" role="group" aria-label="Transaction type">
+            <button class="activity-tab active" type="button" data-type-filter="all">All</button>
+            <button class="activity-tab" type="button" data-type-filter="income">Income</button>
+            <button class="activity-tab" type="button" data-type-filter="spend">Spend</button>
+          </div>
+
+          <div id="activity-feed" class="activity-feed"></div>
+        </section>
+
+        <aside class="activity-panel activity-sidebar">
+          <section class="sidebar-section">
+            <h2 class="sidebar-title">Category insights</h2>
+            <div id="category-insights" class="insight-list"></div>
+          </section>
+
+          <section class="sidebar-section">
+            <h2 class="sidebar-title">Cash flow</h2>
+            <div class="cashflow-box">
+              <div class="cashflow-row">
+                <span class="text-sm text-slate-400">Largest credit</span>
+                <strong id="largest-credit">$0</strong>
+              </div>
+              <div class="cashflow-row">
+                <span class="text-sm text-slate-400">Largest debit</span>
+                <strong id="largest-debit">$0</strong>
+              </div>
+              <div class="cashflow-row">
+                <span class="text-sm text-slate-400">Average transaction</span>
+                <strong id="average-transaction">$0</strong>
+              </div>
+            </div>
+          </section>
+
+          <section class="sidebar-section">
+            <h2 class="sidebar-title">Exports</h2>
+            <div class="export-grid">
+              <button id="download-csv" class="btn-primary justify-center" type="button">Export CSV</button>
+              <button id="download-statement" class="btn-secondary justify-center" type="button">Download Statement</button>
+            </div>
+          </section>
+
+          <section class="sidebar-section">
+            <h2 class="sidebar-title">Support</h2>
+            <p class="text-sm text-slate-400 leading-relaxed mb-3">Need help with a transaction? Open any item for details or contact support.</p>
+            <a href="support.html" class="btn-secondary justify-center w-full">Contact Support</a>
+          </section>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <div id="transaction-modal" class="activity-modal hidden" role="dialog" aria-modal="true" aria-labelledby="transaction-modal-title">
+    <div class="activity-modal-panel">
+      <div class="flex items-start justify-between gap-4 mb-4">
+        <div>
+          <p id="transaction-modal-category" class="summary-label">Transaction</p>
+          <h2 id="transaction-modal-title" class="text-xl font-black mt-1">Transaction detail</h2>
+        </div>
+        <button class="btn-secondary !p-2.5" type="button" data-modal-close aria-label="Close">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <p id="transaction-modal-amount" class="text-3xl font-black mb-3">$0</p>
+      <div id="transaction-detail-lines"></div>
+
+      <div class="flex flex-col sm:flex-row gap-3 mt-5">
+        <a href="support.html" class="btn-primary justify-center flex-1">Report Issue</a>
+        <button class="btn-secondary justify-center flex-1" type="button" data-modal-close>Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="dashboard-activity.js"></script>
+</body>
+
+</html>

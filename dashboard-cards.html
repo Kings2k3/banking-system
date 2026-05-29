@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Payvexis Dashboard - Card Studio</title>
+  <meta name="description" content="Customize and control your Payvexis dashboard card with spending limits, security controls, and card design options.">
+  <meta name="theme-color" content="#0a0e17">
+  <link rel="stylesheet" href="tailwind/output.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .card-dashboard-shell {
+      min-height: 100vh;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background:
+        radial-gradient(circle at 10% 10%, rgba(34, 211, 238, 0.11), transparent 32%),
+        radial-gradient(circle at 80% 8%, rgba(201, 245, 115, 0.10), transparent 34%),
+        radial-gradient(circle at 50% 100%, rgba(52, 211, 153, 0.07), transparent 38%),
+        var(--bg-primary);
+    }
+
+    .card-page-main {
+      position: relative;
+      padding: 7rem 0 3rem;
+    }
+
+    .card-page-hero {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .card-page-title {
+      font-size: clamp(1.875rem, 4vw, 2.25rem);
+      line-height: 1.15;
+      letter-spacing: 0;
+      margin: 0.55rem 0 0.75rem;
+      font-weight: 700;
+    }
+
+    .card-page-copy {
+      max-width: 640px;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.65;
+    }
+
+    .card-dashboard-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 1rem;
+    }
+
+    @media (min-width: 1040px) {
+      .card-dashboard-grid {
+        grid-template-columns: minmax(340px, 0.9fr) minmax(0, 1.25fr);
+        align-items: start;
+      }
+    }
+
+    .card-tool-panel {
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-glass);
+      background: var(--gradient-card);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      box-shadow: var(--shadow-card);
+    }
+
+    .card-preview-panel {
+      padding: 1rem;
+    }
+
+    @media (min-width: 1040px) {
+      .card-preview-panel {
+        position: sticky;
+        top: 7rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .card-page-main {
+        padding: 9rem 0 4rem;
+      }
+    }
+
+    .owner-strip {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0.85rem;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(15, 23, 42, 0.46);
+      margin-bottom: 1rem;
+    }
+
+    .owner-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      color: var(--bg-primary);
+      font-weight: 800;
+      background: var(--accent);
+    }
+
+    .owner-name {
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .owner-account {
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      margin-top: 0.15rem;
+    }
+
+    .card-status-pill {
+      border-radius: 999px;
+      padding: 0.35rem 0.65rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-secondary);
+      font-size: 0.72rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .card-status-pill.is-active {
+      border-color: rgba(201, 245, 115, 0.26);
+      background: rgba(201, 245, 115, 0.1);
+      color: var(--accent);
+    }
+
+    .card-status-pill.is-frozen {
+      border-color: rgba(248, 113, 113, 0.28);
+      background: rgba(248, 113, 113, 0.1);
+      color: #fca5a5;
+    }
+
+    .preview-card-wrap {
+      padding: 0.35rem;
+    }
+
+    .payment-card {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      aspect-ratio: 1.58 / 1;
+      min-height: 220px;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      padding: 1.35rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.38);
+      isolation: isolate;
+    }
+
+    .payment-card::before {
+      content: '';
+      position: absolute;
+      inset: -40% -35% auto auto;
+      width: 78%;
+      height: 95%;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.14);
+      filter: blur(18px);
+      z-index: -1;
+    }
+
+    .payment-card::after {
+      content: '';
+      position: absolute;
+      inset: auto -20% -55% 18%;
+      height: 72%;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      filter: blur(26px);
+      z-index: -1;
+    }
+
+    .card-theme-graphite {
+      background: linear-gradient(145deg, #111827, #243447 48%, #0f172a);
+    }
+
+    .card-theme-emerald {
+      background: linear-gradient(145deg, #052e2b, #2d6a4f 52%, #93c5a8);
+    }
+
+    .card-theme-ocean {
+      background: linear-gradient(145deg, #082f49, #155e75 52%, #22d3ee);
+    }
+
+    .card-theme-sunrise {
+      background: linear-gradient(145deg, #3b1d2f, #a8553f 50%, #f8d66d);
+    }
+
+    .card-topline,
+    .card-bottomline {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .card-logo-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    .card-chip {
+      width: 48px;
+      height: 34px;
+      border-radius: 10px;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.18)),
+        #d7b76a;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+    }
+
+    .card-number {
+      font-size: 1.35rem;
+      line-height: 1.1;
+      letter-spacing: 0.08em;
+      font-weight: 800;
+      word-spacing: 0.18rem;
+    }
+
+    .card-label {
+      color: rgba(255, 255, 255, 0.68);
+      font-size: 0.66rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 0.25rem;
+    }
+
+    .card-value {
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .card-network {
+      font-size: 1.1rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+    }
+
+    .card-frozen-overlay {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(2, 6, 23, 0.58);
+      backdrop-filter: blur(5px);
+      font-weight: 900;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .payment-card.is-frozen .card-frozen-overlay {
+      display: flex;
+    }
+
+    .card-health-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.7rem;
+      margin-top: 1rem;
+    }
+
+    .health-tile {
+      min-height: 88px;
+      border-radius: 14px;
+      padding: 0.85rem;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(15, 23, 42, 0.42);
+    }
+
+    .health-label {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.35rem;
+    }
+
+    .health-value {
+      font-weight: 900;
+      font-size: 1.1rem;
+    }
+
+    .control-panel {
+      padding: 1rem;
+    }
+
+    .control-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .control-title {
+      font-size: 1.35rem;
+      line-height: 1.2;
+      font-weight: 900;
+    }
+
+    .control-copy {
+      color: var(--text-secondary);
+      font-size: 0.88rem;
+      margin-top: 0.35rem;
+    }
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.9rem;
+    }
+
+    @media (min-width: 760px) {
+      .settings-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    .settings-field {
+      display: grid;
+      gap: 0.45rem;
+    }
+
+    .settings-label {
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .settings-input {
+      width: 100%;
+      min-height: 46px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(15, 23, 42, 0.58);
+      color: var(--text-primary);
+      padding: 0.75rem 0.9rem;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .settings-input:focus {
+      border-color: rgba(201, 245, 115, 0.36);
+      box-shadow: 0 0 0 4px rgba(201, 245, 115, 0.08);
+      background: rgba(15, 23, 42, 0.78);
+    }
+
+    .theme-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.65rem;
+      margin: 0.35rem 0 1rem;
+    }
+
+    .theme-swatch {
+      min-height: 64px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .theme-swatch::after {
+      content: attr(data-label);
+      position: absolute;
+      left: 0.55rem;
+      bottom: 0.45rem;
+      font-size: 0.66rem;
+      font-weight: 900;
+      color: rgba(255, 255, 255, 0.88);
+    }
+
+    .theme-swatch.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(201, 245, 115, 0.12);
+    }
+
+    .range-row {
+      display: grid;
+      grid-template-columns: 1fr 120px;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .settings-range {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+
+    .security-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.7rem;
+      margin-top: 1rem;
+    }
+
+    @media (min-width: 760px) {
+      .security-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    .toggle-row {
+      min-height: 72px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 54px;
+      gap: 0.85rem;
+      align-items: center;
+      padding: 0.9rem;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(15, 23, 42, 0.38);
+    }
+
+    .toggle-title {
+      font-weight: 850;
+      line-height: 1.2;
+    }
+
+    .toggle-copy {
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      margin-top: 0.25rem;
+    }
+
+    .switch-input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .switch-ui {
+      width: 52px;
+      height: 30px;
+      border-radius: 999px;
+      padding: 3px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.08);
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .switch-ui::before {
+      content: '';
+      display: block;
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      background: #fff;
+      transition: transform 0.2s ease;
+    }
+
+    .switch-input:checked + .switch-ui {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .switch-input:checked + .switch-ui::before {
+      transform: translateX(22px);
+      background: var(--bg-primary);
+    }
+
+    .form-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .form-actions .btn-primary,
+    .form-actions .btn-secondary {
+      justify-content: center;
+    }
+
+    .save-feedback {
+      min-height: 1.2rem;
+      color: var(--accent);
+      font-size: 0.82rem;
+      font-weight: 750;
+      margin-top: 0.9rem;
+    }
+
+    .empty-state {
+      display: none;
+      padding: 1.1rem;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .empty-state.open {
+      display: block;
+    }
+
+    .workspace-hidden {
+      display: none;
+    }
+
+    @media (max-width: 700px) {
+      .card-page-main {
+        padding-top: 5.75rem;
+        padding-bottom: 2rem;
+      }
+
+      .card-dashboard-shell {
+        background:
+          radial-gradient(circle at 12% 6%, rgba(34, 211, 238, 0.10), transparent 34%),
+          radial-gradient(circle at 90% 10%, rgba(201, 245, 115, 0.09), transparent 36%),
+          radial-gradient(circle at 50% 100%, rgba(52, 211, 153, 0.06), transparent 40%),
+          var(--bg-primary);
+      }
+
+      .card-page-hero {
+        display: block;
+        margin-bottom: 0.85rem;
+      }
+
+      .card-page-title {
+        font-size: 1.75rem;
+        line-height: 1.14;
+        margin: 0.5rem 0 0.55rem;
+      }
+
+      .card-page-copy {
+        font-size: 0.86rem;
+        line-height: 1.55;
+      }
+
+      .card-page-hero .btn-secondary {
+        margin-top: 0.8rem;
+        width: 100%;
+        justify-content: center;
+        min-height: 44px;
+        padding: 0.7rem 1rem;
+      }
+
+      .card-dashboard-grid {
+        gap: 0.85rem;
+      }
+
+      .card-tool-panel {
+        border-radius: 14px;
+        box-shadow: 0 14px 42px rgba(0, 0, 0, 0.22);
+      }
+
+      .card-preview-panel,
+      .control-panel {
+        padding: 0.8rem;
+      }
+
+      .owner-strip {
+        grid-template-columns: 40px minmax(0, 1fr);
+        gap: 0.7rem;
+        padding: 0.7rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .owner-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        font-size: 0.9rem;
+      }
+
+      .owner-name {
+        font-size: 0.92rem;
+      }
+
+      .owner-account {
+        font-size: 0.72rem;
+      }
+
+      .owner-strip .card-status-pill {
+        grid-column: 1 / -1;
+        width: fit-content;
+        font-size: 0.68rem;
+        padding: 0.28rem 0.55rem;
+      }
+
+      .preview-card-wrap {
+        padding: 0;
+      }
+
+      .payment-card {
+        min-height: 184px;
+        border-radius: 18px;
+        padding: 1rem;
+      }
+
+      .card-logo-mark {
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+      }
+
+      .card-chip {
+        width: 42px;
+        height: 30px;
+        border-radius: 9px;
+      }
+
+      .card-number {
+        font-size: 1rem;
+        line-height: 1.15;
+        letter-spacing: 0.06em;
+        word-spacing: 0.08rem;
+      }
+
+      .card-label {
+        font-size: 0.58rem;
+        letter-spacing: 0.08em;
+      }
+
+      .card-value {
+        font-size: 0.86rem;
+        max-width: 15ch;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .card-network {
+        font-size: 0.96rem;
+      }
+
+      .card-health-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+      }
+
+      .health-tile {
+        min-height: 70px;
+        border-radius: 12px;
+        padding: 0.65rem;
+      }
+
+      .health-label {
+        font-size: 0.58rem;
+        letter-spacing: 0.08em;
+        margin-bottom: 0.25rem;
+      }
+
+      .health-value {
+        font-size: 0.92rem;
+      }
+
+      .control-header {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+        margin-bottom: 0.85rem;
+      }
+
+      .control-title {
+        font-size: 1.12rem;
+      }
+
+      .control-copy {
+        font-size: 0.78rem;
+        line-height: 1.5;
+      }
+
+      #freeze-card {
+        width: 100%;
+        min-height: 44px;
+        justify-content: center;
+        padding: 0.7rem 1rem;
+      }
+
+      .settings-grid {
+        gap: 0.75rem;
+      }
+
+      .settings-label {
+        font-size: 0.64rem;
+        letter-spacing: 0.08em;
+      }
+
+      .settings-input {
+        min-height: 44px;
+        border-radius: 11px;
+        font-size: 0.92rem;
+        padding: 0.68rem 0.78rem;
+      }
+
+      .theme-row {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.5rem;
+        margin-bottom: 0.8rem;
+      }
+
+      .theme-swatch {
+        min-height: 54px;
+        border-radius: 12px;
+      }
+
+      .theme-swatch::after {
+        left: 0.42rem;
+        bottom: 0.38rem;
+        font-size: 0.54rem;
+      }
+
+      .range-row {
+        grid-template-columns: 1fr;
+        gap: 0.55rem;
+      }
+
+      .security-grid {
+        gap: 0.55rem;
+        margin-top: 0.85rem;
+      }
+
+      .toggle-row {
+        min-height: 64px;
+        grid-template-columns: minmax(0, 1fr) 48px;
+        gap: 0.65rem;
+        padding: 0.72rem;
+        border-radius: 12px;
+      }
+
+      .toggle-title {
+        font-size: 0.9rem;
+      }
+
+      .toggle-copy {
+        font-size: 0.72rem;
+        line-height: 1.4;
+      }
+
+      .switch-ui {
+        width: 46px;
+        height: 26px;
+        padding: 2px;
+      }
+
+      .switch-ui::before {
+        width: 20px;
+        height: 20px;
+      }
+
+      .switch-input:checked + .switch-ui::before {
+        transform: translateX(20px);
+      }
+
+      .form-actions {
+        gap: 0.6rem;
+        margin-top: 0.85rem;
+      }
+
+      .form-actions .btn-primary,
+      .form-actions .btn-secondary {
+        width: 100%;
+        min-height: 44px;
+        padding: 0.7rem 1rem;
+        font-size: 0.86rem;
+      }
+
+      .save-feedback {
+        font-size: 0.76rem;
+        margin-top: 0.7rem;
+      }
+    }
+  </style>
+</head>
+
+<body class="card-dashboard-shell text-slate-100 font-sans">
+  <nav id="navbar" class="navbar">
+    <div class="container-app navbar-shell">
+      <a href="dashboard.html" id="logo" class="flex items-center gap-2.5 no-underline">
+        <div class="w-9 h-9 rounded-xl bg-accent/20 border border-accent/30 flex items-center justify-center">
+          <svg class="w-5 h-5 text-accent" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+          </svg>
+        </div>
+        <span class="text-lg font-bold text-slate-100 tracking-tight brand-wordmark">Payvexis</span>
+      </a>
+
+      <div class="navbar-desktop hidden lg:flex items-center gap-8">
+        <a href="dashboard.html" class="nav-link">Overview</a>
+        <a href="dashboard-cards.html" class="nav-link" aria-current="page">Cards</a>
+        <a href="dashboard-activity.html" class="nav-link">Activity</a>
+        <a href="support.html" class="nav-link">Support</a>
+      </div>
+
+      <div class="navbar-actions">
+        <a href="dashboard.html" class="nav-login hidden sm:inline-flex">Dashboard</a>
+        <a href="index.html" class="btn-primary hidden lg:inline-flex text-sm py-2.5 px-5" data-sign-out>
+          Sign Out
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6A2.25 2.25 0 005.25 5.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3-3H9m9.75 0l-3-3m3 3l-3 3" />
+          </svg>
+        </a>
+        <button id="nav-toggle" class="lg:hidden p-2.5 rounded-xl glass" aria-label="Open menu">
+          <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div id="mobile-nav" class="mobile-nav-overlay lg:hidden">
+    <div class="flex justify-between items-center mb-10">
+      <span class="text-lg font-bold text-accent brand-wordmark">Payvexis</span>
+      <button id="nav-close" class="p-2.5 rounded-xl glass" aria-label="Close menu">
+        <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <a href="dashboard.html" class="mobile-nav-link">Overview</a>
+    <a href="dashboard-cards.html" class="mobile-nav-link" aria-current="page">Cards</a>
+    <a href="dashboard-activity.html" class="mobile-nav-link">Activity</a>
+    <a href="support.html" class="mobile-nav-link">Support</a>
+    <div class="mobile-nav-actions">
+      <a href="dashboard.html" class="nav-login mobile-login-btn justify-center">Dashboard</a>
+      <a href="index.html" class="btn-primary justify-center" data-sign-out>Sign Out</a>
+    </div>
+  </div>
+
+  <main class="card-page-main">
+    <section class="container-app card-page-hero">
+      <div>
+        <div class="section-label w-fit">
+          <span class="w-2 h-2 rounded-full bg-accent inline-block animate-pulse"></span>
+          Card Studio
+        </div>
+        <h1 class="card-page-title">Customize your Payvexis card</h1>
+        <p class="card-page-copy">Tune the card design, spending controls, and security settings connected to your active dashboard account.</p>
+      </div>
+      <a href="dashboard.html" class="btn-secondary">Back to Overview</a>
+    </section>
+
+    <section id="signed-out-state" class="container-app empty-state">
+      <h2 class="control-title">Sign in to manage a card</h2>
+      <p class="control-copy">Card customization is tied to the active account owner. Sign in or open an account to start managing your card workspace.</p>
+      <div class="form-actions">
+        <a href="login.html" class="btn-primary">Sign In</a>
+        <a href="open-account.html" class="btn-secondary">Open Account</a>
+      </div>
+    </section>
+
+    <section id="card-workspace" class="container-app card-dashboard-grid">
+      <aside class="card-tool-panel card-preview-panel">
+        <div class="owner-strip">
+          <div id="owner-avatar" class="owner-avatar">P</div>
+          <div class="min-w-0">
+            <p id="owner-name" class="owner-name">Payvexis Member</p>
+            <p id="owner-account" class="owner-account">Account ending 0000</p>
+          </div>
+          <span id="card-status" class="card-status-pill is-active">Active</span>
+        </div>
+
+        <div class="preview-card-wrap">
+          <article id="card-preview" class="payment-card card-theme-graphite">
+            <div class="card-topline">
+              <div class="card-logo-mark">
+                <svg class="w-5 h-5 text-slate-100" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                </svg>
+              </div>
+              <div class="card-chip" aria-hidden="true"></div>
+            </div>
+
+            <div>
+              <p id="preview-card-number" class="card-number">**** **** **** 0000</p>
+            </div>
+
+            <div class="card-bottomline">
+              <div>
+                <p class="card-label">Cardholder</p>
+                <p id="preview-holder" class="card-value">Payvexis Member</p>
+              </div>
+              <div class="text-right">
+                <p id="preview-card-name" class="card-label">Everyday card</p>
+                <p id="preview-network" class="card-network">VISA</p>
+              </div>
+            </div>
+            <div class="card-frozen-overlay">Frozen</div>
+          </article>
+        </div>
+
+        <div class="card-health-grid">
+          <div class="health-tile">
+            <p class="health-label">Limit</p>
+            <p id="metric-limit" class="health-value">$400</p>
+          </div>
+          <div class="health-tile">
+            <p class="health-label">Spent</p>
+            <p id="metric-spend" class="health-value">$0</p>
+          </div>
+          <div class="health-tile">
+            <p class="health-label">Controls</p>
+            <p id="metric-controls" class="health-value">4 on</p>
+          </div>
+        </div>
+      </aside>
+
+      <section class="card-tool-panel control-panel">
+        <div class="control-header">
+          <div>
+            <h2 class="control-title">Card settings</h2>
+            <p class="control-copy">Changes are saved to this demo account and reflected on the dashboard card list.</p>
+          </div>
+          <button id="freeze-card" class="btn-secondary" type="button">Freeze Card</button>
+        </div>
+
+        <form id="card-settings-form">
+          <label class="settings-label">Card design</label>
+          <div class="theme-row" role="group" aria-label="Card design">
+            <button class="theme-swatch card-theme-graphite" type="button" data-theme="graphite" data-label="Graphite" aria-label="Graphite card theme"></button>
+            <button class="theme-swatch card-theme-emerald" type="button" data-theme="emerald" data-label="Emerald" aria-label="Emerald card theme"></button>
+            <button class="theme-swatch card-theme-ocean" type="button" data-theme="ocean" data-label="Ocean" aria-label="Ocean card theme"></button>
+            <button class="theme-swatch card-theme-sunrise" type="button" data-theme="sunrise" data-label="Sunrise" aria-label="Sunrise card theme"></button>
+          </div>
+
+          <div class="settings-grid">
+            <label class="settings-field">
+              <span class="settings-label">Card label</span>
+              <input id="card-name" class="settings-input" type="text" maxlength="28" autocomplete="off" placeholder="Payvexis Debit">
+            </label>
+            <label class="settings-field">
+              <span class="settings-label">Cardholder name</span>
+              <input id="card-holder" class="settings-input" type="text" maxlength="30" autocomplete="name" placeholder="Your name">
+            </label>
+            <label class="settings-field">
+              <span class="settings-label">Monthly spending limit</span>
+              <div class="range-row">
+                <input id="card-limit-range" class="settings-range" type="range" min="50" max="5000" step="50">
+                <input id="card-limit" class="settings-input" type="number" min="50" max="5000" step="50">
+              </div>
+            </label>
+            <label class="settings-field">
+              <span class="settings-label">Statement name</span>
+              <input id="card-statement-name" class="settings-input" type="text" maxlength="24" autocomplete="off" placeholder="Everyday spend">
+            </label>
+          </div>
+
+          <div class="security-grid">
+            <label class="toggle-row">
+              <span>
+                <span class="toggle-title">Contactless payments</span>
+                <span class="toggle-copy">Allow tap-to-pay for supported terminals.</span>
+              </span>
+              <span>
+                <input id="toggle-contactless" class="switch-input" type="checkbox">
+                <span class="switch-ui" aria-hidden="true"></span>
+              </span>
+            </label>
+            <label class="toggle-row">
+              <span>
+                <span class="toggle-title">Online payments</span>
+                <span class="toggle-copy">Use the card for web and in-app purchases.</span>
+              </span>
+              <span>
+                <input id="toggle-online" class="switch-input" type="checkbox">
+                <span class="switch-ui" aria-hidden="true"></span>
+              </span>
+            </label>
+            <label class="toggle-row">
+              <span>
+                <span class="toggle-title">International use</span>
+                <span class="toggle-copy">Enable payments outside your home region.</span>
+              </span>
+              <span>
+                <input id="toggle-international" class="switch-input" type="checkbox">
+                <span class="switch-ui" aria-hidden="true"></span>
+              </span>
+            </label>
+            <label class="toggle-row">
+              <span>
+                <span class="toggle-title">ATM withdrawals</span>
+                <span class="toggle-copy">Allow cash withdrawals using this card.</span>
+              </span>
+              <span>
+                <input id="toggle-atm" class="switch-input" type="checkbox">
+                <span class="switch-ui" aria-hidden="true"></span>
+              </span>
+            </label>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn-primary" type="submit">Save Card</button>
+            <button id="reset-card" class="btn-secondary" type="button">Reset Design</button>
+          </div>
+          <p id="save-feedback" class="save-feedback" aria-live="polite"></p>
+        </form>
+      </section>
+    </section>
+  </main>
+
+  <script src="dashboard-cards.js"></script>
+</body>
+
+</html>
