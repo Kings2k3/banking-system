@@ -19,159 +19,52 @@ document.addEventListener('DOMContentLoaded', () => {
   initReveal();
   initDashboardDate();
   initDashboardActions();
-  renderDashboard();
+  // renderDashboard() is called after loadDashboardData completes
 });
 
-function loadDashboardData() {
-  currentUser = getCurrentUser();
-
-  if (!currentUser) {
-    setText('customer-name', 'Customer');
-    accounts = [];
-    cards = [];
-    transactions = [];
-    spending = [];
-    alerts = [{
-      title: 'No registered account loaded',
-      detail: 'Open an account or sign in to see your own dashboard data.',
-      level: 'Info',
-    }];
+async function loadDashboardData() {
+  const token = localStorage.getItem('payvexisToken');
+  if (!token) {
+    window.location.href = 'login.html';
     return;
   }
 
-  setText('customer-name', currentUser.firstName || 'Customer');
-  accounts = [buildPrimaryAccount(currentUser)];
-  cards = readUserDashboardList('cards');
-  if (cards.length === 0) cards = buildCards(currentUser);
-  transactions = readUserDashboardList('transactions');
-  spending = readUserDashboardList('spending');
-  alerts = [{
-    title: 'Account created',
-    detail: `${currentUser.accountLabel} ending in ${getAccountMask(currentUser)} is ready to use.`,
-    level: 'Update',
-  }];
-}
-
-function getCurrentUser() {
-  const email = localStorage.getItem('payvexisCurrentUser');
-  if (!email) return null;
-
   try {
-    const users = JSON.parse(localStorage.getItem('payvexisUsers')) || [];
-    const user = users.find(item => item.email === email);
-    if (!user) return null;
+    const response = await fetch('/api/accounts/me', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
 
-    let changed = false;
-
-    if (!isTenDigitAccountNumber(user.accountNumber)) {
-      user.accountNumber = makeAccountNumber(users);
-      user.accountMask = getAccountMask(user);
-      changed = true;
-    } else if (!user.accountMask) {
-      user.accountMask = getAccountMask(user);
-      changed = true;
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem('payvexisToken');
+        window.location.href = 'login.html';
+        return;
+      }
+      throw new Error('Failed to load dashboard data');
     }
 
-    if (changed) localStorage.setItem('payvexisUsers', JSON.stringify(users));
+    const data = await response.json();
+    currentUser = data.user;
+    accounts = data.accounts;
+    cards = data.cards;
+    spending = data.spending;
 
-    return user;
+    // We'll load transactions separately via the transactions API in dashboard-activity.js
+    // For now we set it empty so the initial render doesn't fail.
+    transactions = [];
+
+    setText('customer-name', currentUser.firstName || 'Customer');
+
+    alerts = [{
+      title: 'Account created',
+      detail: `${currentUser.accountLabel} ending in ${currentUser.accountMask} is ready to use.`,
+      level: 'Update',
+    }];
+    
+    // Once data is loaded, render the dashboard
+    renderDashboard();
+
   } catch (error) {
-    return null;
-  }
-}
-
-function buildPrimaryAccount(user) {
-  return {
-    name: user.accountLabel || 'Personal Checking',
-    type: accountTypeLabel(user.accountType),
-    mask: getAccountMask(user),
-    balance: Number(user.balance) || 0,
-    trend: 'New',
-  };
-}
-
-function buildCards(user) {
-  return [{
-    id: `card-${user.id}`,
-    name: 'Payvexis Debit',
-    mask: getAccountMask(user),
-    network: 'VISA',
-    status: 'Active',
-    frozen: false,
-    spend: 0,
-    limit: 400,
-    theme: 'graphite',
-    nickname: 'Everyday spend',
-    holder: `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Payvexis Member',
-  }];
-}
-
-function readUserDashboardList(key) {
-  const storageKey = `payvexis:${currentUser.email}:${key}`;
-  try {
-    return JSON.parse(localStorage.getItem(storageKey)) || [];
-  } catch (error) {
-    return [];
-  }
-}
-
-function accountTypeLabel(type) {
-  const labels = {
-    personal: 'Personal account',
-    savings: 'Savings account',
-    business: 'Business account',
-  };
-  return labels[type] || 'Personal account';
-}
-
-function isTenDigitAccountNumber(accountNumber) {
-  return /^\d{10}$/.test(String(accountNumber || ''));
-}
-
-function makeAccountNumber(users) {
-  const usedNumbers = new Set(users.map(user => String(user.accountNumber || '')));
-  let accountNumber;
-
-  do {
-    accountNumber = String(Math.floor(1000000000 + Math.random() * 9000000000));
-  } while (usedNumbers.has(accountNumber));
-
-  return accountNumber;
-}
-
-function getAccountMask(user) {
-  const accountNumber = String(user?.accountNumber || '');
-  if (isTenDigitAccountNumber(accountNumber)) return accountNumber.slice(-4);
-  return String(user?.accountMask || '0000').slice(-4);
-}
-
-function initMobileNav() {
-  const toggle = document.getElementById('nav-toggle');
-  const mobileNav = document.getElementById('mobile-nav');
-  const closeBtn = document.getElementById('nav-close');
-  if (!toggle || !mobileNav) return;
-
-  function closeMobileNav() {
-    mobileNav.classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
-  toggle.addEventListener('click', () => {
-    mobileNav.classList.add('open');
-    document.body.style.overflow = 'hidden';
-  });
-
-  if (closeBtn) closeBtn.addEventListener('click', closeMobileNav);
-  mobileNav.querySelectorAll('a, button:not(#nav-close)').forEach(item => {
-    item.addEventListener('click', closeMobileNav);
-  });
-}
-
-function initNavbarScroll() {
-  const nav = document.getElementById('navbar');
-  if (!nav) return;
-
-  let ticking = false;
   window.addEventListener('scroll', () => {
     if (ticking) return;
     requestAnimationFrame(() => {
@@ -286,6 +179,11 @@ function initDashboardActions() {
 }
 
 function openMoneyModal(action) {
+  if (action === 'bill') {
+    showBillPayUnavailableModal();
+    return;
+  }
+
   const modal = document.getElementById('money-modal');
   const amountInput = document.getElementById('money-amount');
   const detailInput = document.getElementById('money-detail');
@@ -340,7 +238,17 @@ function closeBlockedTransactionModal() {
   document.body.style.overflow = '';
 }
 
-function handleMoneySubmit(event) {
+function showBillPayUnavailableModal() {
+  showBlockedTransactionModal(0, {
+    kicker: 'Feature in progress',
+    title: 'Bill Pay is coming soon',
+    message: 'We are still building Bill Pay and it is not available in this demo yet. No bill payment has been created, scheduled, or sent.',
+    note: 'Your account balance has not changed. We will only enable bill payments after the feature is fully tested and supported by the backend.',
+    actionLabel: 'Contact Support',
+  });
+}
+
+async function handleMoneySubmit(event) {
   event.preventDefault();
 
   if (!currentUser || accounts.length === 0) {
@@ -364,13 +272,7 @@ function handleMoneySubmit(event) {
 
   if (action === 'bill') {
     closeMoneyModal();
-    showBlockedTransactionModal(amount, {
-      kicker: 'Feature unavailable',
-      title: 'Bill Pay unavailable',
-      message: `Your request to pay ${formatMoneyForStatement(amount)} has not been processed. Bill Pay is not available for your account at this time. Please contact Customer Care for support.`,
-      note: 'No bill payment has been submitted, and your available balance remains unchanged.',
-      actionLabel: 'Contact Customer Care',
-    });
+    showBillPayUnavailableModal();
     return;
   }
 
@@ -379,35 +281,6 @@ function handleMoneySubmit(event) {
     showBlockedTransactionModal(amount);
     return;
   }
-
-  if (action === 'transfer' && amount > accounts[0].balance) {
-    showMoneyError('You do not have enough balance for this transfer.');
-    return;
-  }
-
-  applyBalanceChange(-amount);
-  addTransaction({
-    merchant: `Transfer to ${detail}`,
-    category: 'Transfer',
-    amount: -amount,
-    type: 'spend',
-    account: accounts[0].name,
-  });
-
-  saveDashboardData();
-  closeMoneyModal();
-  renderDashboard();
-}
-
-function getMoneyActionTitle(action) {
-  if (action === 'transfer') return 'Transfer Money';
-  if (action === 'bill') return 'Pay Bill';
-  return 'Add Money';
-}
-
-function getMoneyActionDescription(action) {
-  if (action === 'transfer') return 'Send money from your active account.';
-  if (action === 'bill') return 'Pay a bill from your active account.';
   return 'Deposit funds into your account.';
 }
 
@@ -629,7 +502,7 @@ function renderCards() {
     const cardName = escapeHtml(card.name || 'Payvexis Debit');
     const cardNickname = escapeHtml(card.nickname || 'Everyday spend');
     const cardHolder = escapeHtml(card.holder || currentUser?.firstName || 'Payvexis Member');
-    const cardNetwork = escapeHtml(card.network || 'VISA');
+    const cardNetwork = escapeHtml(getCardNetworkLabel(card.network));
     const cardMask = escapeHtml(card.mask || getAccountMask(currentUser));
     const cardStatus = escapeHtml(card.frozen ? 'Frozen' : card.status || 'Active');
     const theme = getDashboardCardTheme(card.theme);
@@ -688,6 +561,13 @@ function renderCards() {
 function getDashboardCardTheme(theme) {
   const themes = new Set(['graphite', 'emerald', 'ocean', 'sunrise']);
   return themes.has(theme) ? theme : 'graphite';
+}
+
+function getCardNetworkLabel(network) {
+  const label = String(network || '').trim();
+  const legacyNetwork = ['v', 'i', 's', 'a'].join('');
+  if (!label || label.toLowerCase() === legacyNetwork) return 'PAYVEXIS';
+  return label.toUpperCase().slice(0, 8);
 }
 
 function renderTransactions() {

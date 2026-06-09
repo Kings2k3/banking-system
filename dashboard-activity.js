@@ -60,17 +60,33 @@ function initSignOut() {
   });
 }
 
-function initActivityPage() {
-  activityState.currentUser = getCurrentUser();
-  if (!activityState.currentUser) {
+async function initActivityPage() {
+  const token = localStorage.getItem('payvexisToken');
+  if (!token) {
     showSignedOutState();
     return;
   }
 
-  activityState.transactions = readTransactions();
-  initActivityEvents();
-  populateCategoryFilter();
-  renderActivityPage();
+  try {
+    // 1. Get user
+    const meRes = await fetch('/api/accounts/me', { headers: { 'Authorization': `Bearer ${token}` } });
+    if (!meRes.ok) throw new Error();
+    const meData = await meRes.json();
+    activityState.currentUser = meData.user;
+
+    // 2. Get transactions
+    const txRes = await fetch('/api/transactions', { headers: { 'Authorization': `Bearer ${token}` } });
+    if (!txRes.ok) throw new Error();
+    const txData = await txRes.json();
+    
+    activityState.transactions = txData.transactions.map((tx, idx) => normalizeTransaction(tx, idx));
+    
+    initActivityEvents();
+    populateCategoryFilter();
+    renderActivityPage();
+  } catch(err) {
+    showSignedOutState();
+  }
 }
 
 function showSignedOutState() {
@@ -119,7 +135,7 @@ function initActivityEvents() {
   if (csv) csv.addEventListener('click', downloadCsv);
 
   const statement = document.getElementById('download-statement');
-  if (statement) statement.addEventListener('click', downloadStatement);
+  if (statement) statement.addEventListener('click', downloadStatementAPI);
 
   document.querySelectorAll('[data-modal-close]').forEach(button => {
     button.addEventListener('click', closeTransactionModal);
@@ -133,6 +149,25 @@ function initActivityEvents() {
   }
 }
 
+async function downloadStatementAPI() {
+  const token = localStorage.getItem('payvexisToken');
+  try {
+    const res = await fetch('/api/transactions/statement', { headers: { 'Authorization': `Bearer ${token}` } });
+    if (!res.ok) throw new Error();
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `Payvexis_Statement_${activityState.currentUser.accountMask}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  } catch(err) {
+    alert('Failed to download statement.');
+  }
+}
+
 function renderActivityPage() {
   activityState.filtered = getFilteredTransactions();
   renderSummary();
@@ -141,27 +176,8 @@ function renderActivityPage() {
   renderCashFlow();
 }
 
-function getCurrentUser() {
-  const email = localStorage.getItem('payvexisCurrentUser');
-  if (!email) return null;
-
-  try {
-    const users = JSON.parse(localStorage.getItem('payvexisUsers')) || [];
-    return users.find(item => item.email === email) || null;
-  } catch (error) {
-    return null;
-  }
-}
-
-function readTransactions() {
-  const key = `payvexis:${activityState.currentUser.email}:transactions`;
-  try {
-    const raw = JSON.parse(localStorage.getItem(key)) || [];
-    return raw.map((transaction, index) => normalizeTransaction(transaction, index));
-  } catch (error) {
-    return [];
-  }
-}
+function getCurrentUser() { return activityState.currentUser; }
+function readTransactions() { return activityState.transactions; }
 
 function normalizeTransaction(transaction, index) {
   const amount = Number(transaction.amount) || 0;

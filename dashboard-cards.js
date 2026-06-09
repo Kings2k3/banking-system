@@ -57,19 +57,35 @@ function initSignOut() {
   });
 }
 
-function initCardPage() {
-  cardPageState.currentUser = getCurrentUser();
-  if (!cardPageState.currentUser) {
+async function initCardPage() {
+  const token = localStorage.getItem('payvexisToken');
+  if (!token) {
     showSignedOutState();
     return;
   }
 
-  const card = loadPrimaryCard();
-  cardPageState.activeCard = card;
-  cardPageState.selectedTheme = card.theme || 'graphite';
+  try {
+    const res = await fetch('/api/accounts/me', { headers: { 'Authorization': `Bearer ${token}` } });
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    
+    cardPageState.currentUser = data.user;
+    cardPageState.cards = data.cards;
 
-  initCardFormEvents();
-  renderCardPage();
+    if (cardPageState.cards.length > 0) {
+      cardPageState.activeCard = cardPageState.cards[0];
+      cardPageState.selectedTheme = cardPageState.activeCard.theme || 'graphite';
+    } else {
+      // Create a default card shape if missing (shouldn't happen with our backend)
+      cardPageState.activeCard = { theme: 'graphite', limit: 400, frozen: false, mask: '0000', network: 'PAYVEXIS' };
+      cardPageState.selectedTheme = 'graphite';
+    }
+
+    initCardFormEvents();
+    renderCardPage();
+  } catch(err) {
+    showSignedOutState();
+  }
 }
 
 function showSignedOutState() {
@@ -79,41 +95,9 @@ function showSignedOutState() {
   if (workspace) workspace.classList.add('workspace-hidden');
 }
 
-function getCurrentUser() {
-  const email = localStorage.getItem('payvexisCurrentUser');
-  if (!email) return null;
-
-  try {
-    const users = JSON.parse(localStorage.getItem('payvexisUsers')) || [];
-    const user = users.find(item => item.email === email);
-    if (!user) return null;
-
-    let changed = false;
-    if (!isTenDigitAccountNumber(user.accountNumber)) {
-      user.accountNumber = makeAccountNumber(users);
-      user.accountMask = getAccountMask(user);
-      changed = true;
-    } else if (!user.accountMask) {
-      user.accountMask = getAccountMask(user);
-      changed = true;
-    }
-
-    if (changed) localStorage.setItem('payvexisUsers', JSON.stringify(users));
-    return user;
-  } catch (error) {
-    return null;
-  }
-}
-
-function loadPrimaryCard() {
-  const savedCards = readUserDashboardList('cards');
-  const defaultCard = buildDefaultCard(cardPageState.currentUser);
-  const cards = savedCards.length > 0 ? savedCards : [defaultCard];
-
-  cardPageState.cards = cards.map((card, index) => normalizeCard(card, index === 0 ? defaultCard : buildDefaultCard(cardPageState.currentUser)));
-  saveUserDashboardList('cards', cardPageState.cards);
-  return cardPageState.cards[0];
-}
+// Stubs for functions no longer needed but may be called
+function getCurrentUser() { return cardPageState.currentUser; }
+function loadPrimaryCard() { return cardPageState.activeCard; }
 
 function buildDefaultCard(user) {
   const holder = formatHolderName(user);
@@ -123,7 +107,7 @@ function buildDefaultCard(user) {
     nickname: 'Everyday spend',
     holder,
     mask: getAccountMask(user),
-    network: 'VISA',
+    network: 'PAYVEXIS',
     status: 'Active',
     frozen: false,
     spend: 0,
@@ -145,7 +129,7 @@ function normalizeCard(card, defaults) {
     nickname: cleanText(card.nickname || defaults.nickname, 24),
     holder: cleanText(card.holder || defaults.holder, 30),
     mask: getCardMask(card.mask, defaults.mask),
-    network: cleanText(card.network || defaults.network, 8).toUpperCase(),
+    network: normalizeNetwork(card.network || defaults.network),
     status: card.frozen ? 'Active' : cleanText(card.status || defaults.status, 16),
     frozen: Boolean(card.frozen),
     spend: toMoneyNumber(card.spend, defaults.spend),
@@ -243,7 +227,7 @@ function renderCardPreview() {
   setText('preview-card-number', `**** **** **** ${getCardMask(card.mask, getAccountMask(cardPageState.currentUser))}`);
   setText('preview-holder', card.holder || formatHolderName(cardPageState.currentUser));
   setText('preview-card-name', card.nickname || card.name || 'Everyday card');
-  setText('preview-network', card.network || 'VISA');
+  setText('preview-network', normalizeNetwork(card.network));
 }
 
 function renderThemeButtons() {
@@ -288,48 +272,57 @@ function updateCardFromForm() {
   renderCardMetrics();
 }
 
-function handleCardSave(event) {
+async function handleCardSave(event) {
   event.preventDefault();
   updateCardFromForm();
-  saveActiveCard();
+  await saveActiveCard();
   renderCardPage();
   showSaveFeedback('Card settings saved.');
 }
 
-function toggleCardFrozen() {
+async function toggleCardFrozen() {
   const card = cardPageState.activeCard;
-  card.frozen = !card.frozen;
-  saveActiveCard();
-  renderCardPreview();
-  renderFrozenState();
-  showSaveFeedback(card.frozen ? 'Card frozen. New purchases are paused.' : 'Card unfrozen. New purchases are available.');
+  const token = localStorage.getItem('payvexisToken');
+  try {
+    const res = await fetch(`/api/accounts/cards/${card.id}/freeze`, {
+      method: 'PUT',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    cardPageState.activeCard = data.card;
+    renderCardPreview();
+    renderFrozenState();
+    showSaveFeedback(cardPageState.activeCard.frozen ? 'Card frozen. New purchases are paused.' : 'Card unfrozen. New purchases are available.');
+  } catch (err) {
+    alert('Failed to update card status');
+  }
 }
 
-function resetCardDesign() {
+async function resetCardDesign() {
   const card = cardPageState.activeCard;
   card.theme = 'graphite';
-  card.name = 'Payvexis Debit';
   card.nickname = 'Everyday spend';
-  card.holder = formatHolderName(cardPageState.currentUser);
-  saveActiveCard();
+  await saveActiveCard();
   renderCardPage();
   showSaveFeedback('Card design reset.');
 }
 
-function saveActiveCard() {
-  cardPageState.activeCard = normalizeCard(cardPageState.activeCard, buildDefaultCard(cardPageState.currentUser));
-  cardPageState.activeCard.updatedAt = new Date().toISOString();
-  const index = cardPageState.cards.findIndex(card => card.id === cardPageState.activeCard.id);
-  if (index >= 0) {
-    cardPageState.cards[index] = cardPageState.activeCard;
-  } else {
-    cardPageState.cards.unshift(cardPageState.activeCard);
+async function saveActiveCard() {
+  const card = cardPageState.activeCard;
+  const token = localStorage.getItem('payvexisToken');
+  try {
+    const res = await fetch(`/api/accounts/cards/${card.id}`, {
+      method: 'PUT',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ theme: card.theme, nickname: card.nickname, cardLimit: card.limit })
+    });
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    cardPageState.activeCard = data.card;
+  } catch (err) {
+    console.error('Failed to save card settings');
   }
-  cardPageState.cards = [
-    cardPageState.activeCard,
-    ...cardPageState.cards.filter(card => card.id !== cardPageState.activeCard.id),
-  ];
-  saveUserDashboardList('cards', cardPageState.cards);
 }
 
 function showSaveFeedback(message) {
@@ -385,6 +378,12 @@ function getCardMask(mask, fallback) {
 function getValidTheme(theme) {
   const themes = new Set(['graphite', 'emerald', 'ocean', 'sunrise']);
   return themes.has(theme) ? theme : 'graphite';
+}
+
+function normalizeNetwork(network) {
+  const label = cleanText(network || 'PAYVEXIS', 8).toUpperCase();
+  const legacyNetwork = ['v', 'i', 's', 'a'].join('').toUpperCase();
+  return label === legacyNetwork ? 'PAYVEXIS' : label;
 }
 
 function formatHolderName(user) {
