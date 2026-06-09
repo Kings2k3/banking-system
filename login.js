@@ -83,7 +83,7 @@ function initLoginForm() {
   const success = document.getElementById('login-success');
   if (!form || !submitBtn || !submitText || !success) return;
 
-  form.addEventListener('submit', (event) => {
+  form.addEventListener('submit', async (event) => {
     event.preventDefault();
 
     if (!form.checkValidity()) {
@@ -93,34 +93,53 @@ function initLoginForm() {
 
     const email = document.getElementById('login-email').value.trim().toLowerCase();
     const password = document.getElementById('login-password').value;
-    const user = findRegisteredUser(email);
-    if (!user || user.password !== password) {
-      showLoginError('No matching account found. Use the email and password you registered with.');
-      return;
-    }
 
     submitBtn.disabled = true;
     submitBtn.classList.add('opacity-80', 'cursor-not-allowed');
     submitText.textContent = 'Signing In...';
+    
+    // Clear previous error
+    const errorEl = document.getElementById('login-error');
+    if (errorEl) errorEl.remove();
 
-    setTimeout(() => {
-      localStorage.setItem('payvexisCurrentUser', user.email);
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to login');
+      }
+
+      // Store JWT token
+      if (data.user.role === 'admin') {
+        localStorage.setItem('payvexisAdminToken', data.token);
+      } else {
+        localStorage.setItem('payvexisToken', data.token);
+      }
+
       success.classList.remove('hidden');
-      submitText.textContent = 'Continue to Dashboard';
-      window.setTimeout(() => {
-        window.location.href = 'dashboard.html';
-      }, 800);
-    }, 1100);
-  });
-}
+      submitText.textContent = 'Success!';
+      
+      setTimeout(() => {
+        if (data.user.role === 'admin') {
+          window.location.href = 'admin.html';
+        } else {
+          window.location.href = 'dashboard.html';
+        }
+      }, 500);
 
-function findRegisteredUser(email) {
-  try {
-    const users = JSON.parse(localStorage.getItem('payvexisUsers')) || [];
-    return users.find(user => user.email === email);
-  } catch (error) {
-    return null;
-  }
+    } catch (err) {
+      submitBtn.disabled = false;
+      submitBtn.classList.remove('opacity-80', 'cursor-not-allowed');
+      submitText.textContent = 'Sign In';
+      showLoginError(err.message);
+    }
+  });
 }
 
 function showLoginError(message) {

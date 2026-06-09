@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initPasswordStrength();
 });
 
-/* ── Mobile Navigation ── */
+/* Mobile Navigation */
 function initMobileNav() {
   const toggle = document.getElementById('nav-toggle');
   const mobileNav = document.getElementById('mobile-nav');
@@ -34,7 +34,7 @@ function initMobileNav() {
   });
 }
 
-/* ── Scroll Reveal ── */
+/* Scroll Reveal */
 function initReveal() {
   const elements = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
   const observer = new IntersectionObserver((entries) => {
@@ -48,7 +48,7 @@ function initReveal() {
   elements.forEach(el => observer.observe(el));
 }
 
-/* ── Navbar Scroll ── */
+/* Navbar Scroll */
 function initNavbarScroll() {
   const nav = document.getElementById('navbar');
   if (!nav) return;
@@ -64,7 +64,7 @@ function initNavbarScroll() {
   }, { passive: true });
 }
 
-/* ── Password Toggle ── */
+/* Password Toggle */
 function initPasswordToggle() {
   const passwordInput = document.getElementById('signup-password');
   const toggleBtn = document.getElementById('toggle-password');
@@ -80,7 +80,7 @@ function initPasswordToggle() {
   });
 }
 
-/* ── Password Strength Meter ── */
+/* Password Strength Meter */
 function initPasswordStrength() {
   const input = document.getElementById('signup-password');
   const fill = document.getElementById('strength-fill');
@@ -114,7 +114,7 @@ function initPasswordStrength() {
   });
 }
 
-/* ── Multi-step Form ── */
+/* Multi-step Form */
 function initStepForm() {
   let current = 1;
   const totalSteps = 3;
@@ -223,6 +223,7 @@ function initStepForm() {
     document.getElementById('summary-email').textContent = document.getElementById('signup-email').value;
     document.getElementById('summary-phone').textContent = document.getElementById('phone').value;
     const accountSelect = document.getElementById('account-type');
+
     const accountText = accountSelect.options[accountSelect.selectedIndex]?.text || '-';
     document.getElementById('summary-account').textContent = accountText;
   }
@@ -248,7 +249,7 @@ function initStepForm() {
 
   // Form submit
   if (form) {
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       const terms = document.getElementById('terms');
@@ -263,10 +264,41 @@ function initStepForm() {
       submitBtn.classList.add('opacity-80', 'cursor-not-allowed');
       submitText.textContent = 'Creating Account...';
 
-      setTimeout(() => {
-        saveRegisteredUser();
+      const payload = {
+        firstName: document.getElementById('first-name').value.trim(),
+        lastName: document.getElementById('last-name').value.trim(),
+        email: document.getElementById('signup-email').value.trim().toLowerCase(),
+        phone: document.getElementById('phone').value.trim(),
+        dob: document.getElementById('dob').value,
+        password: document.getElementById('signup-password').value,
+        accountType: document.getElementById('account-type').value
+      };
+
+      try {
+        const response = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to register account');
+        }
+
+        // Store JWT token
+        localStorage.setItem('payvexisToken', data.token);
+
+        showCreatedAccountNumber(data.user);
         goTo('success');
-      }, 1400);
+
+      } catch (err) {
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('opacity-80', 'cursor-not-allowed');
+        submitText.textContent = 'Create Account';
+        alert(err.message);
+      }
     });
   }
 
@@ -277,46 +309,9 @@ function initStepForm() {
   });
 }
 
-function saveRegisteredUser() {
-  const accountSelect = document.getElementById('account-type');
-  const accountType = accountSelect.value;
-  const accountLabel = accountSelect.options[accountSelect.selectedIndex]?.text || 'Personal Checking';
-  const email = document.getElementById('signup-email').value.trim().toLowerCase();
-  const users = readUsers();
-  const existingIndex = users.findIndex(user => user.email === email);
-  const user = {
-    id: existingIndex >= 0 ? users[existingIndex].id : `user-${Date.now()}`,
-    firstName: document.getElementById('first-name').value.trim(),
-    lastName: document.getElementById('last-name').value.trim(),
-    email,
-    phone: document.getElementById('phone').value.trim(),
-    dob: document.getElementById('dob').value,
-    password: document.getElementById('signup-password').value,
-    accountType,
-    accountLabel,
-    accountMask: existingIndex >= 0 ? users[existingIndex].accountMask : makeAccountMask(),
-    balance: existingIndex >= 0 ? users[existingIndex].balance : 0,
-    createdAt: existingIndex >= 0 ? users[existingIndex].createdAt : new Date().toISOString(),
-  };
+function showCreatedAccountNumber(user) {
+  const accountNumberEl = document.getElementById('success-account-number');
+  if (!user) return;
 
-  if (existingIndex >= 0) {
-    users[existingIndex] = user;
-  } else {
-    users.push(user);
-  }
-
-  localStorage.setItem('payvexisUsers', JSON.stringify(users));
-  localStorage.setItem('payvexisCurrentUser', user.email);
-}
-
-function readUsers() {
-  try {
-    return JSON.parse(localStorage.getItem('payvexisUsers')) || [];
-  } catch (error) {
-    return [];
-  }
-}
-
-function makeAccountMask() {
-  return String(Math.floor(1000 + Math.random() * 9000));
+  if (accountNumberEl) accountNumberEl.textContent = user.accountNumber || '----------';
 }

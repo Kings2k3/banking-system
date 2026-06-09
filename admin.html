@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payvexis Admin Dashboard</title>
+  <link rel="stylesheet" href="tailwind/output.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="admin.css">
+</head>
+
+<body class="admin-theme text-slate-100 font-sans min-h-screen flex flex-col">
+
+  <!-- Navbar -->
+  <nav id="navbar" class="navbar border-b border-white/5">
+    <div class="container-app navbar-shell">
+      <a href="admin.html" class="flex items-center gap-2.5 no-underline">
+        <div class="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center">
+          <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+        </div>
+        <span class="text-lg font-bold brand-wordmark">Payvexis Admin</span>
+      </a>
+      <div class="navbar-actions">
+        <button id="admin-logout" class="btn-primary text-sm py-2 px-4">Sign Out</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="flex-grow pt-24 pb-12 container-app">
+    <!-- Stats Row -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div class="glass p-5 rounded-xl border border-white/5">
+        <p class="text-xs text-slate-400 uppercase tracking-wider mb-1">Total Users</p>
+        <p id="stat-users" class="text-3xl font-bold">0</p>
+      </div>
+      <div class="glass p-5 rounded-xl border border-white/5">
+        <p class="text-xs text-slate-400 uppercase tracking-wider mb-1">Total Balance</p>
+        <p id="stat-balance" class="text-3xl font-bold">$0.00</p>
+      </div>
+      <div class="glass p-5 rounded-xl border border-white/5">
+        <p class="text-xs text-slate-400 uppercase tracking-wider mb-1">Transactions</p>
+        <p id="stat-txs" class="text-3xl font-bold">0</p>
+      </div>
+      <div class="glass p-5 rounded-xl border border-white/5">
+        <p class="text-xs text-slate-400 uppercase tracking-wider mb-1">Suspended</p>
+        <p id="stat-suspended" class="text-3xl font-bold text-red-400">0</p>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex border-b border-white/10 mb-6 overflow-x-auto">
+      <button class="admin-tab active" data-target="users-panel">Users</button>
+      <button class="admin-tab" data-target="audit-panel">Audit Log</button>
+    </div>
+
+    <!-- Users Panel -->
+    <div id="users-panel" class="panel active">
+      <div class="flex flex-col md:flex-row gap-4 mb-6">
+        <input type="text" id="user-search"
+          class="glass px-4 py-2 rounded-lg text-sm flex-grow outline-none focus:border-amber-500/50"
+          placeholder="Search by email, name, account...">
+        <select id="user-status-filter" class="glass px-4 py-2 rounded-lg text-sm outline-none">
+          <option value="all">All Status</option>
+          <option value="active">Active</option>
+          <option value="suspended">Suspended</option>
+        </select>
+        <select id="user-sort" class="glass px-4 py-2 rounded-lg text-sm outline-none">
+          <option value="created_at_desc">Newest First</option>
+          <option value="created_at_asc">Oldest First</option>
+          <option value="balance_desc">Highest Balance</option>
+          <option value="balance_asc">Lowest Balance</option>
+        </select>
+      </div>
+
+      <div class="glass p-4 rounded-xl border border-white/5 admin-table-container">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Account</th>
+              <th>Balance</th>
+              <th>Status</th>
+              <th>Joined</th>
+              <th class="text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="user-table-body">
+            <!-- Rendered via JS -->
+            <tr>
+              <td colspan="6" class="text-center py-4 text-slate-400">Loading users...</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="pagination">
+          <span id="user-page-info" class="text-sm text-slate-400">Showing 0-0 of 0</span>
+          <div class="pagination-controls">
+            <button id="user-prev-page" class="page-btn" disabled>&lt;</button>
+            <button id="user-next-page" class="page-btn" disabled>&gt;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Audit Log Panel -->
+    <div id="audit-panel" class="panel hidden">
+      <div class="glass p-4 rounded-xl border border-white/5 admin-table-container">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Admin</th>
+              <th>Action</th>
+              <th>Details</th>
+              <th>IP Address</th>
+            </tr>
+          </thead>
+          <tbody id="audit-table-body">
+            <!-- Rendered via JS -->
+            <tr>
+              <td colspan="5" class="text-center py-4 text-slate-400">Loading audit log...</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="pagination">
+          <span id="audit-page-info" class="text-sm text-slate-400">Showing 0-0 of 0</span>
+          <div class="pagination-controls">
+            <button id="audit-prev-page" class="page-btn" disabled>&lt;</button>
+            <button id="audit-next-page" class="page-btn" disabled>&gt;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modals -->
+  <!-- User Detail Modal -->
+  <div id="user-detail-modal" class="admin-modal hidden">
+    <div class="admin-modal-panel p-6">
+      <div class="flex justify-between items-start mb-6">
+        <h2 class="text-xl font-bold">User Details</h2>
+        <button class="modal-close p-2 text-slate-400 hover:text-white">&times;</button>
+      </div>
+      <div id="user-detail-content">Loading...</div>
+    </div>
+  </div>
+
+  <!-- Adjust Balance Modal -->
+  <div id="adjust-modal" class="admin-modal hidden">
+    <div class="admin-modal-panel p-6 max-w-md">
+      <h2 class="text-xl font-bold mb-4">Adjust Balance</h2>
+      <form id="adjust-form">
+        <input type="hidden" id="adjust-user-id">
+        <div class="mb-4">
+          <label class="block text-xs uppercase text-slate-400 mb-1">Type</label>
+          <select id="adjust-type" class="glass w-full px-3 py-2 rounded border border-white/10 outline-none">
+            <option value="credit">Credit (Add Funds)</option>
+            <option value="debit">Debit (Remove Funds)</option>
+          </select>
+        </div>
+        <div class="mb-4">
+          <label class="block text-xs uppercase text-slate-400 mb-1">Amount</label>
+          <input type="number" id="adjust-amount" step="0.01" min="0.01" required
+            class="glass w-full px-3 py-2 rounded border border-white/10 outline-none" placeholder="0.00">
+        </div>
+        <div class="mb-6">
+          <label class="block text-xs uppercase text-slate-400 mb-1">Reason (required)</label>
+          <input type="text" id="adjust-reason" required
+            class="glass w-full px-3 py-2 rounded border border-white/10 outline-none"
+            placeholder="e.g. Refund, Bonus, Correction">
+        </div>
+        <div class="flex gap-3">
+          <button type="button" class="btn-secondary flex-1 modal-close">Cancel</button>
+          <button type="submit" class="btn-primary flex-1">Confirm</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+
+</html>

@@ -396,19 +396,15 @@ function initLiveRates() {
 async function fetchLiveRates() {
   const statusEl = document.getElementById('rates-status');
   try {
-    // Fetch USD-based rates
-    const [usdRes, gbpRes] = await Promise.all([
-      fetch('https://api.frankfurter.app/latest?from=USD&to=EUR,JPY'),
-      fetch('https://api.frankfurter.app/latest?from=GBP&to=USD')
-    ]);
-
-    if (!usdRes.ok || !gbpRes.ok) throw new Error('API error');
-
-    const usdData = await usdRes.json();
-    const gbpData = await gbpRes.json();
+    // Fetch USD-based rates from proxy
+    const res = await fetch('/api/exchange/rates');
+    if (!res.ok) throw new Error('API error');
+    
+    const data = await res.json();
+    const rates = data.rates;
 
     // USD to EUR
-    const usdEur = usdData.rates.EUR;
+    const usdEur = rates.EUR;
     const usdEurEl = document.getElementById('rate-usd-eur');
     const usdEurChangeEl = document.getElementById('rate-usd-eur-change');
     if (usdEurEl) {
@@ -418,7 +414,7 @@ async function fetchLiveRates() {
     if (usdEurChangeEl) usdEurChangeEl.textContent = `1 USD = ${usdEur.toFixed(4)} EUR`;
 
     // GBP to USD
-    const gbpUsd = gbpData.rates.USD;
+    const gbpUsd = 1 / rates.GBP; // Since our proxy gives USD based rates
     const gbpUsdEl = document.getElementById('rate-gbp-usd');
     const gbpUsdChangeEl = document.getElementById('rate-gbp-usd-change');
     if (gbpUsdEl) {
@@ -428,7 +424,7 @@ async function fetchLiveRates() {
     if (gbpUsdChangeEl) gbpUsdChangeEl.textContent = `1 GBP = ${gbpUsd.toFixed(4)} USD`;
 
     // USD to JPY
-    const usdJpy = usdData.rates.JPY;
+    const usdJpy = rates.JPY;
     const usdJpyEl = document.getElementById('rate-usd-jpy');
     const usdJpyChangeEl = document.getElementById('rate-usd-jpy-change');
     if (usdJpyEl) {
@@ -493,22 +489,13 @@ function initCurrencyConverter() {
     const cacheKey = `${from}_${to}`;
 
     try {
-      // Check cache (valid for 60s)
-      const cached = conversionCache[cacheKey];
-      const now = Date.now();
-      let rate;
-
-      if (cached && (now - cached.time) < 60000) {
-        rate = cached.rate;
-      } else {
-        const res = await fetch(`https://api.frankfurter.app/latest?amount=1&from=${from}&to=${to}`);
-        if (!res.ok) throw new Error('API error');
-        const data = await res.json();
-        rate = data.rates[to];
-        conversionCache[cacheKey] = { rate, time: now };
-      }
-
-      const result = amount * rate;
+      // Use our backend proxy for conversion
+      const res = await fetch(`/api/exchange/convert?from=${from}&to=${to}&amount=${amount}`);
+      if (!res.ok) throw new Error('API error');
+      const data = await res.json();
+      
+      const result = data.result;
+      const rate = data.rate;
 
       if (resultEl) {
         resultEl.textContent = formatNumber(result);

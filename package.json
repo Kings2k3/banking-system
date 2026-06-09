@@ -3,8 +3,21 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "dev": "node --watch server/index.js",
+    "start": "node server/index.js",
     "build:css": "tailwindcss -i ./tailwind/input.css -o ./tailwind/output.css --minify",
     "watch:css": "tailwindcss -i ./tailwind/input.css -o ./tailwind/output.css --watch"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "better-sqlite3": "^11.5.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "express-rate-limit": "^7.4.1",
+    "express-validator": "^7.2.0",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
     "tailwindcss": "3.4.17"

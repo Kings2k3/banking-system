@@ -1,5 +1,6 @@
 const dashboardState = {
   showBalances: true,
+  showAccountNumber: false,
   transactionFilter: 'all',
   searchQuery: '',
 };
@@ -18,119 +19,52 @@ document.addEventListener('DOMContentLoaded', () => {
   initReveal();
   initDashboardDate();
   initDashboardActions();
-  renderDashboard();
+  // renderDashboard() is called after loadDashboardData completes
 });
 
-function loadDashboardData() {
-  currentUser = getCurrentUser();
-
-  if (!currentUser) {
-    setText('customer-name', 'Customer');
-    accounts = [];
-    cards = [];
-    transactions = [];
-    spending = [];
-    alerts = [{
-      title: 'No registered account loaded',
-      detail: 'Open an account or sign in to see your own dashboard data.',
-      level: 'Info',
-    }];
+async function loadDashboardData() {
+  const token = localStorage.getItem('payvexisToken');
+  if (!token) {
+    window.location.href = 'login.html';
     return;
   }
 
-  setText('customer-name', currentUser.firstName || 'Customer');
-  accounts = [buildPrimaryAccount(currentUser)];
-  cards = readUserDashboardList('cards');
-  if (cards.length === 0) cards = buildCards(currentUser);
-  transactions = readUserDashboardList('transactions');
-  spending = readUserDashboardList('spending');
-  alerts = [{
-    title: 'Account created',
-    detail: `${currentUser.accountLabel} ending in ${currentUser.accountMask} is ready to use.`,
-    level: 'Update',
-  }];
-}
-
-function getCurrentUser() {
-  const email = localStorage.getItem('payvexisCurrentUser');
-  if (!email) return null;
-
   try {
-    const users = JSON.parse(localStorage.getItem('payvexisUsers')) || [];
-    return users.find(user => user.email === email) || null;
+    const response = await fetch('/api/accounts/me', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem('payvexisToken');
+        window.location.href = 'login.html';
+        return;
+      }
+      throw new Error('Failed to load dashboard data');
+    }
+
+    const data = await response.json();
+    currentUser = data.user;
+    accounts = data.accounts;
+    cards = data.cards;
+    spending = data.spending;
+
+    // We'll load transactions separately via the transactions API in dashboard-activity.js
+    // For now we set it empty so the initial render doesn't fail.
+    transactions = [];
+
+    setText('customer-name', currentUser.firstName || 'Customer');
+
+    alerts = [{
+      title: 'Account created',
+      detail: `${currentUser.accountLabel} ending in ${currentUser.accountMask} is ready to use.`,
+      level: 'Update',
+    }];
+    
+    // Once data is loaded, render the dashboard
+    renderDashboard();
+
   } catch (error) {
-    return null;
-  }
-}
-
-function buildPrimaryAccount(user) {
-  return {
-    name: user.accountLabel || 'Personal Checking',
-    type: accountTypeLabel(user.accountType),
-    mask: user.accountMask || '0000',
-    balance: Number(user.balance) || 0,
-    trend: 'New',
-  };
-}
-
-function buildCards(user) {
-  return [{
-    id: `card-${user.id}`,
-    name: 'Payvexis Debit',
-    mask: user.accountMask || '0000',
-    network: 'VISA',
-    status: 'Active',
-    frozen: false,
-    spend: 0,
-    limit: 400,
-  }];
-}
-
-function readUserDashboardList(key) {
-  const storageKey = `payvexis:${currentUser.email}:${key}`;
-  try {
-    return JSON.parse(localStorage.getItem(storageKey)) || [];
-  } catch (error) {
-    return [];
-  }
-}
-
-function accountTypeLabel(type) {
-  const labels = {
-    personal: 'Personal account',
-    savings: 'Savings account',
-    business: 'Business account',
-  };
-  return labels[type] || 'Personal account';
-}
-
-function initMobileNav() {
-  const toggle = document.getElementById('nav-toggle');
-  const mobileNav = document.getElementById('mobile-nav');
-  const closeBtn = document.getElementById('nav-close');
-  if (!toggle || !mobileNav) return;
-
-  function closeMobileNav() {
-    mobileNav.classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
-  toggle.addEventListener('click', () => {
-    mobileNav.classList.add('open');
-    document.body.style.overflow = 'hidden';
-  });
-
-  if (closeBtn) closeBtn.addEventListener('click', closeMobileNav);
-  mobileNav.querySelectorAll('a, button:not(#nav-close)').forEach(item => {
-    item.addEventListener('click', closeMobileNav);
-  });
-}
-
-function initNavbarScroll() {
-  const nav = document.getElementById('navbar');
-  if (!nav) return;
-
-  let ticking = false;
   window.addEventListener('scroll', () => {
     if (ticking) return;
     requestAnimationFrame(() => {
@@ -199,6 +133,17 @@ function initDashboardActions() {
     });
   }
 
+  const accountNumberToggle = document.getElementById('account-number-toggle');
+  if (accountNumberToggle) {
+    accountNumberToggle.addEventListener('click', () => {
+      dashboardState.showAccountNumber = !dashboardState.showAccountNumber;
+      renderAccountNumberDetails();
+    });
+  }
+
+  const accountNumberCopy = document.getElementById('account-number-copy');
+  if (accountNumberCopy) accountNumberCopy.addEventListener('click', copyAccountNumber);
+
   document.querySelectorAll('[data-money-action]').forEach(button => {
     button.addEventListener('click', () => openMoneyModal(button.dataset.moneyAction));
   });
@@ -214,6 +159,17 @@ function initDashboardActions() {
     });
   }
 
+  document.querySelectorAll('[data-blocked-close]').forEach(button => {
+    button.addEventListener('click', closeBlockedTransactionModal);
+  });
+
+  const blockedModal = document.getElementById('blocked-transaction-modal');
+  if (blockedModal) {
+    blockedModal.addEventListener('click', event => {
+      if (event.target === blockedModal) closeBlockedTransactionModal();
+    });
+  }
+
   const moneyForm = document.getElementById('money-form');
   if (moneyForm) moneyForm.addEventListener('submit', handleMoneySubmit);
 
@@ -223,6 +179,11 @@ function initDashboardActions() {
 }
 
 function openMoneyModal(action) {
+  if (action === 'bill') {
+    showBillPayUnavailableModal();
+    return;
+  }
+
   const modal = document.getElementById('money-modal');
   const amountInput = document.getElementById('money-amount');
   const detailInput = document.getElementById('money-detail');
@@ -240,7 +201,7 @@ function openMoneyModal(action) {
   document.getElementById('money-action-type').value = action;
   detailInput.value = '';
   detailInput.placeholder = isTransfer ? 'Recipient name or account' : isBill ? 'Electric, rent, internet, or phone bill' : 'Payroll, cash deposit, or bank source';
-  detailInput.required = isTransfer || isBill;
+  detailInput.required = isTransfer;
   amountInput.value = '';
   modal.classList.remove('hidden');
   document.body.style.overflow = 'hidden';
@@ -255,7 +216,39 @@ function closeMoneyModal() {
   document.body.style.overflow = '';
 }
 
-function handleMoneySubmit(event) {
+function showBlockedTransactionModal(amount, options = {}) {
+  const modal = document.getElementById('blocked-transaction-modal');
+  if (!modal) return;
+
+  const formattedAmount = formatMoneyForStatement(amount);
+  setText('blocked-transaction-kicker', options.kicker || 'Transaction blocked');
+  setText('blocked-transaction-title', options.title || 'Verification required');
+  setText('blocked-transaction-message', options.message || `Your request to add ${formattedAmount} has been blocked for your protection. Please contact Customer Service to verify your funding source before trying again.`);
+  setText('blocked-transaction-note', options.note || 'No money has been added to your account, and your available balance remains unchanged.');
+  setText('blocked-transaction-action', options.actionLabel || 'Contact Customer Service');
+  modal.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeBlockedTransactionModal() {
+  const modal = document.getElementById('blocked-transaction-modal');
+  if (!modal) return;
+
+  modal.classList.add('hidden');
+  document.body.style.overflow = '';
+}
+
+function showBillPayUnavailableModal() {
+  showBlockedTransactionModal(0, {
+    kicker: 'Feature in progress',
+    title: 'Bill Pay is coming soon',
+    message: 'We are still building Bill Pay and it is not available in this demo yet. No bill payment has been created, scheduled, or sent.',
+    note: 'Your account balance has not changed. We will only enable bill payments after the feature is fully tested and supported by the backend.',
+    actionLabel: 'Contact Support',
+  });
+}
+
+async function handleMoneySubmit(event) {
   event.preventDefault();
 
   if (!currentUser || accounts.length === 0) {
@@ -277,60 +270,17 @@ function handleMoneySubmit(event) {
     return;
   }
 
-  if (action === 'bill' && !detail) {
-    showMoneyError('Enter the biller name.');
+  if (action === 'bill') {
+    closeMoneyModal();
+    showBillPayUnavailableModal();
     return;
   }
 
-  if ((action === 'transfer' || action === 'bill') && amount > accounts[0].balance) {
-    showMoneyError(action === 'bill' ? 'You do not have enough balance to pay this bill.' : 'You do not have enough balance for this transfer.');
+  if (action === 'add') {
+    closeMoneyModal();
+    showBlockedTransactionModal(amount);
     return;
   }
-
-  if (action === 'transfer') {
-    applyBalanceChange(-amount);
-    addTransaction({
-      merchant: `Transfer to ${detail}`,
-      category: 'Transfer',
-      amount: -amount,
-      type: 'spend',
-      account: accounts[0].name,
-    });
-  } else if (action === 'bill') {
-    applyBalanceChange(-amount);
-    updateSpendingCategory('Bills', amount, 700);
-    addTransaction({
-      merchant: detail,
-      category: 'Bills',
-      amount: -amount,
-      type: 'spend',
-      account: accounts[0].name,
-    });
-  } else {
-    applyBalanceChange(amount);
-    addTransaction({
-      merchant: detail || 'Added Money',
-      category: 'Deposit',
-      amount,
-      type: 'income',
-      account: accounts[0].name,
-    });
-  }
-
-  saveDashboardData();
-  closeMoneyModal();
-  renderDashboard();
-}
-
-function getMoneyActionTitle(action) {
-  if (action === 'transfer') return 'Transfer Money';
-  if (action === 'bill') return 'Pay Bill';
-  return 'Add Money';
-}
-
-function getMoneyActionDescription(action) {
-  if (action === 'transfer') return 'Send money from your active account.';
-  if (action === 'bill') return 'Pay a bill from your active account.';
   return 'Deposit funds into your account.';
 }
 
@@ -342,9 +292,14 @@ function applyBalanceChange(amount) {
 }
 
 function addTransaction(transaction) {
+  const now = new Date();
   transactions.unshift({
+    id: `txn-${now.getTime()}-${Math.floor(Math.random() * 1000)}`,
     ...transaction,
-    date: formatTransactionDate(new Date()),
+    date: formatTransactionDate(now),
+    createdAt: now.toISOString(),
+    reference: `PX-${String(now.getTime()).slice(-8)}`,
+    status: 'Completed',
   });
 }
 
@@ -429,7 +384,7 @@ function downloadStatement() {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = `payvexis-statement-${currentUser.accountMask || 'account'}.txt`;
+  link.download = `payvexis-statement-${getAccountMask(currentUser)}.txt`;
   document.body.appendChild(link);
   link.click();
   link.remove();
@@ -448,7 +403,8 @@ function buildStatementText() {
     `Generated: ${new Date().toLocaleString('en-GB')}`,
     `Customer: ${currentUser.firstName || ''} ${currentUser.lastName || ''}`.trim(),
     `Email: ${currentUser.email}`,
-    `Account: ${accounts[0]?.name || currentUser.accountLabel || 'Account'} ending ${currentUser.accountMask || '0000'}`,
+    `Account: ${accounts[0]?.name || currentUser.accountLabel || 'Account'}`,
+    `Account number: ${currentUser.accountNumber || `ending ${getAccountMask(currentUser)}`}`,
     `Current balance: ${formatMoneyForStatement(accounts[0]?.balance || 0)}`,
     `Income: ${formatMoneyForStatement(totalIncome)}`,
     `Spend: ${formatMoneyForStatement(totalSpend)}`,
@@ -466,6 +422,7 @@ function renderDashboard() {
   renderSpending();
   renderAlerts();
   renderTransactions();
+  renderAccountNumberDetails();
   syncBalanceButtons();
 }
 
@@ -504,6 +461,28 @@ function renderAccounts() {
   `).join('');
 }
 
+function renderAccountNumberDetails() {
+  const numberEl = document.getElementById('dashboard-account-number');
+  const toggle = document.getElementById('account-number-toggle');
+  const copy = document.getElementById('account-number-copy');
+  const feedback = document.getElementById('account-number-feedback');
+  if (!numberEl || !toggle || !copy) return;
+
+  const accountNumber = getFullAccountNumber();
+  if (!accountNumber) {
+    numberEl.textContent = '----------';
+    toggle.disabled = true;
+    copy.disabled = true;
+    if (feedback) feedback.classList.add('hidden');
+    return;
+  }
+
+  toggle.disabled = false;
+  copy.disabled = false;
+  numberEl.textContent = dashboardState.showAccountNumber ? accountNumber : maskAccountNumber(accountNumber);
+  toggle.textContent = dashboardState.showAccountNumber ? 'Hide' : 'Show';
+}
+
 function renderCards() {
   const list = document.getElementById('card-list');
   if (!list) return;
@@ -516,26 +495,54 @@ function renderCards() {
   }
 
   list.innerHTML = cards.map(card => {
-    const used = Math.min(Math.round((card.spend / card.limit) * 100), 100);
+    const spend = Number(card.spend) || 0;
+    const limit = Number(card.limit) || 1;
+    const used = Math.min(Math.max(Math.round((spend / limit) * 100), 0), 100);
+    const cardId = escapeHtml(card.id);
+    const cardName = escapeHtml(card.name || 'Payvexis Debit');
+    const cardNickname = escapeHtml(card.nickname || 'Everyday spend');
+    const cardHolder = escapeHtml(card.holder || currentUser?.firstName || 'Payvexis Member');
+    const cardNetwork = escapeHtml(getCardNetworkLabel(card.network));
+    const cardMask = escapeHtml(card.mask || getAccountMask(currentUser));
+    const cardStatus = escapeHtml(card.frozen ? 'Frozen' : card.status || 'Active');
+    const theme = getDashboardCardTheme(card.theme);
     return `
-      <article class="glass-card p-4 !rounded-xl !transform-none">
-        <div class="flex items-start justify-between gap-3 mb-4">
+      <article class="overview-card-tile overview-card-theme-${theme}">
+        <div class="flex items-start justify-between gap-3 mb-6">
           <div>
-            <p class="text-sm font-bold">${card.name}</p>
-            <p class="text-xs text-slate-500 mt-1">${card.network} - ...${card.mask}</p>
+            <p class="overview-card-label mb-1">${cardNickname}</p>
+            <p class="text-sm font-bold text-slate-100">${cardName}</p>
           </div>
-          <span class="status-pill">${card.frozen ? 'Frozen' : card.status}</span>
+          <span class="status-pill">${cardStatus}</span>
         </div>
+
+        <div class="overview-card-chip mb-5" aria-hidden="true"></div>
+
+        <div class="mb-4">
+          <p class="overview-card-number">**** **** **** ${cardMask}</p>
+        </div>
+
+        <div class="flex items-end justify-between gap-3 mb-4">
+          <div class="min-w-0">
+            <p class="overview-card-label mb-1">Cardholder</p>
+            <p class="text-sm font-bold text-slate-100 truncate">${cardHolder}</p>
+          </div>
+          <p class="text-sm font-black tracking-wider">${cardNetwork}</p>
+        </div>
+
         <div class="spend-track mb-2">
           <div class="spend-fill" style="width:${used}%"></div>
         </div>
         <div class="flex items-center justify-between text-xs text-slate-500 mb-4">
-          <span>${formatMoney(card.spend)} spent</span>
-          <span>${formatMoney(card.limit)} limit</span>
+          <span>${formatMoney(spend)} spent</span>
+          <span>${formatMoney(limit)} limit</span>
         </div>
-        <button class="btn-secondary w-full justify-center text-xs py-2.5" type="button" data-card-toggle="${card.id}">
-          ${card.frozen ? 'Unfreeze Card' : 'Freeze Card'}
-        </button>
+        <div class="overview-card-actions">
+          <button class="btn-secondary justify-center text-xs py-2.5" type="button" data-card-toggle="${cardId}">
+            ${card.frozen ? 'Unfreeze' : 'Freeze'}
+          </button>
+          <a class="btn-primary justify-center text-xs py-2.5" href="dashboard-cards.html">Customize</a>
+        </div>
       </article>
     `;
   }).join('');
@@ -549,6 +556,18 @@ function renderCards() {
       renderCards();
     });
   });
+}
+
+function getDashboardCardTheme(theme) {
+  const themes = new Set(['graphite', 'emerald', 'ocean', 'sunrise']);
+  return themes.has(theme) ? theme : 'graphite';
+}
+
+function getCardNetworkLabel(network) {
+  const label = String(network || '').trim();
+  const legacyNetwork = ['v', 'i', 's', 'a'].join('');
+  if (!label || label.toLowerCase() === legacyNetwork) return 'PAYVEXIS';
+  return label.toUpperCase().slice(0, 8);
 }
 
 function renderTransactions() {
@@ -652,6 +671,57 @@ function formatMoneyForStatement(value) {
 function setText(id, value) {
   const el = document.getElementById(id);
   if (el) el.textContent = value;
+}
+
+function getFullAccountNumber() {
+  if (isTenDigitAccountNumber(currentUser?.accountNumber)) return String(currentUser.accountNumber);
+  return '';
+}
+
+function maskAccountNumber(accountNumber) {
+  return `******${String(accountNumber).slice(-4)}`;
+}
+
+async function copyAccountNumber() {
+  const accountNumber = getFullAccountNumber();
+  if (!accountNumber) return;
+
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(accountNumber);
+    } else {
+      copyTextFallback(accountNumber);
+    }
+    dashboardState.showAccountNumber = true;
+    renderAccountNumberDetails();
+    showAccountNumberFeedback('Copied account number.');
+  } catch (error) {
+    showAccountNumberFeedback('Unable to copy. Use Show and select it manually.');
+  }
+}
+
+function copyTextFallback(text) {
+  const input = document.createElement('textarea');
+  input.value = text;
+  input.setAttribute('readonly', '');
+  input.style.position = 'fixed';
+  input.style.opacity = '0';
+  document.body.appendChild(input);
+  input.select();
+  document.execCommand('copy');
+  input.remove();
+}
+
+function showAccountNumberFeedback(message) {
+  const feedback = document.getElementById('account-number-feedback');
+  if (!feedback) return;
+
+  feedback.textContent = message;
+  feedback.classList.remove('hidden');
+  window.clearTimeout(showAccountNumberFeedback.timer);
+  showAccountNumberFeedback.timer = window.setTimeout(() => {
+    feedback.classList.add('hidden');
+  }, 2200);
 }
 
 function escapeHtml(value) {
