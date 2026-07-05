@@ -711,7 +711,7 @@ function getFullAccountNumber() {
 }
 
 function maskAccountNumber(accountNumber) {
-  return \`******\${String(accountNumber).slice(-4)}\`;
+  return `******${String(accountNumber).slice(-4)}`;
 }
 
 async function copyAccountNumber() {
