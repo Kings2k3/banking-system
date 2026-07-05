@@ -65,13 +65,45 @@ async function loadDashboardData() {
     renderDashboard();
 
   } catch (error) {
+    console.error('Failed to load dashboard data:', error);
+  }
+}
+
+function initMobileNav() {
+  const toggle = document.getElementById('nav-toggle');
+  const mobileNav = document.getElementById('mobile-nav');
+  const closeBtn = document.getElementById('nav-close');
+  if (!toggle || !mobileNav) return;
+
+  function closeMobileNav() {
+    mobileNav.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  toggle.addEventListener('click', () => {
+    mobileNav.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  });
+
+  if (closeBtn) closeBtn.addEventListener('click', closeMobileNav);
+  mobileNav.querySelectorAll('a, button:not(#nav-close)').forEach(item => {
+    item.addEventListener('click', closeMobileNav);
+  });
+}
+
+function initNavbarScroll() {
+  const nav = document.getElementById('navbar');
+  if (!nav) return;
+
+  let ticking = false;
   window.addEventListener('scroll', () => {
-    if (ticking) return;
-    requestAnimationFrame(() => {
-      nav.classList.toggle('scrolled', window.scrollY > 50);
-      ticking = false;
-    });
-    ticking = true;
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        nav.classList.toggle('scrolled', window.scrollY > 50);
+        ticking = false;
+      });
+      ticking = true;
+    }
   }, { passive: true });
 }
 
@@ -679,7 +711,7 @@ function getFullAccountNumber() {
 }
 
 function maskAccountNumber(accountNumber) {
-  return `******${String(accountNumber).slice(-4)}`;
+  return \`******\${String(accountNumber).slice(-4)}\`;
 }
 
 async function copyAccountNumber() {

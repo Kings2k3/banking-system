@@ -51,12 +51,7 @@ const gracefulShutdown = () => {
 process.on('SIGINT', gracefulShutdown);
 process.on('SIGTERM', gracefulShutdown);
 
-// Start server if not running in serverless mode
-if (require.main === module || !process.env.VERCEL) {
-  app.listen(config.PORT, () => {
-    console.log(`Server running on http://localhost:${config.PORT}`);
-  });
-}
-
-// Export for Vercel serverless function
-module.exports = app;
+// Start server
+app.listen(config.PORT, () => {
+  console.log(`Server running on http://localhost:${config.PORT}`);
+});
