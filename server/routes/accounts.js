@@ -44,9 +44,12 @@ router.get('/me', asyncHandler(async (req, res) => {
     accounts: [
       {
         id: 'acc_1',
+        name: user.accountLabel,
         label: user.accountLabel,
         type: user.accountType,
+        mask: fullAccountNumber.slice(-4),
         balance: user.balance,
+        trend: 'Active',
         currency: 'USD'
       }
     ],

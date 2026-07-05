@@ -778,3 +778,26 @@ function incomeIcon() {
 function spendIcon() {
   return '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m0 0l6-6m-6 6l-6-6" /></svg>';
 }
+
+function isTenDigitAccountNumber(accountNumber) {
+  return /^\d{10}$/.test(String(accountNumber || ''));
+}
+
+function getAccountMask(user) {
+  const accountNumber = String(user?.accountNumber || '');
+  if (isTenDigitAccountNumber(accountNumber)) return accountNumber.slice(-4);
+  return String(user?.accountMask || '0000').slice(-4);
+}
+
+function getMoneyActionTitle(action) {
+  if (action === 'transfer') return 'Transfer Money';
+  if (action === 'bill') return 'Pay a Bill';
+  return 'Add Money';
+}
+
+function getMoneyActionDescription(action) {
+  if (action === 'transfer') return 'Send money to another account or recipient.';
+  if (action === 'bill') return 'Pay a bill from your connected account.';
+  return 'Deposit funds into your account.';
+}
+

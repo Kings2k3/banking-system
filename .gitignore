@@ -7,3 +7,8 @@ Thumbs.db
 
 .vercel
 node_modules/
+
+# SQLite database files
+*.db
+*.db-shm
+*.db-wal
