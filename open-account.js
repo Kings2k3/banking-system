@@ -198,7 +198,7 @@ function initStepForm() {
       }
     });
 
-    // Step 2: password match
+    // Step 2: password match and joint fields
     if (step === 2) {
       const pass = document.getElementById('signup-password').value;
       const confirm = document.getElementById('confirm-password').value;
@@ -209,6 +209,18 @@ function initStepForm() {
       if (pass.length < 8) {
         document.getElementById('signup-password').classList.add('error');
         valid = false;
+      }
+
+      const accountType = document.getElementById('account-type').value;
+      if (accountType === 'joint') {
+        const jFirst = document.getElementById('joint-first-name');
+        const jLast = document.getElementById('joint-last-name');
+        const jEmail = document.getElementById('joint-email');
+        if (!jFirst.value.trim()) { jFirst.classList.add('error'); valid = false; }
+        if (!jLast.value.trim()) { jLast.classList.add('error'); valid = false; }
+        if (!jEmail.value.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(jEmail.value)) {
+          jEmail.classList.add('error'); valid = false;
+        }
       }
     }
 
@@ -226,6 +238,16 @@ function initStepForm() {
 
     const accountText = accountSelect.options[accountSelect.selectedIndex]?.text || '-';
     document.getElementById('summary-account').textContent = accountText;
+
+    const jointRow = document.getElementById('summary-joint-row');
+    if (accountSelect.value === 'joint' && jointRow) {
+      jointRow.classList.remove('hidden');
+      const jFirst = document.getElementById('joint-first-name').value;
+      const jLast = document.getElementById('joint-last-name').value;
+      document.getElementById('summary-joint-name').textContent = `${jFirst} ${jLast}`;
+    } else if (jointRow) {
+      jointRow.classList.add('hidden');
+    }
   }
 
   // Events
@@ -240,6 +262,19 @@ function initStepForm() {
       if (validateStep(2)) {
         populateSummary();
         goTo(3);
+      }
+    });
+  }
+
+  // Toggle joint fields visibility based on account type selection
+  const accountSelect = document.getElementById('account-type');
+  const jointFields = document.getElementById('joint-fields');
+  if (accountSelect && jointFields) {
+    accountSelect.addEventListener('change', () => {
+      if (accountSelect.value === 'joint') {
+        jointFields.classList.remove('hidden');
+      } else {
+        jointFields.classList.add('hidden');
       }
     });
   }
@@ -271,7 +306,13 @@ function initStepForm() {
         phone: document.getElementById('phone').value.trim(),
         dob: document.getElementById('dob').value,
         password: document.getElementById('signup-password').value,
-        accountType: document.getElementById('account-type').value
+        accountType: document.getElementById('account-type').value,
+        jointFirstName: document.getElementById('joint-first-name')?.value.trim(),
+        jointLastName: document.getElementById('joint-last-name')?.value.trim(),
+        jointEmail: document.getElementById('joint-email')?.value.trim().toLowerCase(),
+        jointPhone: document.getElementById('joint-phone')?.value.trim(),
+        jointDob: document.getElementById('joint-dob')?.value,
+        jointRelationship: document.getElementById('joint-relationship')?.value
       };
 
       try {

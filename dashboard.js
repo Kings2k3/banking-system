@@ -430,10 +430,17 @@ function buildStatementText() {
     ? transactions.map(item => `${item.date} | ${item.category} | ${item.merchant} | ${formatMoneyForStatement(item.amount)} | ${item.account}`)
     : ['No transactions yet.'];
 
-  return [
+  const baseInfo = [
     'Payvexis Account Statement',
     `Generated: ${new Date().toLocaleString('en-GB')}`,
-    `Customer: ${currentUser.firstName || ''} ${currentUser.lastName || ''}`.trim(),
+    `Customer: ${currentUser.firstName || ''} ${currentUser.lastName || ''}`.trim()
+  ];
+  
+  if (accounts[0]?.isJoint) {
+    baseInfo.push(`Joint holder: ${accounts[0].jointFirstName || ''} ${accounts[0].jointLastName || ''}`.trim());
+  }
+
+  baseInfo.push(
     `Email: ${currentUser.email}`,
     `Account: ${accounts[0]?.name || currentUser.accountLabel || 'Account'}`,
     `Account number: ${currentUser.accountNumber || `ending ${getAccountMask(currentUser)}`}`,
@@ -443,8 +450,10 @@ function buildStatementText() {
     '',
     'Transactions',
     ...rows,
-    '',
-  ].join('\n');
+    ''
+  );
+  
+  return baseInfo.join('\n');
 }
 
 function renderDashboard() {
@@ -482,8 +491,12 @@ function renderAccounts() {
   list.innerHTML = accounts.map(account => `
     <article class="account-row p-4 flex items-center justify-between gap-4">
       <div class="min-w-0">
-        <p class="text-sm font-bold text-slate-100">${account.name}</p>
+        <p class="text-sm font-bold text-slate-100 flex items-center gap-2">
+          ${account.name}
+          ${account.isJoint ? '<span class="px-2 py-0.5 rounded-full bg-accent/10 text-accent text-[10px] uppercase font-bold tracking-wider">Joint</span>' : ''}
+        </p>
         <p class="text-xs text-slate-500 mt-1">${account.type} - ...${account.mask}</p>
+        ${account.isJoint ? `<p class="text-xs text-slate-400 mt-0.5">with ${account.jointFirstName} ${account.jointLastName}</p>` : ''}
       </div>
       <div class="text-right flex-shrink-0">
         <p class="text-sm font-bold text-slate-100">${formatMoney(account.balance)}</p>

@@ -15,7 +15,10 @@ const validateRegistration = [
   body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long'),
   body('firstName').notEmpty().withMessage('First name is required').trim(),
   body('lastName').notEmpty().withMessage('Last name is required').trim(),
-  body('accountType').isIn(['personal', 'business', 'student']).withMessage('Invalid account type'),
+  body('accountType').isIn(['personal', 'savings', 'business', 'student', 'joint']).withMessage('Invalid account type'),
+  body('jointFirstName').if(body('accountType').equals('joint')).notEmpty().withMessage('Joint first name is required').trim(),
+  body('jointLastName').if(body('accountType').equals('joint')).notEmpty().withMessage('Joint last name is required').trim(),
+  body('jointEmail').if(body('accountType').equals('joint')).isEmail().withMessage('Valid joint email is required').normalizeEmail(),
   handleValidationErrors
 ];
 

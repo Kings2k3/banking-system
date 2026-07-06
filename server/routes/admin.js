@@ -64,7 +64,8 @@ router.get('/users/:id', asyncHandler(async (req, res) => {
   const userId = req.params.id;
 
   const user = db.prepare(`
-    SELECT id, email, first_name, last_name, phone, dob, account_type, account_label, account_number, balance, suspended, created_at 
+    SELECT id, email, first_name, last_name, phone, dob, account_type, account_label, account_number, balance, suspended, created_at,
+           is_joint, joint_first_name, joint_last_name, joint_email, joint_phone, joint_dob, joint_relationship
     FROM users WHERE id = ? AND role = 'user'
   `).get(userId);
 

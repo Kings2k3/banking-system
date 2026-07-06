@@ -26,6 +26,13 @@ const initDB = () => {
       balance         REAL    DEFAULT 0,
       role            TEXT    DEFAULT 'user' CHECK(role IN ('user','admin')),
       suspended       INTEGER DEFAULT 0,
+      is_joint        INTEGER DEFAULT 0,
+      joint_first_name TEXT   DEFAULT '',
+      joint_last_name  TEXT   DEFAULT '',
+      joint_email      TEXT   DEFAULT '',
+      joint_phone      TEXT   DEFAULT '',
+      joint_dob        TEXT   DEFAULT '',
+      joint_relationship TEXT DEFAULT '',
       created_at      TEXT    DEFAULT (datetime('now'))
     );
 
@@ -81,8 +88,27 @@ const initDB = () => {
     );
   `);
 
+  // Migrations for existing DBs
+  const addColumn = (table, column, definition) => {
+    try {
+      db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+      console.log(`Migrated: Added ${column} to ${table}`);
+    } catch (e) {
+      // Column probably already exists, ignore
+    }
+  };
+
+  addColumn('users', 'is_joint', 'INTEGER DEFAULT 0');
+  addColumn('users', 'joint_first_name', 'TEXT DEFAULT ""');
+  addColumn('users', 'joint_last_name', 'TEXT DEFAULT ""');
+  addColumn('users', 'joint_email', 'TEXT DEFAULT ""');
+  addColumn('users', 'joint_phone', 'TEXT DEFAULT ""');
+  addColumn('users', 'joint_dob', 'TEXT DEFAULT ""');
+  addColumn('users', 'joint_relationship', 'TEXT DEFAULT ""');
+
   // Seed Admin User if not exists
   const adminExists = db.prepare("SELECT id FROM users WHERE role = 'admin'").get();
+
   if (!adminExists) {
     console.log('Seeding default admin user...');
     const hashedPassword = bcrypt.hashSync(config.ADMIN_PASSWORD, 12);

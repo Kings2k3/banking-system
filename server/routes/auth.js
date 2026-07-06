@@ -14,7 +14,7 @@ router.use(authLimiter);
 
 // Register
 router.post('/register', validateRegistration, asyncHandler(async (req, res) => {
-  const { email, password, firstName, lastName, phone, dob, accountType } = req.body;
+  const { email, password, firstName, lastName, phone, dob, accountType, jointFirstName, jointLastName, jointEmail, jointPhone, jointDob, jointRelationship } = req.body;
 
   // Check if email exists
   const existingUser = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
@@ -24,7 +24,9 @@ router.post('/register', validateRegistration, asyncHandler(async (req, res) => 
 
   const hashedPassword = await bcrypt.hash(password, 12);
   const accountLabel = accountType === 'business' ? 'Business Checking' : 
-                       accountType === 'student' ? 'Student Checking' : 'Personal Checking';
+                       accountType === 'student' ? 'Student Checking' : 
+                       accountType === 'joint' ? 'Joint Checking' :
+                       accountType === 'savings' ? 'Savings Account' : 'Personal Checking';
 
   // Generate unique account number
   let accountNumber;
@@ -39,9 +41,9 @@ router.post('/register', validateRegistration, asyncHandler(async (req, res) => 
   const createAccount = db.transaction(() => {
     // 1. Create User
     const userResult = db.prepare(`
-      INSERT INTO users (email, password_hash, first_name, last_name, phone, dob, account_type, account_label, account_number)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(email, hashedPassword, firstName, lastName, phone || '', dob || '', accountType, accountLabel, accountNumber);
+      INSERT INTO users (email, password_hash, first_name, last_name, phone, dob, account_type, account_label, account_number, is_joint, joint_first_name, joint_last_name, joint_email, joint_phone, joint_dob, joint_relationship)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(email, hashedPassword, firstName, lastName, phone || '', dob || '', accountType, accountLabel, accountNumber, accountType === 'joint' ? 1 : 0, jointFirstName || '', jointLastName || '', jointEmail || '', jointPhone || '', jointDob || '', jointRelationship || '');
     
     const userId = userResult.lastInsertRowid;
 

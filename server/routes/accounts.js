@@ -16,7 +16,8 @@ router.get('/me', asyncHandler(async (req, res) => {
   const user = db.prepare(`
     SELECT id, email, first_name as firstName, last_name as lastName, 
            account_type as accountType, account_label as accountLabel, 
-           balance, created_at as createdAt 
+           balance, created_at as createdAt,
+           is_joint as isJoint, joint_first_name as jointFirstName, joint_last_name as jointLastName
     FROM users WHERE id = ?
   `).get(userId);
 
@@ -50,7 +51,10 @@ router.get('/me', asyncHandler(async (req, res) => {
         mask: fullAccountNumber.slice(-4),
         balance: user.balance,
         trend: 'Active',
-        currency: 'USD'
+        currency: 'USD',
+        isJoint: !!user.isJoint,
+        jointFirstName: user.jointFirstName,
+        jointLastName: user.jointLastName
       }
     ],
     cards,
