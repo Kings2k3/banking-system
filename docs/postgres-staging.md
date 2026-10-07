@@ -33,3 +33,19 @@ complete.
 The import SQL is exercised against an in-memory PostgreSQL engine in
 `test/postgres-import.test.js`. A provisioned PostgreSQL server is required to validate
 the `pg` client connection and perform an actual staged import.
+
+## Fresh deployment schema
+
+For a new deployment with no existing customer data, run
+`npm run bootstrap:postgres -- <path-to-private-env-file>` after setting a PostgreSQL
+connection string in that file. Set `PG_STAGE_SCHEMA` if a name other than
+`payvexis_app` is needed. The bootstrap creates a disposable SQLite source,
+applies migrations 001 through 006, removes its temporary admin, and uses the
+same reconciled importer to create an empty PostgreSQL schema. It refuses to
+overwrite an existing schema. The source database and its snapshot are removed
+when the command finishes.
+
+Verify with `npm run check:postgres -- <path-to-private-env-file> payvexis_app`.
+The expected fresh state is 31 tables, six migration records, and zero users.
+Keep the private environment file out of Git. This prepares the database only;
+the Express runtime still uses SQLite until its routes and services are ported.

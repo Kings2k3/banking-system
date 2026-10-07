@@ -112,7 +112,11 @@ async function main() {
       }
       await client.query('COMMIT');
       console.log(`PostgreSQL staging import verified: ${schema}; ${tables.length} tables.`);
-      console.log(`SQLite snapshot retained: ${snapshot}`);
+      if (process.env.PG_BOOTSTRAP_FRESH === 'true') {
+        console.log('Temporary SQLite source and snapshot will be removed by fresh bootstrap.');
+      } else {
+        console.log(`SQLite snapshot retained: ${snapshot}`);
+      }
       console.log('The application still uses SQLite; PostgreSQL runtime cutover is not enabled.');
     } catch (error) {
       await client.query('ROLLBACK');

@@ -15,6 +15,7 @@
     "migrate:admin-workspace": "node scripts/migrate-admin-workspace.js",
     "migrate:postgres": "node scripts/migrate-to-postgres.js",
     "check:postgres": "node scripts/check-postgres.js",
+    "bootstrap:postgres": "node scripts/bootstrap-fresh-postgres.js",
     "build:css": "tailwindcss -i ./tailwind/input.css -o ./tailwind/output.css --minify",
     "watch:css": "tailwindcss -i ./tailwind/input.css -o ./tailwind/output.css --watch"
   },
