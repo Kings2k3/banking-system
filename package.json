@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "node --watch server/index.js",
     "start": "node server/index.js",
+    "vercel-build": "node scripts/build-vercel.js",
     "test": "node --test",
     "migrate:ledger": "node scripts/migrate-ledger.js",
     "migrate:admin": "node scripts/migrate-admin-controls.js",

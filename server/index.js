@@ -6,6 +6,7 @@ const config = require('./config');
 const { initDB, db } = require('./database');
 const errorHandler = require('./middleware/errorHandler');
 const { apiLimiter } = require('./middleware/rateLimiter');
+const publicAssets = new Set(require('./public-assets'));
 
 // Initialize database schema
 initDB();
@@ -50,18 +51,6 @@ app.use('/api/support', require('./routes/support'));
 // Only these browser assets may be served from the project root. In particular,
 // server/, docs/, .env, package files and database files are never web assets.
 const projectRoot = path.join(__dirname, '..');
-const publicAssets = new Set([
-  'index.html', 'features.html', 'security.html', 'support.html', 'card.html',
-  'login.html', 'open-account.html', 'verify-email.html', 'recover-account.html',
-  'dashboard.html', 'dashboard-activity.html',
-  'dashboard-cards.html', 'dashboard-support.html', 'dashboard-members.html',
-  'account-invite.html', 'admin.html', 'staff-setup.html',
-  'script.js', 'card.js', 'login.js', 'open-account.js', 'dashboard.js',
-  'dashboard-activity.js', 'dashboard-cards.js', 'dashboard-support.js',
-  'admin.js', 'auth-client.js', 'translate.js', 'staff-setup.js',
-  'verify-email.js', 'recover-account.js', 'account-invite.js', 'dashboard-members.js',
-  'style.css', 'admin.css', 'translate.css', 'tailwind/output.css'
-]);
 app.use((req, res, next) => {
   if (req.method !== 'GET' && req.method !== 'HEAD') return next();
   const asset = req.path === '/' ? 'index.html' : req.path.slice(1);
