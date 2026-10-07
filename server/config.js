@@ -3,15 +3,17 @@ const { createHash } = require('node:crypto');
 dotenv.config();
 
 const isProduction = process.env.NODE_ENV === 'production';
+const useResendSmtp = !!process.env.RESEND_API_KEY && !process.env.SMTP_HOST;
+const smtpHost = process.env.SMTP_HOST || (useResendSmtp ? 'smtp.resend.com' : null);
 const jwtSecret = requireEnv('JWT_SECRET', 'fallback_secret_for_development_only');
 const staffMfaKey = process.env.STAFF_MFA_KEY || (isProduction ? '' :
   createHash('sha256').update(`payvexis-staff-mfa-v1:${jwtSecret}`).digest('hex'));
 if (!/^[a-fA-F0-9]{64}$/.test(staffMfaKey)) {
   throw new Error('STAFF_MFA_KEY must be a separate 32-byte hex key.');
 }
-if (isProduction && (!process.env.SMTP_HOST || !process.env.MAIL_FROM ||
+if (isProduction && (!smtpHost || !process.env.MAIL_FROM ||
     !/^https:\/\//.test(process.env.APP_BASE_URL || ''))) {
-  throw new Error('Production email requires SMTP_HOST, MAIL_FROM, and an HTTPS APP_BASE_URL.');
+  throw new Error('Production email requires SMTP or RESEND_API_KEY, MAIL_FROM, and an HTTPS APP_BASE_URL.');
 }
 
 function requireEnv(name, fallback) {
@@ -27,11 +29,11 @@ module.exports = {
   JWT_SECRET: jwtSecret,
   STAFF_MFA_KEY: staffMfaKey,
   APP_BASE_URL: process.env.APP_BASE_URL || `http://localhost:${process.env.PORT || 3000}`,
-  SMTP_HOST: process.env.SMTP_HOST || null,
-  SMTP_PORT: Number(process.env.SMTP_PORT || 587),
-  SMTP_SECURE: process.env.SMTP_SECURE === 'true',
-  SMTP_USER: process.env.SMTP_USER || null,
-  SMTP_PASS: process.env.SMTP_PASS || null,
+  SMTP_HOST: smtpHost,
+  SMTP_PORT: Number(process.env.SMTP_PORT || (useResendSmtp ? 465 : 587)),
+  SMTP_SECURE: process.env.SMTP_SECURE === undefined ? useResendSmtp : process.env.SMTP_SECURE === 'true',
+  SMTP_USER: process.env.SMTP_USER || (useResendSmtp ? 'resend' : null),
+  SMTP_PASS: process.env.SMTP_PASS || (useResendSmtp ? process.env.RESEND_API_KEY : null),
   MAIL_FROM: process.env.MAIL_FROM || 'Payvexis Demo <no-reply@payvexis.invalid>',
   DB_PATH: process.env.DB_PATH || './server/payvexis.db',
   CORS_ORIGIN: process.env.CORS_ORIGIN || '*',
