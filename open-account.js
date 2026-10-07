@@ -1,3 +1,20 @@
+// --- Dev API Redirect ---
+(function() {
+  const isLocalDev = window.location.hostname === 'localhost' ||
+                      window.location.hostname === '127.0.0.1' ||
+                      window.location.protocol === 'file:';
+  const isWrongPort = window.location.port !== '3000';
+  if (isLocalDev && isWrongPort) {
+    const originalFetch = window.fetch;
+    window.fetch = function(input, init) {
+      if (typeof input === 'string' && input.startsWith('/api')) {
+        input = 'http://localhost:3000' + input;
+      }
+      return originalFetch(input, init);
+    };
+  }
+})();
+
 document.addEventListener('DOMContentLoaded', () => {
   initMobileNav();
   initReveal();

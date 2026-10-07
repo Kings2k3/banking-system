@@ -9,6 +9,7 @@
   <meta name="theme-color" content="#0a0e17">
   <link rel="stylesheet" href="tailwind/output.css">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="translate.css">
   <style>
     .activity-shell {
       min-height: 100vh;
@@ -503,7 +504,7 @@
         <a href="dashboard.html" class="nav-link">Overview</a>
         <a href="dashboard-cards.html" class="nav-link">Cards</a>
         <a href="dashboard-activity.html" class="nav-link" aria-current="page">Activity</a>
-        <a href="support.html" class="nav-link">Support</a>
+        <a href="dashboard-support.html" class="nav-link">Support</a>
       </div>
 
       <div class="navbar-actions">
@@ -535,7 +536,7 @@
     <a href="dashboard.html" class="mobile-nav-link">Overview</a>
     <a href="dashboard-cards.html" class="mobile-nav-link">Cards</a>
     <a href="dashboard-activity.html" class="mobile-nav-link" aria-current="page">Activity</a>
-    <a href="support.html" class="mobile-nav-link">Support</a>
+    <a href="dashboard-support.html" class="mobile-nav-link">Support</a>
     <div class="mobile-nav-actions">
       <a href="dashboard.html" class="nav-login mobile-login-btn justify-center">Dashboard</a>
       <a href="index.html" class="btn-primary justify-center" data-sign-out>Sign Out</a>
@@ -647,7 +648,7 @@
           <section class="sidebar-section">
             <h2 class="sidebar-title">Support</h2>
             <p class="text-sm text-slate-400 leading-relaxed mb-3">Need help with a transaction? Open any item for details or contact support.</p>
-            <a href="support.html" class="btn-secondary justify-center w-full">Contact Support</a>
+            <a href="dashboard-support.html" class="btn-secondary justify-center w-full">Contact Support</a>
           </section>
         </aside>
       </div>
@@ -672,13 +673,15 @@
       <div id="transaction-detail-lines"></div>
 
       <div class="flex flex-col sm:flex-row gap-3 mt-5">
-        <a href="support.html" class="btn-primary justify-center flex-1">Report Issue</a>
+        <a href="dashboard-support.html" class="btn-primary justify-center flex-1">Report Issue</a>
         <button class="btn-secondary justify-center flex-1" type="button" data-modal-close>Close</button>
       </div>
     </div>
   </div>
 
+  <script src="auth-client.js"></script>
   <script src="dashboard-activity.js"></script>
+  <script src="translate.js"></script>
 </body>
 
 </html>

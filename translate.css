@@ -1,0 +1,311 @@
+/* ============================================================
+   TRANSLATE — Custom Language Selector & Google Translate Overrides
+   ============================================================ */
+
+/* ---- Hide default Google Translate elements ---- */
+.goog-te-banner-frame,
+#goog-gt-tt,
+.goog-te-balloon-frame,
+.goog-tooltip,
+.goog-tooltip:hover,
+.goog-text-highlight {
+  display: none !important;
+}
+
+body {
+  top: 0 !important;
+}
+
+.skiptranslate {
+  display: none !important;
+}
+
+/* Prevent Google from altering body position */
+html.translated-ltr body,
+html.translated-rtl body {
+  margin-top: 0 !important;
+  top: 0 !important;
+}
+
+/* Fix font issues Google Translate sometimes introduces */
+.goog-te-gadget {
+  font-size: 0 !important;
+}
+
+/* ---- Language Selector Button ---- */
+.translate-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.translate-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #cbd5e1;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+
+.translate-btn:hover {
+  border-color: rgba(34, 211, 238, 0.35);
+  background: rgba(34, 211, 238, 0.08);
+  color: #e2e8f0;
+}
+
+.translate-btn:focus-visible {
+  outline: 2px solid rgba(34, 211, 238, 0.5);
+  outline-offset: 2px;
+}
+
+.translate-btn .globe-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  opacity: 0.75;
+  transition: opacity 0.2s;
+}
+
+.translate-btn:hover .globe-icon {
+  opacity: 1;
+}
+
+.translate-btn .lang-label {
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.translate-btn .chevron-icon {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  opacity: 0.5;
+  transition: transform 0.25s ease, opacity 0.2s;
+}
+
+.translate-wrapper.open .translate-btn .chevron-icon {
+  transform: rotate(180deg);
+  opacity: 0.8;
+}
+
+/* ---- Dropdown Panel ---- */
+.translate-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 220px;
+  max-height: 360px;
+  overflow-y: auto;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(15, 20, 35, 0.95);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  padding: 0.5rem;
+  z-index: 9999;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px) scale(0.97);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.translate-wrapper.open .translate-dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+/* Scrollbar inside dropdown */
+.translate-dropdown::-webkit-scrollbar {
+  width: 4px;
+}
+
+.translate-dropdown::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.translate-dropdown::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+}
+
+/* ---- Search Input ---- */
+.translate-search {
+  width: 100%;
+  padding: 0.55rem 0.75rem 0.55rem 2.2rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: #e2e8f0;
+  font-size: 0.78rem;
+  margin-bottom: 0.4rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.translate-search::placeholder {
+  color: rgba(148, 163, 184, 0.6);
+}
+
+.translate-search:focus {
+  border-color: rgba(34, 211, 238, 0.3);
+}
+
+.translate-search-wrap {
+  position: relative;
+}
+
+.translate-search-wrap .search-icon {
+  position: absolute;
+  left: 0.7rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 14px;
+  height: 14px;
+  color: rgba(148, 163, 184, 0.5);
+  pointer-events: none;
+  margin-top: -0.2rem;
+}
+
+/* ---- Section Label ---- */
+.translate-section-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(148, 163, 184, 0.5);
+  padding: 0.45rem 0.6rem 0.25rem;
+}
+
+/* ---- Language Option ---- */
+.translate-option {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: #cbd5e1;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  width: 100%;
+  text-align: left;
+}
+
+.translate-option:hover {
+  background: rgba(34, 211, 238, 0.08);
+  color: #f1f5f9;
+}
+
+.translate-option.active {
+  background: rgba(34, 211, 238, 0.12);
+  color: #22d3ee;
+}
+
+.translate-option .lang-flag {
+  font-size: 1.1rem;
+  width: 22px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.translate-option .lang-name {
+  flex: 1;
+  min-width: 0;
+}
+
+.translate-option .check-icon {
+  width: 14px;
+  height: 14px;
+  opacity: 0;
+  color: #22d3ee;
+  flex-shrink: 0;
+  transition: opacity 0.15s;
+}
+
+.translate-option.active .check-icon {
+  opacity: 1;
+}
+
+/* ---- Divider ---- */
+.translate-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 0.35rem 0.4rem;
+}
+
+/* ---- Detected Badge ---- */
+.translate-detected-badge {
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(34, 211, 238, 0.7);
+  background: rgba(34, 211, 238, 0.08);
+  padding: 0.15rem 0.4rem;
+  border-radius: 6px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* ---- Mobile Responsive ---- */
+@media (max-width: 639px) {
+  .translate-btn .lang-label {
+    display: none;
+  }
+
+  .translate-btn {
+    padding: 0.45rem 0.55rem;
+    gap: 0;
+  }
+
+  .translate-btn .chevron-icon {
+    display: none;
+  }
+
+  .translate-dropdown {
+    right: -8px;
+    width: 200px;
+  }
+}
+
+/* ---- Admin theme adjustment ---- */
+.admin-theme .translate-btn:hover {
+  border-color: rgba(245, 158, 11, 0.35);
+  background: rgba(245, 158, 11, 0.08);
+}
+
+.admin-theme .translate-option:hover {
+  background: rgba(245, 158, 11, 0.08);
+}
+
+.admin-theme .translate-option.active {
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+}
+
+.admin-theme .translate-option.active .check-icon {
+  color: #f59e0b;
+}
+
+.admin-theme .translate-detected-badge {
+  color: rgba(245, 158, 11, 0.7);
+  background: rgba(245, 158, 11, 0.08);
+}

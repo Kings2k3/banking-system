@@ -11,6 +11,13 @@ const auth = (req, res, next) => {
 
     const token = authHeader.split(' ')[1];
     const decoded = jwt.verify(token, config.JWT_SECRET);
+    if (!decoded.jti) {
+      return res.status(401).json({ error: 'Session expired. Please log in again.' });
+    }
+    const session = db.prepare('SELECT user_id, expires_at, revoked_at FROM auth_sessions WHERE id = ?').get(decoded.jti);
+    if (!session || session.user_id !== decoded.id || session.revoked_at || Date.parse(session.expires_at) <= Date.now()) {
+      return res.status(401).json({ error: 'Session expired. Please log in again.' });
+    }
     
     // Check if user still exists and is not suspended
     const user = db.prepare('SELECT id, email, role, suspended FROM users WHERE id = ?').get(decoded.id);
@@ -29,6 +36,7 @@ const auth = (req, res, next) => {
       email: user.email,
       role: user.role
     };
+    req.sessionId = decoded.jti;
 
     next();
   } catch (err) {

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Accept staff invitation | Payvexis</title>
+  <link rel="stylesheet" href="tailwind/output.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-5">
+  <main class="w-full max-w-md rounded-2xl border border-white/10 bg-slate-900 p-6 shadow-xl">
+    <a href="index.html" class="text-sm text-emerald-300">Payvexis</a>
+    <h1 class="text-2xl font-bold mt-4 mb-2">Accept staff invitation</h1>
+    <p class="text-sm text-slate-400 mb-5">Enter the one-time code supplied by your administrator. Codes expire after 24 hours.</p>
+    <form id="staff-setup-form" class="space-y-4">
+      <label class="block text-sm">Invitation code
+        <input id="invitation-code" class="dashboard-input w-full mt-1" type="text" autocomplete="off" required>
+      </label>
+      <label class="block text-sm">First name
+        <input id="first-name" class="dashboard-input w-full mt-1" type="text" maxlength="80" autocomplete="given-name" required>
+      </label>
+      <label class="block text-sm">Last name
+        <input id="last-name" class="dashboard-input w-full mt-1" type="text" maxlength="80" autocomplete="family-name" required>
+      </label>
+      <label class="block text-sm">Password
+        <input id="password" class="dashboard-input w-full mt-1" type="password" minlength="12" autocomplete="new-password" required>
+      </label>
+      <p id="staff-setup-message" class="text-sm" role="status"></p>
+      <button id="staff-setup-submit" class="btn-primary w-full justify-center" type="submit">Create staff account</button>
+    </form>
+    <a href="login.html" class="block text-sm text-slate-400 mt-5">Already accepted? Sign in</a>
+  </main>
+  <script src="staff-setup.js"></script>
+</body>
+</html>

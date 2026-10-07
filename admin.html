@@ -8,67 +8,121 @@
   <link rel="stylesheet" href="tailwind/output.css">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="admin.css">
+  <link rel="stylesheet" href="translate.css">
 </head>
 
-<body class="admin-theme text-slate-100 font-sans min-h-screen flex flex-col">
+<body class="admin-theme text-slate-100 font-sans min-h-screen flex flex-col lg:flex-row">
 
-  <!-- Navbar -->
-  <nav id="navbar" class="navbar border-b border-white/5">
-    <div class="container-app navbar-shell">
-      <a href="admin.html" class="flex items-center gap-2.5 no-underline">
-        <div class="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center">
-          <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <!-- Mobile Header -->
+  <div class="mobile-header">
+    <a href="admin.html" class="flex items-center gap-2.5 no-underline">
+      <div class="w-8 h-8 rounded-lg bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center">
+        <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+        </svg>
+      </div>
+      <span class="text-sm font-bold brand-wordmark text-white">Payvexis Admin</span>
+    </a>
+    <button id="sidebar-toggle" class="p-2 rounded-lg bg-white/5 border border-white/10 text-slate-300 hover:text-white" aria-label="Open sidebar">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Sidebar -->
+  <aside id="admin-sidebar" class="admin-sidebar">
+    <!-- Brand -->
+    <div class="h-24 flex items-center justify-between px-6 border-b border-white/5">
+      <a href="admin.html" class="flex items-center gap-3 no-underline">
+        <div class="w-10 h-10 rounded-xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center">
+          <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
           </svg>
         </div>
-        <span class="text-lg font-bold brand-wordmark">Payvexis Admin</span>
+        <span class="text-lg font-bold brand-wordmark text-white">Payvexis Admin</span>
       </a>
-      <div class="navbar-actions">
-        <button id="admin-logout" class="btn-primary text-sm py-2 px-4">Sign Out</button>
+      <button id="sidebar-close" class="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5" aria-label="Close sidebar">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Navigation Menu -->
+    <div class="flex-grow p-4 mt-4">
+      <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4 px-3">Dashboard</p>
+      <div class="space-y-2">
+        <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-indigo-500/10 text-indigo-400 font-medium border border-indigo-500/20 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+          User Management
+        </a>
+        <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-white/5 hover:text-slate-200 font-medium transition-colors cursor-not-allowed opacity-50" title="Coming soon">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+          Settings
+        </a>
       </div>
     </div>
-  </nav>
 
-  <main class="flex-grow pt-24 pb-12 container-app">
+    <!-- Bottom Actions -->
+    <div class="p-4 border-t border-white/5">
+      <button id="admin-logout" class="w-full btn-primary text-sm py-2.5 px-4 flex justify-center items-center gap-2">
+        Sign Out
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Sidebar Overlay backdrop -->
+  <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+  <main class="admin-main">
     <!-- Stats Row -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-      <div class="glass p-5 rounded-xl border border-white/5">
-        <p class="text-xs text-slate-400 uppercase tracking-wider mb-1">Total Users</p>
-        <p id="stat-users" class="text-3xl font-bold">0</p>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
+      <div class="glass-card p-6">
+        <p class="text-xs text-indigo-300 uppercase tracking-wider mb-2 font-semibold">Total Users</p>
+        <p id="stat-users" class="text-4xl font-bold text-white">0</p>
       </div>
-      <div class="glass p-5 rounded-xl border border-white/5">
-        <p class="text-xs text-slate-400 uppercase tracking-wider mb-1">Total Balance</p>
-        <p id="stat-balance" class="text-3xl font-bold">$0.00</p>
+      <div class="glass-card p-6">
+        <p class="text-xs text-indigo-300 uppercase tracking-wider mb-2 font-semibold">Total Balance</p>
+        <p id="stat-balance" class="text-4xl font-bold text-emerald-400">$0.00</p>
       </div>
-      <div class="glass p-5 rounded-xl border border-white/5">
-        <p class="text-xs text-slate-400 uppercase tracking-wider mb-1">Transactions</p>
-        <p id="stat-txs" class="text-3xl font-bold">0</p>
+      <div class="glass-card p-6">
+        <p class="text-xs text-indigo-300 uppercase tracking-wider mb-2 font-semibold">Transactions</p>
+        <p id="stat-txs" class="text-4xl font-bold text-white">0</p>
       </div>
-      <div class="glass p-5 rounded-xl border border-white/5">
-        <p class="text-xs text-slate-400 uppercase tracking-wider mb-1">Suspended</p>
-        <p id="stat-suspended" class="text-3xl font-bold text-red-400">0</p>
+      <div class="glass-card p-6">
+        <p class="text-xs text-indigo-300 uppercase tracking-wider mb-2 font-semibold">Suspended</p>
+        <p id="stat-suspended" class="text-4xl font-bold text-red-400">0</p>
       </div>
     </div>
 
     <!-- Tabs -->
-    <div class="flex border-b border-white/10 mb-6 overflow-x-auto">
-      <button class="admin-tab active" data-target="users-panel">Users</button>
-      <button class="admin-tab" data-target="audit-panel">Audit Log</button>
+    <div class="flex mb-8 overflow-x-auto pb-2">
+      <div class="admin-tab-group">
+        <button class="admin-tab active" data-target="users-panel" data-permission="users.read">Users</button>
+        <button class="admin-tab" data-target="ledger-panel" data-permission="ledger.read">Ledger</button>
+        <button class="admin-tab" data-target="adjustments-panel" data-permission="adjustments.read">Adjustments</button>
+        <button class="admin-tab" data-target="operations-panel" data-permission="operations.read">Operations</button>
+        <button class="admin-tab" data-target="staff-panel" data-permission="staff.manage">Staff</button>
+        <button class="admin-tab" data-target="audit-panel" data-permission="audit.read">Audit Log</button>
+      </div>
     </div>
 
     <!-- Users Panel -->
     <div id="users-panel" class="panel active">
       <div class="flex flex-col md:flex-row gap-4 mb-6">
         <input type="text" id="user-search"
-          class="glass px-4 py-2 rounded-lg text-sm flex-grow outline-none focus:border-amber-500/50"
+          class="admin-input px-4 py-2.5 rounded-lg text-sm flex-grow w-full"
           placeholder="Search by email, name, account...">
-        <select id="user-status-filter" class="glass px-4 py-2 rounded-lg text-sm outline-none">
+        <select id="user-status-filter" class="admin-input px-4 py-2.5 rounded-lg text-sm">
           <option value="all">All Status</option>
           <option value="active">Active</option>
           <option value="suspended">Suspended</option>
         </select>
-        <select id="user-sort" class="glass px-4 py-2 rounded-lg text-sm outline-none">
+        <select id="user-sort" class="admin-input px-4 py-2.5 rounded-lg text-sm">
           <option value="created_at_desc">Newest First</option>
           <option value="created_at_asc">Oldest First</option>
           <option value="balance_desc">Highest Balance</option>
@@ -105,6 +159,103 @@
       </div>
     </div>
 
+    <div id="ledger-panel" class="panel hidden">
+      <div class="flex justify-between items-center mb-4">
+        <p class="text-sm text-slate-400">Posted opening balances and internal transfers</p>
+        <button id="refresh-ledger" class="btn-secondary text-sm px-4 py-2" type="button">Refresh</button>
+      </div>
+      <div class="glass p-4 rounded-xl border border-white/5 admin-table-container">
+        <table class="admin-table">
+          <thead><tr><th>Reference</th><th>Type</th><th>Postings</th><th>Time</th></tr></thead>
+          <tbody id="ledger-table-body"><tr><td colspan="4" class="text-slate-400">Open this tab to load journals.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="adjustments-panel" class="panel hidden">
+      <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
+        <p class="text-sm text-slate-400">Demo corrections need a decision by a different authorized staff member. No external funds are created.</p>
+        <select id="adjustment-status-filter" class="admin-input px-3 py-2 rounded-lg text-sm">
+          <option value="pending">Pending</option>
+          <option value="approved">Approved</option>
+          <option value="rejected">Rejected</option>
+          <option value="all">All</option>
+        </select>
+      </div>
+      <div class="glass p-4 rounded-xl border border-white/5 admin-table-container">
+        <table class="admin-table">
+          <thead><tr><th>Customer</th><th>Change</th><th>Reason</th><th>Proposed by</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="adjustments-table-body"><tr><td colspan="6" class="text-slate-400">Open this tab to load proposals.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="operations-panel" class="panel hidden">
+      <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
+        <p class="text-sm text-slate-400">Review existing demo transfers and adjustments. Investigation status does not move money or replace customer signatures.</p>
+        <div class="flex gap-2">
+          <select id="operation-type-filter" class="admin-input px-3 py-2 rounded-lg text-sm" aria-label="Operation type">
+            <option value="all">All types</option>
+            <option value="shared_transfer">Shared transfers</option>
+            <option value="adjustment">Adjustments</option>
+          </select>
+          <select id="operation-status-filter" class="admin-input px-3 py-2 rounded-lg text-sm" aria-label="Financial status">
+            <option value="all">All statuses</option>
+            <option value="pending">Pending</option>
+            <option value="posted">Posted</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+            <option value="expired">Expired</option>
+          </select>
+        </div>
+      </div>
+      <div class="glass p-4 rounded-xl border border-white/5 admin-table-container">
+        <table class="admin-table">
+          <thead><tr><th>Customer</th><th>Operation</th><th>Amount</th><th>Financial status</th><th>Review</th><th>Actions</th></tr></thead>
+          <tbody id="operations-table-body"><tr><td colspan="6" class="text-slate-400">Open this tab to load operations.</td></tr></tbody>
+        </table>
+        <div class="pagination">
+          <span id="operation-page-info" class="text-sm text-slate-400">Showing 0-0 of 0</span>
+          <div class="pagination-controls">
+            <button id="operation-prev-page" class="page-btn" type="button" disabled>&lt;</button>
+            <button id="operation-next-page" class="page-btn" type="button" disabled>&gt;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="staff-panel" class="panel hidden">
+      <div class="glass p-5 rounded-xl border border-white/5 mb-5">
+        <h2 class="font-bold text-lg mb-2">Invite staff</h2>
+        <p class="text-sm text-slate-400 mb-4">Give the one-time code to the invited person through your own secure channel. It expires in 24 hours.</p>
+        <form id="staff-invite-form" class="flex flex-wrap gap-3 items-end">
+          <label class="text-sm">Email
+            <input id="staff-invite-email" class="admin-input block px-3 py-2 rounded-lg" type="email" required>
+          </label>
+          <label class="text-sm">Role
+            <select id="staff-invite-role" class="admin-input block px-3 py-2 rounded-lg">
+              <option value="finance_operator">Finance operator</option>
+              <option value="finance_approver">Finance approver</option>
+              <option value="support">Support</option>
+              <option value="auditor">Auditor</option>
+            </select>
+          </label>
+          <button type="submit" class="btn-primary px-4 py-2">Create invitation</button>
+        </form>
+        <p id="staff-invite-message" class="text-sm mt-3"></p>
+        <label id="staff-invite-code-wrap" class="text-sm hidden mt-3">One-time code
+          <input id="staff-invite-code" class="admin-input block w-full px-3 py-2 rounded-lg font-mono" readonly>
+        </label>
+        <p class="text-xs text-slate-400 mt-2">Setup page: <a href="staff-setup.html">staff-setup.html</a></p>
+      </div>
+      <div class="glass p-4 rounded-xl border border-white/5 admin-table-container">
+        <table class="admin-table">
+          <thead><tr><th>Staff member</th><th>Role</th><th>Access</th><th>Actions</th></tr></thead>
+          <tbody id="staff-table-body"><tr><td colspan="4" class="text-slate-400">Open this tab to load staff.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
     <!-- Audit Log Panel -->
     <div id="audit-panel" class="panel hidden">
       <div class="glass p-4 rounded-xl border border-white/5 admin-table-container">
@@ -138,49 +289,67 @@
 
   <!-- Modals -->
   <!-- User Detail Modal -->
-  <div id="user-detail-modal" class="admin-modal hidden">
-    <div class="admin-modal-panel p-6">
+  <div id="user-detail-modal" class="admin-modal">
+    <div class="admin-modal-panel admin-workspace-panel p-8">
       <div class="flex justify-between items-start mb-6">
-        <h2 class="text-xl font-bold">User Details</h2>
-        <button class="modal-close p-2 text-slate-400 hover:text-white">&times;</button>
+        <h2 class="text-2xl font-bold">User Details</h2>
+        <button class="modal-close p-2 text-slate-400 hover:text-white transition-colors">&times;</button>
       </div>
       <div id="user-detail-content">Loading...</div>
     </div>
   </div>
 
-  <!-- Adjust Balance Modal -->
-  <div id="adjust-modal" class="admin-modal hidden">
-    <div class="admin-modal-panel p-6 max-w-md">
-      <h2 class="text-xl font-bold mb-4">Adjust Balance</h2>
+  <div id="operation-detail-modal" class="admin-modal">
+    <div class="admin-modal-panel p-8">
+      <div class="flex justify-between items-start mb-6">
+        <h2 class="text-2xl font-bold">Operation review</h2>
+        <button class="modal-close p-2 text-slate-400 hover:text-white transition-colors" type="button">&times;</button>
+      </div>
+      <div id="operation-detail-content">Loading...</div>
+    </div>
+  </div>
+
+  <!-- Balance adjustment modal, enabled with the approved ledger workflow -->
+  <div id="adjust-modal" class="admin-modal">
+    <div class="admin-modal-panel p-8 max-w-md">
+      <h2 class="text-2xl font-bold mb-2">Propose demo balance adjustment</h2>
+      <p class="text-sm text-slate-400 mb-5">A second authorized staff member must approve before the demo balance changes.</p>
       <form id="adjust-form">
         <input type="hidden" id="adjust-user-id">
-        <div class="mb-4">
-          <label class="block text-xs uppercase text-slate-400 mb-1">Type</label>
-          <select id="adjust-type" class="glass w-full px-3 py-2 rounded border border-white/10 outline-none">
+        <div class="mb-5">
+          <label class="block text-xs uppercase text-slate-400 mb-2 font-semibold">Type</label>
+          <select id="adjust-type" class="admin-input w-full px-4 py-2.5 rounded-lg">
             <option value="credit">Credit (Add Funds)</option>
             <option value="debit">Debit (Remove Funds)</option>
           </select>
         </div>
-        <div class="mb-4">
-          <label class="block text-xs uppercase text-slate-400 mb-1">Amount</label>
+        <div class="mb-5">
+          <label class="block text-xs uppercase text-slate-400 mb-2 font-semibold">Amount</label>
           <input type="number" id="adjust-amount" step="0.01" min="0.01" required
-            class="glass w-full px-3 py-2 rounded border border-white/10 outline-none" placeholder="0.00">
+            class="admin-input w-full px-4 py-2.5 rounded-lg" placeholder="0.00">
         </div>
-        <div class="mb-6">
-          <label class="block text-xs uppercase text-slate-400 mb-1">Reason (required)</label>
-          <input type="text" id="adjust-reason" required
-            class="glass w-full px-3 py-2 rounded border border-white/10 outline-none"
+        <div class="mb-5">
+          <label class="block text-xs uppercase text-slate-400 mb-2 font-semibold">Display description (optional)</label>
+          <input type="text" id="adjust-sender" maxlength="120"
+            class="admin-input w-full px-4 py-2.5 rounded-lg" placeholder="Shown in customer activity">
+        </div>
+        <div class="mb-8">
+          <label class="block text-xs uppercase text-slate-400 mb-2 font-semibold">Reason (required)</label>
+          <input type="text" id="adjust-reason" required minlength="10" maxlength="500"
+            class="admin-input w-full px-4 py-2.5 rounded-lg"
             placeholder="e.g. Refund, Bonus, Correction">
         </div>
         <div class="flex gap-3">
           <button type="button" class="btn-secondary flex-1 modal-close">Cancel</button>
-          <button type="submit" class="btn-primary flex-1">Confirm</button>
+          <button type="submit" class="btn-primary flex-1">Submit proposal</button>
         </div>
       </form>
     </div>
   </div>
 
+  <script src="auth-client.js"></script>
   <script src="admin.js"></script>
+  <script src="translate.js"></script>
 </body>
 
 </html>

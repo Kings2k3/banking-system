@@ -1,3 +1,20 @@
+// --- Dev API Redirect ---
+(function() {
+  const isLocalDev = window.location.hostname === 'localhost' ||
+                      window.location.hostname === '127.0.0.1' ||
+                      window.location.protocol === 'file:';
+  const isWrongPort = window.location.port !== '3000';
+  if (isLocalDev && isWrongPort) {
+    const originalFetch = window.fetch;
+    window.fetch = function(input, init) {
+      if (typeof input === 'string' && input.startsWith('/api')) {
+        input = 'http://localhost:3000' + input;
+      }
+      return originalFetch(input, init);
+    };
+  }
+})();
+
 const activityState = {
   currentUser: null,
   transactions: [],
@@ -11,7 +28,6 @@ const activityState = {
 document.addEventListener('DOMContentLoaded', () => {
   initMobileNav();
   initNavbarScroll();
-  initSignOut();
   initActivityPage();
 });
 
@@ -52,14 +68,6 @@ function initNavbarScroll() {
   }, { passive: true });
 }
 
-function initSignOut() {
-  document.querySelectorAll('[data-sign-out]').forEach(link => {
-    link.addEventListener('click', () => {
-      localStorage.removeItem('payvexisCurrentUser');
-    });
-  });
-}
-
 async function initActivityPage() {
   const token = localStorage.getItem('payvexisToken');
   if (!token) {
@@ -78,9 +86,9 @@ async function initActivityPage() {
     const txRes = await fetch('/api/transactions', { headers: { 'Authorization': `Bearer ${token}` } });
     if (!txRes.ok) throw new Error();
     const txData = await txRes.json();
-    
+
     activityState.transactions = txData.transactions.map((tx, idx) => normalizeTransaction(tx, idx));
-    
+
     initActivityEvents();
     populateCategoryFilter();
     renderActivityPage();
@@ -181,16 +189,26 @@ function readTransactions() { return activityState.transactions; }
 
 function normalizeTransaction(transaction, index) {
   const amount = Number(transaction.amount) || 0;
-  const type = transaction.type === 'income' || amount > 0 ? 'income' : 'spend';
+  const type = transaction.type === 'income' ? 'income' : 'spend';
   const dateValue = getTransactionDate(transaction);
+
+  let category = transaction.category || (type === 'income' ? 'Income' : 'General');
+  let merchant = transaction.merchant || (type === 'income' ? 'Deposit' : 'Payment');
+
+  if (category === 'Admin Adjustment' || (transaction.reference && transaction.reference.startsWith('ADM'))) {
+    category = type === 'income' ? 'Deposit' : 'Withdrawal';
+  }
+  else {}
+
+
   return {
-    id: transaction.id || `txn-${index}-${Math.abs(amount)}-${String(transaction.merchant || 'item').slice(0, 8)}`,
-    merchant: cleanText(transaction.merchant || (type === 'income' ? 'Deposit' : 'Payment'), 80),
-    category: cleanText(transaction.category || (type === 'income' ? 'Income' : 'General'), 40),
+    id: transaction.id || `txn-${index}-${Math.abs(amount)}-${String(merchant).slice(0, 8)}`,
+    merchant: cleanText(merchant, 80),
+    category: cleanText(category, 40),
     amount,
     type,
     account: cleanText(transaction.account || activityState.currentUser.accountLabel || 'Account', 60),
-    date: cleanText(transaction.date || formatDisplayDate(dateValue), 40),
+    date: dateValue ? formatDisplayDate(dateValue) : 'Unknown date',
     createdAt: dateValue ? dateValue.toISOString() : '',
     reference: transaction.reference || makeReference(index),
     status: transaction.status || 'Completed',
@@ -418,11 +436,14 @@ function downloadText(filename, content, type) {
 }
 
 function getTransactionDate(transaction) {
-  if (transaction.createdAt) {
-    const created = new Date(transaction.createdAt);
+  const raw = transaction.createdAt || transaction.date || transaction.created_at;
+  if (raw) {
+    const timestamp = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(raw)
+      ? `${raw.replace(' ', 'T')}Z` : raw;
+    const created = new Date(timestamp);
     if (!Number.isNaN(created.getTime())) return created;
   }
-  return new Date();
+  return null;
 }
 
 function daysBetween(date, now) {

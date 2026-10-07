@@ -12,3 +12,5 @@ node_modules/
 *.db
 *.db-shm
 *.db-wal
+backups/
+dev-mailbox/

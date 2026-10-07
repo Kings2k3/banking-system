@@ -18,7 +18,25 @@ const authLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+const mfaLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30,
+  message: { error: 'Too many authenticator attempts from this IP. Try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const emailActionLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { error: 'Too many email requests. Try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 module.exports = {
   apiLimiter,
-  authLimiter
+  authLimiter,
+  mfaLimiter,
+  emailActionLimiter
 };

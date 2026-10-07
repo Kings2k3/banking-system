@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Account recovery · Payvexis</title>
+  <link rel="stylesheet" href="tailwind/output.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-6">
+  <main class="glass-card max-w-md w-full p-8 rounded-2xl">
+    <a href="index.html" class="text-accent font-bold">Payvexis</a>
+    <h1 class="text-2xl font-bold mt-5">Account recovery</h1>
+    <p class="text-sm text-slate-400 mt-2">Demo prototype. Use only a demo account.</p>
+    <p id="recovery-message" class="text-slate-300 mt-4" role="status"></p>
+    <form id="recovery-request" class="mt-5 space-y-4">
+      <label for="recovery-email" class="block text-sm">Account email</label>
+      <input id="recovery-email" type="email" autocomplete="email" required
+        class="dashboard-input w-full" placeholder="you@example.com">
+      <button type="submit" class="btn-primary w-full justify-center">Send recovery link</button>
+    </form>
+    <form id="recovery-complete" class="hidden mt-5 space-y-4">
+      <label for="recovery-password" class="block text-sm">New password (12 characters minimum)</label>
+      <input id="recovery-password" type="password" autocomplete="new-password" minlength="12" maxlength="128"
+        required class="dashboard-input w-full">
+      <button type="submit" class="btn-primary w-full justify-center">Reset password</button>
+    </form>
+    <a href="login.html" class="text-accent text-sm inline-block mt-6">Return to sign in</a>
+  </main>
+  <script src="recover-account.js"></script>
+</body>
+</html>

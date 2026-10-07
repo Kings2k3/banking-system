@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Members and approvals · Payvexis</title>
+  <link rel="stylesheet" href="tailwind/output.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="dashboard-shell text-slate-100 min-h-screen">
+  <header class="container-app py-6 flex items-center justify-between gap-4">
+    <a href="dashboard.html" class="text-accent font-bold text-xl">Payvexis</a>
+    <a href="dashboard.html" class="btn-secondary">Back to dashboard</a>
+  </header>
+  <main class="container-app pb-16 max-w-4xl">
+    <h1 class="text-3xl font-bold">Members and approvals</h1>
+    <p class="text-slate-400 mt-2">Shared membership and two-person internal transfers are demo features. Pending transfers do not reserve funds.</p>
+    <p id="members-message" class="mt-4 text-sm text-accent" role="status"></p>
+    <section id="email-verification" class="glass-card p-5 mt-6 hidden">
+      <h2 class="text-xl font-bold">Verify your email</h2>
+      <p class="text-sm text-slate-400 mt-2">Verification is required to invite members or sign a shared transfer.</p>
+      <button id="resend-verification" type="button" class="btn-secondary mt-4">Send verification email</button>
+    </section>
+    <section class="glass-card p-5 mt-6">
+      <h2 class="text-xl font-bold">Your accounts</h2>
+      <div id="member-accounts" class="mt-4 space-y-5"></div>
+    </section>
+    <section class="glass-card p-5 mt-6">
+      <h2 class="text-xl font-bold">Transfer approvals</h2>
+      <div id="transfer-approvals" class="mt-4 space-y-4"></div>
+    </section>
+  </main>
+  <script src="dashboard-members.js"></script>
+</body>
+</html>

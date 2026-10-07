@@ -5,11 +5,19 @@
   "scripts": {
     "dev": "node --watch server/index.js",
     "start": "node server/index.js",
+    "test": "node --test",
+    "migrate:ledger": "node scripts/migrate-ledger.js",
+    "migrate:admin": "node scripts/migrate-admin-controls.js",
+    "migrate:identity": "node scripts/migrate-identity-ownership.js",
+    "migrate:customer-identity": "node scripts/migrate-customer-identity.js",
+    "migrate:shared": "node scripts/migrate-shared-accounts.js",
+    "migrate:admin-workspace": "node scripts/migrate-admin-workspace.js",
+    "migrate:postgres": "node scripts/migrate-to-postgres.js",
     "build:css": "tailwindcss -i ./tailwind/input.css -o ./tailwind/output.css --minify",
     "watch:css": "tailwindcss -i ./tailwind/input.css -o ./tailwind/output.css --watch"
   },
   "dependencies": {
-    "bcrypt": "^5.1.1",
+    "bcrypt": "^6.0.0",
     "better-sqlite3": "^11.5.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
@@ -17,9 +25,12 @@
     "express-rate-limit": "^7.4.1",
     "express-validator": "^7.2.0",
     "helmet": "^8.0.0",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^10.0.15",
+    "pg": "^8.23.1"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
     "tailwindcss": "3.4.17"
   }
 }

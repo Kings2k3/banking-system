@@ -5,10 +5,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Payvexis Dashboard - Account Overview</title>
-  <meta name="description" content="Payvexis account dashboard with balances, cards, recent activity, alerts, and quick banking actions.">
+  <meta name="description"
+    content="Payvexis account dashboard with balances, cards, recent activity, alerts, and quick banking actions.">
   <meta name="theme-color" content="#0a0e17">
   <link rel="stylesheet" href="tailwind/output.css">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="translate.css">
   <style>
     .dashboard-shell {
       min-height: 100vh;
@@ -361,20 +363,24 @@
       <div class="navbar-desktop hidden lg:flex items-center gap-8">
         <a href="dashboard.html" class="nav-link" aria-current="page">Overview</a>
         <a href="dashboard-cards.html" class="nav-link">Cards</a>
+        <a href="dashboard-members.html" class="nav-link">Members &amp; approvals</a>
         <a href="dashboard-activity.html" class="nav-link">Activity</a>
-        <a href="support.html" class="nav-link">Support</a>
+        <a href="dashboard-support.html" class="nav-link">Support</a>
       </div>
 
       <div class="navbar-actions">
         <button id="balance-toggle" class="nav-login hidden sm:inline-flex" type="button">Hide Balance</button>
-        <a href="index.html" class="btn-primary hidden lg:inline-flex text-sm py-2.5 px-5">
+        <a href="index.html" data-sign-out class="btn-primary hidden lg:inline-flex text-sm py-2.5 px-5">
           Sign Out
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6A2.25 2.25 0 005.25 5.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3-3H9m9.75 0l-3-3m3 3l-3 3" />
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+            aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6A2.25 2.25 0 005.25 5.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3-3H9m9.75 0l-3-3m3 3l-3 3" />
           </svg>
         </a>
         <button id="nav-toggle" class="lg:hidden p-2.5 rounded-xl glass" aria-label="Open menu">
-          <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+          <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+            aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
@@ -386,7 +392,8 @@
     <div class="flex justify-between items-center mb-10">
       <span class="text-lg font-bold text-accent brand-wordmark">Payvexis</span>
       <button id="nav-close" class="p-2.5 rounded-xl glass" aria-label="Close menu">
-        <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+        <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+          aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
@@ -394,11 +401,12 @@
     <a href="dashboard.html" class="mobile-nav-link" aria-current="page">Overview</a>
     <a href="#accounts" class="mobile-nav-link">Accounts</a>
     <a href="dashboard-cards.html" class="mobile-nav-link">Cards</a>
+    <a href="dashboard-members.html" class="mobile-nav-link">Members &amp; approvals</a>
     <a href="dashboard-activity.html" class="mobile-nav-link">Activity</a>
-    <a href="support.html" class="mobile-nav-link">Support</a>
+    <a href="dashboard-support.html" class="mobile-nav-link">Support</a>
     <div class="mobile-nav-actions">
       <button id="mobile-balance-toggle" class="nav-login mobile-login-btn" type="button">Hide Balance</button>
-      <a href="index.html" class="btn-primary justify-center">Sign Out</a>
+      <a href="index.html" data-sign-out class="btn-primary justify-center">Sign Out</a>
     </div>
   </div>
 
@@ -416,8 +424,10 @@
             <span class="w-2 h-2 rounded-full bg-accent inline-block animate-pulse"></span>
             Account Overview
           </div>
-          <h1 class="text-3xl md:text-4xl font-bold leading-tight mb-3">Welcome back, <span id="customer-name" class="gradient-text">Customer</span></h1>
-          <p class="text-sm text-slate-400 max-w-2xl">Review balances, cards, recent activity, and account alerts from one secure workspace.</p>
+          <h1 class="text-3xl md:text-4xl font-bold leading-tight mb-3">Welcome back, <span id="customer-name"
+              class="gradient-text">Customer</span></h1>
+          <p class="text-sm text-slate-400 max-w-2xl">Review balances, cards, recent activity, and account alerts from
+            one secure workspace.</p>
         </div>
         <div class="glass-card !rounded-xl px-4 py-3 !transform-none">
           <p class="text-[10px] uppercase tracking-wider text-slate-500 mb-1">Today</p>
@@ -427,7 +437,8 @@
 
       <div
         class="rounded-xl border border-yellow-400/30 bg-yellow-400/10 text-yellow-100 text-sm px-4 py-3 mb-5 leading-relaxed">
-        Demo prototype only. Dashboard balances, transfers, bills, cards, and statements are simulated. Do not enter real banking or personal information.
+        Demo prototype only. Dashboard balances, transfers, bills, cards, and statements are simulated. Do not enter
+        real banking or personal information.
       </div>
 
       <div class="dashboard-grid">
@@ -455,7 +466,10 @@
           <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 reveal">
             <button class="quick-action text-left" type="button" data-money-action="add">
               <span class="action-icon">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" /></svg>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+                  aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
+                </svg>
               </span>
               <span>
                 <span class="block text-sm font-bold">Add Money</span>
@@ -464,7 +478,10 @@
             </button>
             <button class="quick-action text-left" type="button" data-money-action="transfer">
               <span class="action-icon">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+                  aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
               </span>
               <span>
                 <span class="block text-sm font-bold">Transfer</span>
@@ -473,7 +490,11 @@
             </button>
             <button class="quick-action text-left" type="button" data-money-action="bill">
               <span class="action-icon">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15A2.25 2.25 0 002.25 6.75v10.5A2.25 2.25 0 004.5 19.5z" /></svg>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+                  aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15A2.25 2.25 0 002.25 6.75v10.5A2.25 2.25 0 004.5 19.5z" />
+                </svg>
               </span>
               <span>
                 <span class="block text-sm font-bold">Pay Bills</span>
@@ -482,7 +503,11 @@
             </button>
             <button class="quick-action text-left" type="button" data-statement-action="download">
               <span class="action-icon">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h12A2.25 2.25 0 0020.25 14.25V3M8.25 21h7.5M12 16.5V21" /></svg>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+                  aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M3.75 3v11.25A2.25 2.25 0 006 16.5h12A2.25 2.25 0 0020.25 14.25V3M8.25 21h7.5M12 16.5V21" />
+                </svg>
               </span>
               <span>
                 <span class="block text-sm font-bold">Statements</span>
@@ -500,19 +525,35 @@
               <span id="total-balance" class="status-pill">$0.00 total</span>
             </div>
             <div id="account-list" class="space-y-3"></div>
-            <div id="account-details-panel" class="account-row p-4 mt-3">
-              <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <a href="dashboard-members.html" class="text-accent text-sm inline-block mt-3">Manage members and transfer approvals</a>
+            <div id="account-details-panel" class="account-row p-5 mt-4">
+              <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 <div>
-                  <p class="text-xs uppercase tracking-wider text-slate-500 mb-1">Account details</p>
-                  <p id="dashboard-account-number" class="text-lg font-bold text-slate-100 tracking-[0.18em]">----------</p>
-                  <p class="text-xs text-slate-500 mt-1">Use Show before copying the full 10-digit account number.</p>
+                  <p class="text-[10px] uppercase tracking-wider text-slate-500 font-semibold mb-1">Account Holder</p>
+                  <p id="details-holder-name" class="text-sm font-bold text-slate-100">----------</p>
+                  <p id="details-joint-holder" class="text-xs text-accent mt-1 hidden"></p>
                 </div>
-                <div class="flex gap-2">
-                  <button id="account-number-toggle" class="btn-secondary text-xs py-2.5 px-4" type="button">Show</button>
-                  <button id="account-number-copy" class="btn-primary text-xs py-2.5 px-4" type="button">Copy</button>
+                <div>
+                  <p class="text-[10px] uppercase tracking-wider text-slate-500 font-semibold mb-1">Account Type</p>
+                  <p id="details-account-type" class="text-sm font-bold text-slate-100">----------</p>
+                </div>
+                <div>
+                  <p class="text-[10px] uppercase tracking-wider text-slate-500 font-semibold mb-1">Account Number</p>
+                  <div class="flex items-center gap-2.5">
+                    <p id="dashboard-account-number" class="text-sm font-mono font-bold tracking-widest text-slate-100">
+                      ******0000</p>
+                    <div class="flex gap-1.5">
+                      <button id="account-number-toggle"
+                        class="p-1 px-2.5 rounded-lg bg-white/5 border border-white/10 text-[10px] uppercase font-bold text-slate-300 hover:text-white transition-colors"
+                        type="button">Show</button>
+                      <button id="account-number-copy"
+                        class="p-1 px-2.5 rounded-lg bg-white/5 border border-white/10 text-[10px] uppercase font-bold text-slate-300 hover:text-white transition-colors"
+                        type="button">Copy</button>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <p id="account-number-feedback" class="text-xs text-accent mt-3 hidden">Copied account number.</p>
+              <p id="account-number-feedback" class="text-xs text-accent mt-4 hidden">Copied account number.</p>
             </div>
           </section>
 
@@ -523,7 +564,8 @@
                 <h2 class="text-xl font-bold">Transactions</h2>
               </div>
               <div class="flex flex-col sm:flex-row gap-2">
-                <input id="transaction-search" class="dashboard-input text-sm" type="search" placeholder="Search activity">
+                <input id="transaction-search" class="dashboard-input text-sm" type="search"
+                  placeholder="Search activity">
                 <div class="flex gap-2">
                   <button class="dashboard-tab active" type="button" data-filter="all">All</button>
                   <button class="dashboard-tab" type="button" data-filter="income">Income</button>
@@ -575,7 +617,8 @@
     </section>
   </main>
 
-  <div id="money-modal" class="money-modal hidden justify-center" role="dialog" aria-modal="true" aria-labelledby="money-modal-title" >
+  <div id="money-modal" class="money-modal hidden justify-center" role="dialog" aria-modal="true"
+    aria-labelledby="money-modal-title">
     <form id="money-form" class="money-modal-panel p-5 md:p-6 justify-center">
       <div class="flex items-start justify-between gap-4 mb-5">
         <div>
@@ -584,7 +627,8 @@
           <p id="money-modal-description" class="text-sm text-slate-500 mt-1">Deposit funds into your account.</p>
         </div>
         <button class="btn-secondary !p-2.5" type="button" data-modal-close aria-label="Close">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+            aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
@@ -592,11 +636,20 @@
 
       <input id="money-action-type" type="hidden" value="add">
 
-      <label id="money-detail-label" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2" for="money-detail">Source</label>
-      <input id="money-detail" class="dashboard-input text-sm mb-4" type="text" placeholder="Payroll, cash deposit, or bank source">
+      <div id="money-account-wrap" class="hidden mb-4">
+        <label for="money-account" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">From account</label>
+        <select id="money-account" class="dashboard-input text-sm"></select>
+      </div>
 
-      <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2" for="money-amount">Amount</label>
-      <input id="money-amount" class="dashboard-input text-sm mb-3" type="number" min="1" step="0.01" inputmode="decimal" placeholder="0.00" required>
+      <label id="money-detail-label" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2"
+        for="money-detail">Source</label>
+      <input id="money-detail" class="dashboard-input text-sm mb-4" type="text"
+        placeholder="Payroll, cash deposit, or bank source">
+
+      <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2"
+        for="money-amount">Amount</label>
+      <input id="money-amount" class="dashboard-input text-sm mb-3" type="number" min="0.01" step="0.01"
+        inputmode="decimal" placeholder="0.00" required>
 
       <p id="money-error" class="hidden text-sm text-red-300 mb-4"></p>
 
@@ -607,43 +660,52 @@
     </form>
   </div>
 
-  <div id="blocked-transaction-modal" class="money-modal hidden" role="dialog" aria-modal="true" aria-labelledby="blocked-transaction-title">
+  <div id="blocked-transaction-modal" class="money-modal hidden" role="dialog" aria-modal="true"
+    aria-labelledby="blocked-transaction-title">
     <div class="money-modal-panel blocked-modal-panel p-5 md:p-6">
       <div class="blocked-modal-header">
         <div class="blocked-modal-heading">
           <span class="action-icon blocked-modal-icon text-yellow-100 border-yellow-400/30 bg-yellow-400/10">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+              aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
             </svg>
-          </span>
-          <div class="min-w-0">
-            <p id="blocked-transaction-kicker" class="text-xs uppercase tracking-wider text-slate-500 mb-1">Transaction blocked</p>
-            <h2 id="blocked-transaction-title" class="blocked-modal-title font-bold">Verification required</h2>
-          </div>
+            <div class="min-w-0">
+              <p id="blocked-transaction-kicker" class="text-xs uppercase tracking-wider text-slate-500 mb-1">
+                Transaction blocked</p>
+              <h2 id="blocked-transaction-title" class="blocked-modal-title font-bold">Verification required</h2>
+            </div>
         </div>
         <button class="btn-secondary blocked-modal-close" type="button" data-blocked-close aria-label="Close">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+            aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>
 
       <p class="text-sm text-slate-400 leading-relaxed mb-4">
-        <span id="blocked-transaction-message">Your request has been blocked for your protection. Please contact Customer Service before trying again.</span>
+        <span id="blocked-transaction-message">Your request has been blocked for your protection. Please contact
+          Customer Service before trying again.</span>
       </p>
 
-      <div id="blocked-transaction-note" class="rounded-xl border border-yellow-400/30 bg-yellow-400/10 px-3.5 py-3 text-sm text-yellow-100 mb-5">
+      <div id="blocked-transaction-note"
+        class="rounded-xl border border-yellow-400/30 bg-yellow-400/10 px-3.5 py-3 text-sm text-yellow-100 mb-5">
         No money has been added to your account, and your available balance remains unchanged.
       </div>
 
       <div class="blocked-modal-actions">
-        <a id="blocked-transaction-action" href="support.html" class="btn-primary flex-1 justify-center">Contact Customer Service</a>
+        <a id="blocked-transaction-action" href="dashboard-support.html"
+          class="btn-primary flex-1 justify-center">Contact Customer Service</a>
         <button class="btn-secondary flex-1 justify-center" type="button" data-blocked-close>Close</button>
       </div>
     </div>
   </div>
 
+  <script src="auth-client.js"></script>
   <script src="dashboard.js"></script>
+  <script src="translate.js"></script>
 </body>
 
 </html>

@@ -1,3 +1,20 @@
+// --- Dev API Redirect ---
+(function() {
+  const isLocalDev = window.location.hostname === 'localhost' ||
+                      window.location.hostname === '127.0.0.1' ||
+                      window.location.protocol === 'file:';
+  const isWrongPort = window.location.port !== '3000';
+  if (isLocalDev && isWrongPort) {
+    const originalFetch = window.fetch;
+    window.fetch = function(input, init) {
+      if (typeof input === 'string' && input.startsWith('/api')) {
+        input = 'http://localhost:3000' + input;
+      }
+      return originalFetch(input, init);
+    };
+  }
+})();
+
 const cardPageState = {
   currentUser: null,
   cards: [],
@@ -8,7 +25,6 @@ const cardPageState = {
 document.addEventListener('DOMContentLoaded', () => {
   initMobileNav();
   initNavbarScroll();
-  initSignOut();
   initCardPage();
 });
 
@@ -49,14 +65,6 @@ function initNavbarScroll() {
   }, { passive: true });
 }
 
-function initSignOut() {
-  document.querySelectorAll('[data-sign-out]').forEach(link => {
-    link.addEventListener('click', () => {
-      localStorage.removeItem('payvexisCurrentUser');
-    });
-  });
-}
-
 async function initCardPage() {
   const token = localStorage.getItem('payvexisToken');
   if (!token) {
@@ -68,12 +76,12 @@ async function initCardPage() {
     const res = await fetch('/api/accounts/me', { headers: { 'Authorization': `Bearer ${token}` } });
     if (!res.ok) throw new Error();
     const data = await res.json();
-    
+
     cardPageState.currentUser = data.user;
     cardPageState.cards = data.cards;
 
     if (cardPageState.cards.length > 0) {
-      cardPageState.activeCard = cardPageState.cards[0];
+      cardPageState.activeCard = normalizeCard(cardPageState.cards[0], buildDefaultCard(data.user));
       cardPageState.selectedTheme = cardPageState.activeCard.theme || 'graphite';
     } else {
       // Create a default card shape if missing (shouldn't happen with our backend)
@@ -130,10 +138,10 @@ function normalizeCard(card, defaults) {
     holder: cleanText(card.holder || defaults.holder, 30),
     mask: getCardMask(card.mask, defaults.mask),
     network: normalizeNetwork(card.network || defaults.network),
-    status: card.frozen ? 'Active' : cleanText(card.status || defaults.status, 16),
+    status: card.frozen ? 'Frozen' : cleanText(card.status || defaults.status, 16),
     frozen: Boolean(card.frozen),
     spend: toMoneyNumber(card.spend, defaults.spend),
-    limit: clampLimit(card.limit || defaults.limit),
+    limit: clampLimit(card.cardLimit ?? card.limit ?? defaults.limit),
     theme: getValidTheme(card.theme || defaults.theme),
     contactless: card.contactless !== false,
     online: card.online !== false,
@@ -274,10 +282,17 @@ function updateCardFromForm() {
 
 async function handleCardSave(event) {
   event.preventDefault();
+  const previousCard = { ...cardPageState.activeCard };
   updateCardFromForm();
-  await saveActiveCard();
-  renderCardPage();
-  showSaveFeedback('Card settings saved.');
+  try {
+    await saveActiveCard();
+    renderCardPage();
+    showSaveFeedback('Card settings saved.');
+  } catch (error) {
+    cardPageState.activeCard = previousCard;
+    renderCardPage();
+    showSaveFeedback(error.message);
+  }
 }
 
 async function toggleCardFrozen() {
@@ -290,7 +305,7 @@ async function toggleCardFrozen() {
     });
     if (!res.ok) throw new Error();
     const data = await res.json();
-    cardPageState.activeCard = data.card;
+    cardPageState.activeCard = normalizeCard(data.card, buildDefaultCard(cardPageState.currentUser));
     renderCardPreview();
     renderFrozenState();
     showSaveFeedback(cardPageState.activeCard.frozen ? 'Card frozen. New purchases are paused.' : 'Card unfrozen. New purchases are available.');
@@ -301,28 +316,38 @@ async function toggleCardFrozen() {
 
 async function resetCardDesign() {
   const card = cardPageState.activeCard;
+  const previousCard = { ...card };
   card.theme = 'graphite';
   card.nickname = 'Everyday spend';
-  await saveActiveCard();
-  renderCardPage();
-  showSaveFeedback('Card design reset.');
+  try {
+    await saveActiveCard();
+    renderCardPage();
+    showSaveFeedback('Card design reset.');
+  } catch (error) {
+    cardPageState.activeCard = previousCard;
+    renderCardPage();
+    showSaveFeedback(error.message);
+  }
 }
 
 async function saveActiveCard() {
   const card = cardPageState.activeCard;
   const token = localStorage.getItem('payvexisToken');
-  try {
-    const res = await fetch(`/api/accounts/cards/${card.id}`, {
+  const res = await fetch(`/api/accounts/cards/${card.id}`, {
       method: 'PUT',
       headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ theme: card.theme, nickname: card.nickname, cardLimit: card.limit })
+      body: JSON.stringify({
+        theme: card.theme, nickname: card.nickname, cardLimit: card.limit,
+        name: card.name, holder: card.holder, contactless: card.contactless,
+        online: card.online, international: card.international, atm: card.atm
+      })
     });
-    if (!res.ok) throw new Error();
-    const data = await res.json();
-    cardPageState.activeCard = data.card;
-  } catch (err) {
-    console.error('Failed to save card settings');
+  if (!res.ok) {
+    const failure = await res.json().catch(() => ({}));
+    throw new Error(failure.error || 'Failed to save card settings.');
   }
+  const data = await res.json();
+  cardPageState.activeCard = normalizeCard(data.card, buildDefaultCard(cardPageState.currentUser));
 }
 
 function showSaveFeedback(message) {

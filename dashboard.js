@@ -1,3 +1,20 @@
+// --- Dev API Redirect ---
+(function() {
+  const isLocalDev = window.location.hostname === 'localhost' ||
+                      window.location.hostname === '127.0.0.1' ||
+                      window.location.protocol === 'file:';
+  const isWrongPort = window.location.port !== '3000';
+  if (isLocalDev && isWrongPort) {
+    const originalFetch = window.fetch;
+    window.fetch = function(input, init) {
+      if (typeof input === 'string' && input.startsWith('/api')) {
+        input = 'http://localhost:3000' + input;
+      }
+      return originalFetch(input, init);
+    };
+  }
+})();
+
 const dashboardState = {
   showBalances: true,
   showAccountNumber: false,
@@ -11,6 +28,8 @@ let cards = [];
 let transactions = [];
 let spending = [];
 let alerts = [];
+let demoTransferAvailable = false;
+let pendingTransferRequest = null;
 
 document.addEventListener('DOMContentLoaded', () => {
   loadDashboardData();
@@ -21,6 +40,24 @@ document.addEventListener('DOMContentLoaded', () => {
   initDashboardActions();
   // renderDashboard() is called after loadDashboardData completes
 });
+
+function getWelcomeName(user) {
+  const f1 = (user.firstName || '').trim();
+  const l1 = (user.lastName || '').trim();
+  if (!user.isJoint) {
+    return `${f1} ${l1}`.trim() || 'Customer';
+  }
+  const f2 = (user.jointFirstName || '').trim();
+  const l2 = (user.jointLastName || '').trim();
+
+  if (l1 && l2 && l1.toLowerCase() === l2.toLowerCase()) {
+    return `${f1} & ${f2} ${l1}`;
+  }
+  if (f1 && f2) {
+    return `${f1} & ${f2}`;
+  }
+  return `${f1} ${l1}`.trim() || 'Customer';
+}
 
 async function loadDashboardData() {
   const token = localStorage.getItem('payvexisToken');
@@ -48,19 +85,53 @@ async function loadDashboardData() {
     accounts = data.accounts;
     cards = data.cards;
     spending = data.spending;
+    try {
+      const capabilities = await fetch('/api/transactions/capabilities', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      demoTransferAvailable = capabilities.ok &&
+        (await capabilities.json()).demoInternalTransfersEnabled === true;
+    } catch (error) {
+      demoTransferAvailable = false;
+    }
 
-    // We'll load transactions separately via the transactions API in dashboard-activity.js
-    // For now we set it empty so the initial render doesn't fail.
-    transactions = [];
+    // Fetch transactions from backend
+    try {
+      const txRes = await fetch('/api/transactions', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (txRes.ok) {
+        const txData = await txRes.json();
+        transactions = txData.transactions || [];
+      } else {
+        transactions = [];
+      }
+    } catch (txErr) {
+      console.error('Failed to load transactions:', txErr);
+      transactions = [];
+    }
 
-    setText('customer-name', currentUser.firstName || 'Customer');
+    setText('customer-name', getWelcomeName(currentUser));
 
     alerts = [{
       title: 'Account created',
       detail: `${currentUser.accountLabel} ending in ${currentUser.accountMask} is ready to use.`,
       level: 'Update',
     }];
-    
+
+    // Generate alerts for admin adjustments (reference starts with ADM)
+    transactions.forEach(tx => {
+      if (tx.reference && tx.reference.startsWith('ADM')) {
+        const isCredit = tx.type === 'income';
+        const actionText = isCredit ? 'deposited' : 'withdrew';
+        alerts.unshift({
+          title: isCredit ? 'Credit alert' : 'Debit alert',
+          detail: `${tx.merchant} ${actionText} ${Math.abs(tx.amount)}`,
+          level: 'Alert'
+        });
+      }
+    });
+
     // Once data is loaded, render the dashboard
     renderDashboard();
 
@@ -134,12 +205,6 @@ function initDashboardDate() {
 }
 
 function initDashboardActions() {
-  document.querySelectorAll('a[href="index.html"]').forEach(link => {
-    link.addEventListener('click', () => {
-      localStorage.removeItem('payvexisCurrentUser');
-    });
-  });
-
   document.querySelectorAll('#balance-toggle, #mobile-balance-toggle').forEach(button => {
     button.addEventListener('click', () => {
       dashboardState.showBalances = !dashboardState.showBalances;
@@ -167,9 +232,23 @@ function initDashboardActions() {
 
   const accountNumberToggle = document.getElementById('account-number-toggle');
   if (accountNumberToggle) {
-    accountNumberToggle.addEventListener('click', () => {
+    accountNumberToggle.addEventListener('click', async () => {
+      if (!currentUser.accountNumber) {
+        try {
+          const token = localStorage.getItem('payvexisToken');
+          const response = await fetch('/api/accounts/number', {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (response.ok) {
+            const data = await response.json();
+            currentUser.accountNumber = data.accountNumber;
+          }
+        } catch (err) {
+          console.error('Failed to fetch account number:', err);
+        }
+      }
       dashboardState.showAccountNumber = !dashboardState.showAccountNumber;
-      renderAccountNumberDetails();
+      renderAccountDetails();
     });
   }
 
@@ -215,6 +294,16 @@ function openMoneyModal(action) {
     showBillPayUnavailableModal();
     return;
   }
+  if (action === 'transfer' && !demoTransferAvailable) {
+    showBlockedTransactionModal(0, {
+      kicker: 'Feature in progress',
+      title: 'Transfers are unavailable',
+      message: 'Internal transfers require the demo ledger migration and explicit demo mode. No funds were moved.',
+      note: 'External transfers will be added after provider integration and approval controls.',
+      actionLabel: 'Contact Support'
+    });
+    return;
+  }
 
   const modal = document.getElementById('money-modal');
   const amountInput = document.getElementById('money-amount');
@@ -227,12 +316,24 @@ function openMoneyModal(action) {
   clearMoneyError();
   setText('money-modal-title', getMoneyActionTitle(action));
   setText('money-modal-description', getMoneyActionDescription(action));
-  setText('money-detail-label', isTransfer ? 'Recipient' : isBill ? 'Biller' : 'Source');
+  setText('money-detail-label', isTransfer ? 'Recipient account number' : isBill ? 'Biller' : 'Source');
   setText('money-submit', isTransfer ? 'Transfer' : isBill ? 'Pay Bill' : 'Add Money');
 
   document.getElementById('money-action-type').value = action;
+  const accountWrap = document.getElementById('money-account-wrap');
+  const accountSelect = document.getElementById('money-account');
+  accountWrap.classList.toggle('hidden', !isTransfer);
+  accountSelect.replaceChildren();
+  if (isTransfer) {
+    accounts.forEach(account => {
+      const option = document.createElement('option');
+      option.value = String(account.id);
+      option.textContent = `${account.name} · ****${account.mask} · ${account.memberRole || 'owner'}`;
+      accountSelect.append(option);
+    });
+  }
   detailInput.value = '';
-  detailInput.placeholder = isTransfer ? 'Recipient name or account' : isBill ? 'Electric, rent, internet, or phone bill' : 'Payroll, cash deposit, or bank source';
+  detailInput.placeholder = isTransfer ? '10-digit Payvexis account number' : isBill ? 'Electric, rent, internet, or phone bill' : 'Payroll, cash deposit, or bank source';
   detailInput.required = isTransfer;
   amountInput.value = '';
   modal.classList.remove('hidden');
@@ -289,7 +390,8 @@ async function handleMoneySubmit(event) {
   }
 
   const action = document.getElementById('money-action-type').value;
-  const amount = Number(document.getElementById('money-amount').value);
+  const amountText = document.getElementById('money-amount').value.trim();
+  const amount = Number(amountText);
   const detail = document.getElementById('money-detail').value.trim();
 
   if (!Number.isFinite(amount) || amount <= 0) {
@@ -297,8 +399,8 @@ async function handleMoneySubmit(event) {
     return;
   }
 
-  if (action === 'transfer' && !detail) {
-    showMoneyError('Enter who you are transferring money to.');
+  if (action === 'transfer' && !/^\d{10}$/.test(detail)) {
+    showMoneyError('Enter the recipient’s 10-digit Payvexis account number.');
     return;
   }
 
@@ -313,7 +415,45 @@ async function handleMoneySubmit(event) {
     showBlockedTransactionModal(amount);
     return;
   }
-  return 'Deposit funds into your account.';
+  if (!/^\d+(?:\.\d{1,2})?$/.test(amountText)) {
+    showMoneyError('Enter a USD amount with at most two decimal places.');
+    return;
+  }
+  if (!window.confirm(`Send $${amountText} to account ending ${detail.slice(-4)}? This is a demo transfer.`)) return;
+  const accountId = Number(document.getElementById('money-account').value);
+  const requestBody = JSON.stringify({ amount: amountText, recipient: detail,
+    ...(Number.isSafeInteger(accountId) && accountId > 0 ? { accountId } : {}) });
+  if (!pendingTransferRequest || pendingTransferRequest.body !== requestBody) {
+    pendingTransferRequest = { body: requestBody, key: crypto.randomUUID() };
+  }
+  const submit = document.getElementById('money-submit');
+  submit.disabled = true;
+  try {
+    const token = localStorage.getItem('payvexisToken');
+    const response = await fetch('/api/transactions/transfer', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        'Idempotency-Key': pendingTransferRequest.key
+      },
+      body: requestBody
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Transfer failed. No funds were moved.');
+    pendingTransferRequest = null;
+    closeMoneyModal();
+    await loadDashboardData();
+    if (result.request?.status === 'pending') {
+      window.alert(`Transfer proposal #${result.request.id} is waiting for a second signature. No funds have moved or been reserved. Open Members & approvals to review it.`);
+    } else {
+      window.alert(`Demo transfer completed. Reference: ${result.reference}`);
+    }
+  } catch (error) {
+    showMoneyError(error.message);
+  } finally {
+    submit.disabled = false;
+  }
 }
 
 function applyBalanceChange(amount) {
@@ -435,7 +575,7 @@ function buildStatementText() {
     `Generated: ${new Date().toLocaleString('en-GB')}`,
     `Customer: ${currentUser.firstName || ''} ${currentUser.lastName || ''}`.trim()
   ];
-  
+
   if (accounts[0]?.isJoint) {
     baseInfo.push(`Joint holder: ${accounts[0].jointFirstName || ''} ${accounts[0].jointLastName || ''}`.trim());
   }
@@ -452,7 +592,7 @@ function buildStatementText() {
     ...rows,
     ''
   );
-  
+
   return baseInfo.join('\n');
 }
 
@@ -463,7 +603,7 @@ function renderDashboard() {
   renderSpending();
   renderAlerts();
   renderTransactions();
-  renderAccountNumberDetails();
+  renderAccountDetails();
   syncBalanceButtons();
 }
 
@@ -488,44 +628,77 @@ function renderAccounts() {
     return;
   }
 
-  list.innerHTML = accounts.map(account => `
-    <article class="account-row p-4 flex items-center justify-between gap-4">
-      <div class="min-w-0">
-        <p class="text-sm font-bold text-slate-100 flex items-center gap-2">
-          ${account.name}
-          ${account.isJoint ? '<span class="px-2 py-0.5 rounded-full bg-accent/10 text-accent text-[10px] uppercase font-bold tracking-wider">Joint</span>' : ''}
-        </p>
-        <p class="text-xs text-slate-500 mt-1">${account.type} - ...${account.mask}</p>
-        ${account.isJoint ? `<p class="text-xs text-slate-400 mt-0.5">with ${account.jointFirstName} ${account.jointLastName}</p>` : ''}
-      </div>
-      <div class="text-right flex-shrink-0">
-        <p class="text-sm font-bold text-slate-100">${formatMoney(account.balance)}</p>
-        <p class="text-xs ${getTrendClass(account.trend)} mt-1">${account.trend}</p>
-      </div>
-    </article>
-  `).join('');
+  list.innerHTML = accounts.map(account => {
+    const isChecking = account.name.toLowerCase().includes('checking');
+    const isSavings = account.name.toLowerCase().includes('savings');
+    const displayType = isChecking ? 'Checking' : (isSavings ? 'Savings' : 'Account');
+    const cleanName = account.name.replace(/Joint\s+/gi, '').replace(/joint\s+/gi, '');
+
+    return `
+      <article class="account-row p-4 flex items-center justify-between gap-4">
+        <div class="min-w-0">
+          <p class="text-sm font-bold text-slate-100 flex items-center gap-2">
+            ${cleanName}
+          </p>
+          <p class="text-xs text-slate-500 mt-1">${displayType} - ...${account.mask}</p>
+          ${account.isJoint ? `<p class="text-xs text-slate-400 mt-0.5">with ${account.jointFirstName} ${account.jointLastName}</p>` : ''}
+        </div>
+        <div class="text-right flex-shrink-0">
+          <p class="text-sm font-bold text-slate-100">${formatMoney(account.balance)}</p>
+          <p class="text-xs ${getTrendClass(account.trend)} mt-1">${account.trend}</p>
+        </div>
+      </article>
+    `;
+  }).join('');
 }
 
-function renderAccountNumberDetails() {
+function renderAccountDetails() {
+  const holderNameEl = document.getElementById('details-holder-name');
+  const jointHolderEl = document.getElementById('details-joint-holder');
+  const accountTypeEl = document.getElementById('details-account-type');
   const numberEl = document.getElementById('dashboard-account-number');
   const toggle = document.getElementById('account-number-toggle');
   const copy = document.getElementById('account-number-copy');
-  const feedback = document.getElementById('account-number-feedback');
-  if (!numberEl || !toggle || !copy) return;
 
-  const accountNumber = getFullAccountNumber();
-  if (!accountNumber) {
-    numberEl.textContent = '----------';
-    toggle.disabled = true;
-    copy.disabled = true;
-    if (feedback) feedback.classList.add('hidden');
-    return;
+  if (!currentUser) return;
+
+  // 1. Populate Name and Joint Info
+  if (holderNameEl) {
+    holderNameEl.textContent = `${currentUser.firstName || ''} ${currentUser.lastName || ''}`.trim();
   }
 
-  toggle.disabled = false;
-  copy.disabled = false;
-  numberEl.textContent = dashboardState.showAccountNumber ? accountNumber : maskAccountNumber(accountNumber);
-  toggle.textContent = dashboardState.showAccountNumber ? 'Hide' : 'Show';
+  if (jointHolderEl) {
+    if (currentUser.isJoint) {
+      jointHolderEl.textContent = `Joint Partner: ${currentUser.jointFirstName || ''} ${currentUser.jointLastName || ''}`.trim();
+      jointHolderEl.classList.remove('hidden');
+    } else {
+      jointHolderEl.classList.add('hidden');
+    }
+  }
+
+  // 2. Populate Account Type
+  if (accountTypeEl) {
+    let typeLabel = currentUser.accountLabel || 'Personal Checking';
+    typeLabel = typeLabel.replace(/Joint\s+/gi, '').replace(/joint\s+/gi, '');
+    accountTypeEl.textContent = typeLabel;
+  }
+
+  // 3. Populate and Mask Account Number
+  if (numberEl && toggle && copy) {
+    toggle.disabled = false;
+    copy.disabled = false;
+
+    const mask = currentUser.accountMask || '0000';
+    const fullNumber = currentUser.accountNumber;
+
+    if (dashboardState.showAccountNumber && fullNumber) {
+      numberEl.textContent = fullNumber;
+      toggle.textContent = 'Hide';
+    } else {
+      numberEl.textContent = `******${mask}`;
+      toggle.textContent = 'Show';
+    }
+  }
 }
 
 function renderCards() {
@@ -541,7 +714,7 @@ function renderCards() {
 
   list.innerHTML = cards.map(card => {
     const spend = Number(card.spend) || 0;
-    const limit = Number(card.limit) || 1;
+    const limit = Number(card.cardLimit) || 1;
     const used = Math.min(Math.max(Math.round((spend / limit) * 100), 0), 100);
     const cardId = escapeHtml(card.id);
     const cardName = escapeHtml(card.name || 'Payvexis Debit');
@@ -630,23 +803,30 @@ function renderTransactions() {
     return;
   }
 
-  list.innerHTML = filtered.map(item => `
-    <article class="activity-row p-4 flex items-center justify-between gap-4">
-      <div class="flex items-center gap-3 min-w-0">
-        <span class="action-icon !w-10 !h-10">
-          ${item.type === 'income' ? incomeIcon() : spendIcon()}
-        </span>
-        <div class="min-w-0">
-          <p class="text-sm font-bold text-slate-100 truncate">${escapeHtml(item.merchant)}</p>
-          <p class="text-xs text-slate-500 mt-1">${escapeHtml(item.category)} - ${escapeHtml(item.date)}</p>
+  list.innerHTML = filtered.map(item => {
+    let category = item.category;
+    let merchant = item.merchant;
+    if (category === 'Admin Adjustment' || (item.reference && item.reference.startsWith('ADM'))) {
+      category = item.type === 'income' ? 'Deposit' : 'Withdrawal';
+    }
+    return `
+      <article class="activity-row p-4 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3 min-w-0">
+          <span class="action-icon !w-10 !h-10">
+            ${item.type === 'income' ? incomeIcon() : spendIcon()}
+          </span>
+          <div class="min-w-0">
+            <p class="text-sm font-bold text-slate-100 truncate">${escapeHtml(merchant)}</p>
+            <p class="text-xs text-slate-500 mt-1">${escapeHtml(category)} - ${escapeHtml(item.date)}</p>
+          </div>
         </div>
-      </div>
-      <div class="text-right flex-shrink-0">
-        <p class="text-sm font-bold ${item.amount >= 0 ? 'text-emerald-400' : 'text-slate-100'}">${formatMoney(item.amount)}</p>
-        <p class="text-xs text-slate-500 mt-1">${escapeHtml(item.account)}</p>
-      </div>
-    </article>
-  `).join('');
+        <div class="text-right flex-shrink-0">
+          <p class="text-sm font-bold ${item.amount >= 0 ? 'text-emerald-400' : 'text-slate-100'}">${formatMoney(item.amount)}</p>
+          <p class="text-xs text-slate-500 mt-1">${escapeHtml(item.account)}</p>
+        </div>
+      </article>
+    `;
+  }).join('');
 }
 
 function renderSpending() {
@@ -728,7 +908,26 @@ function maskAccountNumber(accountNumber) {
 }
 
 async function copyAccountNumber() {
-  const accountNumber = getFullAccountNumber();
+  if (!currentUser) return;
+  const token = localStorage.getItem('payvexisToken');
+
+  if (!currentUser.accountNumber) {
+    try {
+      const response = await fetch('/api/accounts/number', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        currentUser.accountNumber = data.accountNumber;
+      }
+    } catch (err) {
+      console.error('Failed to fetch account number:', err);
+      showAccountNumberFeedback('Failed to copy account number.');
+      return;
+    }
+  }
+
+  const accountNumber = currentUser.accountNumber;
   if (!accountNumber) return;
 
   try {
@@ -738,7 +937,7 @@ async function copyAccountNumber() {
       copyTextFallback(accountNumber);
     }
     dashboardState.showAccountNumber = true;
-    renderAccountNumberDetails();
+    renderAccountDetails();
     showAccountNumberFeedback('Copied account number.');
   } catch (error) {
     showAccountNumberFeedback('Unable to copy. Use Show and select it manually.');
@@ -803,13 +1002,13 @@ function getAccountMask(user) {
 }
 
 function getMoneyActionTitle(action) {
-  if (action === 'transfer') return 'Transfer Money';
+  if (action === 'transfer') return 'Demo Internal Transfer';
   if (action === 'bill') return 'Pay a Bill';
   return 'Add Money';
 }
 
 function getMoneyActionDescription(action) {
-  if (action === 'transfer') return 'Send money to another account or recipient.';
+  if (action === 'transfer') return 'Send demo funds to another Payvexis account.';
   if (action === 'bill') return 'Pay a bill from your connected account.';
   return 'Deposit funds into your account.';
 }

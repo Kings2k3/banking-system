@@ -1,6 +1,4 @@
 const errorHandler = (err, req, res, next) => {
-  console.error(err.stack);
-
   // If it's our custom validation error array from express-validator
   if (Array.isArray(err) && err[0]?.msg) {
     return res.status(400).json({ error: err[0].msg });
@@ -12,8 +10,11 @@ const errorHandler = (err, req, res, next) => {
   }
 
   // Default server error
-  const statusCode = err.statusCode || 500;
-  const message = err.message || 'Internal Server Error';
+  const statusCode = Number.isInteger(err.statusCode) && err.statusCode >= 400 && err.statusCode < 600
+    ? err.statusCode : 500;
+  if (statusCode >= 500 && statusCode !== 503) console.error(err.stack || err);
+  const message = statusCode >= 500 && statusCode !== 503
+    ? 'Internal Server Error' : (err.message || 'Request failed');
 
   res.status(statusCode).json({
     error: message,

@@ -1,3 +1,20 @@
+// --- Dev API Redirect ---
+(function() {
+  const isLocalDev = window.location.hostname === 'localhost' ||
+                      window.location.hostname === '127.0.0.1' ||
+                      window.location.protocol === 'file:';
+  const isWrongPort = window.location.port !== '3000';
+  if (isLocalDev && isWrongPort) {
+    const originalFetch = window.fetch;
+    window.fetch = function(input, init) {
+      if (typeof input === 'string' && input.startsWith('/api')) {
+        input = 'http://localhost:3000' + input;
+      }
+      return originalFetch(input, init);
+    };
+  }
+})();
+
 // ============================================================
 // BANKLIO - Premium Fintech Interactions
 // ============================================================
@@ -399,7 +416,7 @@ async function fetchLiveRates() {
     // Fetch USD-based rates from proxy
     const res = await fetch('/api/exchange/rates');
     if (!res.ok) throw new Error('API error');
-    
+
     const data = await res.json();
     const rates = data.rates;
 
@@ -493,7 +510,7 @@ function initCurrencyConverter() {
       const res = await fetch(`/api/exchange/convert?from=${from}&to=${to}&amount=${amount}`);
       if (!res.ok) throw new Error('API error');
       const data = await res.json();
-      
+
       const result = data.result;
       const rate = data.rate;
 

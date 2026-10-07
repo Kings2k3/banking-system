@@ -1,3 +1,20 @@
+// --- Dev API Redirect ---
+(function() {
+  const isLocalDev = window.location.hostname === 'localhost' ||
+                      window.location.hostname === '127.0.0.1' ||
+                      window.location.protocol === 'file:';
+  const isWrongPort = window.location.port !== '3000';
+  if (isLocalDev && isWrongPort) {
+    const originalFetch = window.fetch;
+    window.fetch = function(input, init) {
+      if (typeof input === 'string' && input.startsWith('/api')) {
+        input = 'http://localhost:3000' + input;
+      }
+      return originalFetch(input, init);
+    };
+  }
+})();
+
 document.addEventListener('DOMContentLoaded', () => {
   initMobileNav();
   initReveal();
@@ -78,10 +95,65 @@ function initPasswordToggle() {
 
 function initLoginForm() {
   const form = document.getElementById('login-form');
+  const mfaForm = document.getElementById('staff-mfa-form');
   const submitBtn = document.getElementById('login-submit');
   const submitText = document.getElementById('login-submit-text');
   const success = document.getElementById('login-success');
-  if (!form || !submitBtn || !submitText || !success) return;
+  if (!form || !mfaForm || !submitBtn || !submitText || !success) return;
+  let challengeToken = null;
+  let mfaPurpose = null;
+
+  function finishLogin(data) {
+    if (data.user.role === 'admin') {
+      localStorage.removeItem('payvexisToken');
+      localStorage.setItem('payvexisAdminToken', data.token);
+    } else {
+      localStorage.removeItem('payvexisAdminToken');
+      localStorage.setItem('payvexisToken', data.token);
+    }
+    if (data.recoveryCodes?.length) {
+      mfaForm.classList.add('hidden');
+      document.getElementById('staff-recovery-list').textContent = data.recoveryCodes.join('\n');
+      document.getElementById('staff-recovery-codes').classList.remove('hidden');
+      return;
+    }
+    success.classList.remove('hidden');
+    setTimeout(() => {
+      window.location.href = data.user.role === 'admin' ? 'admin.html' : 'dashboard.html';
+    }, 500);
+  }
+
+  document.getElementById('staff-recovery-continue').addEventListener('click', () => {
+    document.getElementById('staff-recovery-list').textContent = '';
+    window.location.href = 'admin.html';
+  });
+  document.getElementById('staff-mfa-back').addEventListener('click', () => window.location.reload());
+
+  mfaForm.addEventListener('submit', async event => {
+    event.preventDefault();
+    const code = document.getElementById('staff-mfa-code').value.trim();
+    const recoveryCode = document.getElementById('staff-mfa-recovery-code').value.trim();
+    if (!/^\d{6}$/.test(code) && !(mfaPurpose === 'login' && recoveryCode)) {
+      showLoginError('Enter a 6-digit authenticator code or a recovery code.');
+      return;
+    }
+    const button = document.getElementById('staff-mfa-submit');
+    button.disabled = true;
+    try {
+      const response = await fetch('/api/auth/staff-mfa/complete', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ challengeToken, purpose: mfaPurpose, code,
+          recoveryCode: /^\d{6}$/.test(code) ? '' : recoveryCode })
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Authenticator verification failed.');
+      finishLogin(data);
+    } catch (error) {
+      showLoginError(error.message);
+    } finally {
+      button.disabled = false;
+    }
+  });
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -115,23 +187,35 @@ function initLoginForm() {
         throw new Error(data.error || 'Failed to login');
       }
 
-      // Store JWT token
-      if (data.user.role === 'admin') {
-        localStorage.setItem('payvexisAdminToken', data.token);
-      } else {
-        localStorage.setItem('payvexisToken', data.token);
+      if (data.mfaRequired) {
+        challengeToken = data.challengeToken;
+        mfaPurpose = data.setupRequired ? 'enroll' : 'login';
+        if (data.setupRequired) {
+          const setupResponse = await fetch('/api/auth/staff-mfa/setup', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ challengeToken })
+          });
+          const setup = await setupResponse.json();
+          if (!setupResponse.ok) throw new Error(setup.error || 'Could not start authenticator setup.');
+          document.getElementById('staff-mfa-secret').textContent = setup.secret;
+          document.getElementById('staff-mfa-setup').classList.remove('hidden');
+        } else {
+          document.getElementById('staff-mfa-recovery-entry').classList.remove('hidden');
+        }
+        document.getElementById('staff-mfa-title').textContent = data.setupRequired
+          ? 'Set up your staff authenticator' : 'Verify your authenticator';
+        document.getElementById('staff-mfa-instructions').textContent = data.setupRequired
+          ? 'Enter the current code from your authenticator app to activate staff access.'
+          : 'Enter the current code from your authenticator app, or a saved recovery code.';
+        document.getElementById('login-password').value = '';
+        form.classList.add('hidden');
+        mfaForm.classList.remove('hidden');
+        document.getElementById('staff-mfa-code').focus();
+        return;
       }
 
-      success.classList.remove('hidden');
+      finishLogin(data);
       submitText.textContent = 'Success!';
-      
-      setTimeout(() => {
-        if (data.user.role === 'admin') {
-          window.location.href = 'admin.html';
-        } else {
-          window.location.href = 'dashboard.html';
-        }
-      }, 500);
 
     } catch (err) {
       submitBtn.disabled = false;
