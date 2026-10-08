@@ -94,7 +94,7 @@ test('public files, sessions, transfer guard and card settings', async t => {
       const bcrypt = require('bcrypt');
       db.prepare(`INSERT INTO users (email, password_hash, first_name, last_name, account_number, role)
         VALUES (?, ?, ?, ?, ?, 'admin')`)
-        .run('admin@example.com', bcrypt.hashSync('UniqueAdminPassword123!', 12), 'Test', 'Admin', '0000000000');
+        .run('admin+staff@gmail.com', bcrypt.hashSync('UniqueAdminPassword123!', 12), 'Test', 'Admin', '0000000000');
       const { migrateLedger } = require('../server/migrations/001_ledger');
       const { migrateAdminControls } = require('../server/migrations/002_admin_controls');
       const { migrateIdentityOwnership } = require('../server/migrations/003_identity_ownership');
@@ -105,7 +105,7 @@ test('public files, sessions, transfer guard and card settings', async t => {
       const login = await request('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: 'admin@example.com', password: 'UniqueAdminPassword123!' })
+        body: JSON.stringify({ email: 'admin+staff@gmail.com', password: 'UniqueAdminPassword123!' })
       });
       assert.equal(login.status, 202);
       const challenge = await login.json();
