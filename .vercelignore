@@ -1,0 +1,13 @@
+.env
+.env.*
+*.db
+*.db-shm
+*.db-wal
+backups/
+dev-mailbox/
+server/backups/
+server/dev-mailbox/
+docs/
+test/
+.vscode/
+.agents/
