@@ -2,7 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "express",
   "regions": ["lhr1"],
-  "rewrites": [
-    { "source": "/", "destination": "/index.html" }
+  "redirects": [
+    { "source": "/", "destination": "/index.html", "permanent": false }
   ]
 }
