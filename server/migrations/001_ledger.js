@@ -102,6 +102,7 @@ function migrateLedger(db) {
 }
 
 function ledgerIsReady(db) {
+  if (db.engine === 'postgres') return db.migrationsReady;
   const table = db.prepare("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'schema_migrations'").get();
   return !!table && !!db.prepare('SELECT 1 FROM schema_migrations WHERE version = ?').get(MIGRATION);
 }

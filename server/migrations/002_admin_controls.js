@@ -3,6 +3,7 @@ const { ledgerIsReady } = require('./001_ledger');
 const VERSION = '002_admin_controls';
 
 function adminControlsReady(db) {
+  if (db.engine === 'postgres') return db.migrationsReady;
   return ledgerIsReady(db) && !!db.prepare('SELECT 1 FROM schema_migrations WHERE version = ?').get(VERSION);
 }
 

@@ -3,6 +3,7 @@ const { sharedAccountsReady } = require('./005_shared_accounts');
 const VERSION = '006_admin_workspace';
 
 function adminWorkspaceReady(db) {
+  if (db.engine === 'postgres') return db.migrationsReady;
   return sharedAccountsReady(db) &&
     !!db.prepare('SELECT 1 FROM schema_migrations WHERE version = ?').get(VERSION);
 }

@@ -3,6 +3,7 @@ const { adminControlsReady } = require('./002_admin_controls');
 const VERSION = '003_identity_ownership';
 
 function identityOwnershipReady(db) {
+  if (db.engine === 'postgres') return db.migrationsReady;
   return adminControlsReady(db) && !!db.prepare('SELECT 1 FROM schema_migrations WHERE version = ?').get(VERSION);
 }
 

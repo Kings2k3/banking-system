@@ -1,3 +1,6 @@
+if (process.env.DB_ENGINE === 'postgres' || process.env.VERCEL === '1') {
+  module.exports = require('./postgres-database');
+} else {
 const Database = require('better-sqlite3');
 const bcrypt = require('bcrypt');
 const config = require('./config');
@@ -200,3 +203,4 @@ module.exports = {
   db,
   initDB
 };
+}

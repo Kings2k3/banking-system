@@ -20,6 +20,8 @@ const dbPath = path.join(folder, 'source.db');
 
 process.env.DB_PATH = dbPath;
 process.env.NODE_ENV = 'test';
+process.env.VERCEL = '0';
+process.env.DB_ENGINE = 'sqlite';
 process.env.JWT_SECRET = randomBytes(32).toString('hex');
 process.env.STAFF_MFA_KEY = randomBytes(32).toString('hex');
 process.env.ADMIN_EMAIL = `bootstrap-${randomUUID()}@example.invalid`;

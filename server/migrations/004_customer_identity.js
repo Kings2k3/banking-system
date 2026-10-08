@@ -3,6 +3,7 @@ const { identityOwnershipReady } = require('./003_identity_ownership');
 const VERSION = '004_customer_identity';
 
 function customerIdentityReady(db) {
+  if (db.engine === 'postgres') return db.migrationsReady;
   return identityOwnershipReady(db) && !!db.prepare('SELECT 1 FROM schema_migrations WHERE version = ?').get(VERSION);
 }
 

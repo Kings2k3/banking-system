@@ -3,6 +3,7 @@ const { customerIdentityReady } = require('./004_customer_identity');
 const VERSION = '005_shared_accounts';
 
 function sharedAccountsReady(db) {
+  if (db.engine === 'postgres') return db.migrationsReady;
   return customerIdentityReady(db) && !!db.prepare('SELECT 1 FROM schema_migrations WHERE version = ?').get(VERSION);
 }
 
