@@ -22,7 +22,7 @@ The PostgreSQL adapter runs the current synchronous repository calls through one
 - `npm test` checks the SQLite behavior.
 - `node scripts/smoke-postgres-runtime.js path/to/ignored-env-file payvexis_test` checks PostgreSQL query translation, rollback, customer registration and email verification, staff MFA, admin workspaces, and joint invitations. It creates test data only in the named test schema.
 - `npm run vercel-build` creates the allowlisted public assets. `vercel build --prod` should produce `.vercel/output/functions/index.func` containing `server/postgres-worker.js`.
-- Production still needs an HTTPS `APP_BASE_URL`, a verified sending domain and SMTP/Resend settings (`MAIL_FROM` plus credentials), and a reviewed owner staff account. The current production config intentionally refuses to start without working email settings. Do not publish a live customer signup that cannot deliver verification and recovery links.
+- Production still needs an HTTPS `APP_BASE_URL`, a verified sending address or domain and SMTP/Resend settings (`MAIL_FROM` plus credentials), and a reviewed owner staff account. The current production config intentionally refuses to start without working email settings. Do not publish a live customer signup that cannot deliver verification and recovery links.
 - Demo internal transfers and admin balance adjustments remain disabled when `NODE_ENV=production`.
 
 Keep database URLs and authentication keys in Vercel environment variables or ignored local files. Never commit them or include local `.env` files in a deployment artifact.
