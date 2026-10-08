@@ -26,6 +26,10 @@ router.post(['/staff-mfa/setup', '/staff-mfa/complete'], mfaLimiter);
 router.post(['/resend-verification', '/verify-email', '/password-reset/request',
   '/password-reset/complete'], emailActionLimiter);
 
+router.get('/capabilities', (req, res) => {
+  res.json({ emailActionsEnabled: config.EMAIL_ACTIONS_ENABLED });
+});
+
 async function deliverAction(db, userId, purpose) {
   const action = issueActionToken(db, userId, purpose);
   if (!action) return 'not-issued';
@@ -142,14 +146,16 @@ router.post('/register', validateRegistration, asyncHandler(async (req, res) => 
 
   // Generate JWT
   const token = createSessionToken(newUser);
-  const verificationDelivery = customerIdentityReady(db)
-    ? await deliverAction(db, newUser.id, 'verify_email') : 'unavailable';
+  const verificationDelivery = !config.EMAIL_ACTIONS_ENABLED ? 'disabled' :
+    customerIdentityReady(db) ? await deliverAction(db, newUser.id, 'verify_email') : 'unavailable';
 
   res.status(201).json({ token, user: newUser,
-    emailVerificationRequired: customerIdentityReady(db), verificationDelivery });
+    emailVerificationRequired: config.EMAIL_ACTIONS_ENABLED && customerIdentityReady(db),
+    verificationDelivery });
 }));
 
 router.post('/resend-verification', auth, asyncHandler(async (req, res) => {
+  if (!config.EMAIL_ACTIONS_ENABLED) return res.status(503).json({ error: 'Email verification is temporarily unavailable.' });
   if (!customerIdentityReady(db)) return res.status(503).json({ error: 'Email verification is unavailable.' });
   if (req.user.role !== 'user') return res.status(403).json({ error: 'Customer access required.' });
   const delivery = await deliverAction(db, req.user.id, 'verify_email');
@@ -158,6 +164,7 @@ router.post('/resend-verification', auth, asyncHandler(async (req, res) => {
 }));
 
 router.post('/verify-email', (req, res) => {
+  if (!config.EMAIL_ACTIONS_ENABLED) return res.status(503).json({ error: 'Email verification is temporarily unavailable.' });
   if (!customerIdentityReady(db)) return res.status(503).json({ error: 'Email verification is unavailable.' });
   if (!consumeEmailVerification(db, req.body?.token)) {
     return res.status(400).json({ error: 'Verification link is invalid or expired.' });
@@ -166,6 +173,7 @@ router.post('/verify-email', (req, res) => {
 });
 
 router.post('/password-reset/request', asyncHandler(async (req, res) => {
+  if (!config.EMAIL_ACTIONS_ENABLED) return res.status(503).json({ error: 'Password recovery is temporarily unavailable.' });
   if (!customerIdentityReady(db)) return res.status(503).json({ error: 'Password recovery is unavailable.' });
   const email = typeof req.body?.email === 'string' ? req.body.email.trim().toLowerCase() : '';
   if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && email.length <= 254) {
@@ -176,6 +184,7 @@ router.post('/password-reset/request', asyncHandler(async (req, res) => {
 }));
 
 router.post('/password-reset/complete', asyncHandler(async (req, res) => {
+  if (!config.EMAIL_ACTIONS_ENABLED) return res.status(503).json({ error: 'Password recovery is temporarily unavailable.' });
   if (!customerIdentityReady(db)) return res.status(503).json({ error: 'Password recovery is unavailable.' });
   const { token, password } = req.body || {};
   if (typeof password !== 'string' || password.length < 12 || password.length > 128) {

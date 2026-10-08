@@ -349,6 +349,9 @@ function initStepForm() {
         localStorage.setItem('payvexisToken', data.token);
 
         showCreatedAccountNumber(data.user);
+        if (data.verificationDelivery === 'disabled') {
+          document.getElementById('email-pause-note').classList.remove('hidden');
+        }
         goTo('success');
 
       } catch (err) {

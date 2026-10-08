@@ -8,6 +8,13 @@
     requestForm.classList.add('hidden');
     completeForm.classList.remove('hidden');
   }
+  fetch('/api/auth/capabilities').then(response => response.json()).then(capabilities => {
+    if (!capabilities.emailActionsEnabled) {
+      requestForm.classList.add('hidden');
+      completeForm.classList.add('hidden');
+      message.textContent = 'Password recovery is temporarily unavailable. Please contact support for help with account access.';
+    }
+  }).catch(() => {});
   async function submit(route, payload) {
     const response = await fetch(route, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },

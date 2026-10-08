@@ -6,6 +6,7 @@
     return;
   }
   let userId;
+  let emailActionsEnabled = true;
   async function api(route, method = 'GET', body) {
     const response = await fetch(route, {
       method, headers: { Authorization: `Bearer ${token}`,
@@ -38,7 +39,7 @@
       members.forEach(member => list.append(element('li', '',
         `${member.firstName} ${member.lastName} · ${member.role} · ${member.email}`)));
       panel.append(list);
-      if (account.memberRole === 'owner' && ['joint', 'business'].includes(account.requestedType)) {
+      if (emailActionsEnabled && account.memberRole === 'owner' && ['joint', 'business'].includes(account.requestedType)) {
         const form = element('form', 'mt-4 flex flex-wrap gap-2');
         const email = element('input', 'dashboard-input flex-1 min-w-48');
         email.type = 'email'; email.required = true; email.placeholder = 'Member email';
@@ -112,8 +113,17 @@
   (async () => {
     try {
       const me = await api('/api/accounts/me');
+      const capabilities = await api('/api/auth/capabilities');
+      emailActionsEnabled = capabilities.emailActionsEnabled;
       userId = me.user.id;
-      if (!me.user.emailVerifiedAt) document.getElementById('email-verification').classList.remove('hidden');
+      if (!me.user.emailVerifiedAt) {
+        document.getElementById('email-verification').classList.remove('hidden');
+        if (!emailActionsEnabled) {
+          document.getElementById('email-verification-description').textContent =
+            'Email verification and shared invitations are temporarily unavailable in this demo.';
+          document.getElementById('resend-verification').classList.add('hidden');
+        }
+      }
       await renderAccounts();
       await renderRequests();
     } catch (error) { message.textContent = error.message; }

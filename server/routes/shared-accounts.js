@@ -6,6 +6,7 @@ const auth = require('../middleware/auth');
 const { sharedAccountsReady } = require('../migrations/005_shared_accounts');
 const { accountForUser } = require('../services/ownership');
 const { deliverMail, actionLink } = require('../services/mail');
+const config = require('../config');
 const { emailActionLimiter } = require('../middleware/rateLimiter');
 
 const router = express.Router();
@@ -49,6 +50,7 @@ router.get('/:id/invitations', requireShared, (req, res) => {
 });
 
 router.post('/:id/invitations', requireShared, emailActionLimiter, asyncHandler(async (req, res) => {
+  if (!config.EMAIL_ACTIONS_ENABLED) return res.status(503).json({ error: 'Member invitations are temporarily unavailable.' });
   const account = accountForUser(db, req.user.id, req.params.id);
   if (!account || account.memberRole !== 'owner' || account.status !== 'active') {
     return res.status(404).json({ error: 'Account not found or invitation unavailable.' });
